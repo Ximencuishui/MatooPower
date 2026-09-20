@@ -1,29 +1,50 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TabBar } from '@/components/TabBar';
+import { PageLoading } from '@/components/Spinner';
+import { ErrorBlock } from '@/components/ErrorBlock';
+import { EmptyState } from '@/components/EmptyState';
 import { useT } from '@/lib/i18n';
 import { listMyDevices } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
 import type { DeviceDto } from '@/lib/api/endpoints';
 
+type StatusFilter = 'all' | 'bound' | 'online';
+
 export default function DevicesPage() {
   const { t } = useT();
   const [items, setItems] = useState<DeviceDto[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<unknown>(null);
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<StatusFilter>('all');
 
-  useEffect(() => {
+  function load() {
+    setError(null);
     listMyDevices()
       .then((r) => setItems(r.items))
-      .catch((e: unknown) => {
-        if (e instanceof ApiError && e.status === 401) {
-          setError(t.devices.needLogin);
-        } else {
-          setError(e instanceof Error ? e.message : t.common.networkErr);
-        }
-      });
-  }, [t.common.networkErr, t.devices.needLogin]);
+      .catch((e: unknown) => setError(e));
+  }
+
+  useEffect(() => { load(); }, []);
+
+  const filtered = useMemo(() => {
+    if (!items) return [];
+    const q = search.trim().toLowerCase();
+    return items.filter((d) => {
+      if (q) {
+        const hit =
+          (d.s_modelName ?? '').toLowerCase().includes(q) ||
+          (d.s_serial ?? '').toLowerCase().includes(q) ||
+          (d.skuId ?? '').toLowerCase().includes(q);
+        if (!hit) return false;
+      }
+      // 注意:'online' 字段后端 health 接口才有,/device/mine 没返回,演示期仅按 bound 过滤
+      if (filter === 'bound' && !d.fw) return false;
+      return true;
+    });
+  }, [items, search, filter]);
 
   return (
     <PhoneShell>
@@ -41,24 +62,57 @@ export default function DevicesPage() {
           <span className="text-matoo text-sm" aria-hidden="true">›</span>
         </Link>
 
-        {error && (
-          <div role="alert" className="card p-4 text-sm text-red-600 bg-red-50">
-            {error}
-            <div className="mt-2">
-              <Link href="/auth?next=/devices" className="text-matoo underline">{t.devices.goLogin}</Link>
+        {/* P2-9:搜索 + 筛选 */}
+        {!error && items && items.length > 0 && (
+          <div className="space-y-2">
+            <div className="relative">
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="搜索 序列号 / 型号"
+                aria-label="search devices"
+                className="input pr-9"
+              />
+              <span aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">⌕</span>
+            </div>
+            <div role="tablist" className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs">
+              {([
+                { k: 'all' as StatusFilter, l: '全部' },
+                { k: 'bound' as StatusFilter, l: '已绑定' },
+              ]).map((tb) => (
+                <button
+                  key={tb.k}
+                  role="tab"
+                  aria-selected={filter === tb.k}
+                  onClick={() => setFilter(tb.k)}
+                  className={`flex-1 py-1.5 rounded-lg ${filter === tb.k ? 'bg-white dark:bg-slate-700 shadow-sm font-semibold' : 'text-slate-500'}`}
+                >
+                  {tb.l}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {!error && items === null && (
-          <div className="text-center text-slate-400 text-sm py-8">{t.scan.loadingHint}</div>
-        )}
+        {error != null && <ErrorBlock error={error} onRetry={load} showLoginLink={error instanceof ApiError && error.status === 401} loginNext="/devices" />}
+
+        {!error && items === null && <PageLoading />}
 
         {!error && items && items.length === 0 && (
-          <div className="card p-8 text-center text-slate-500">{t.devices.empty}</div>
+          <EmptyState
+            icon="📱"
+            title={t.devices.empty}
+            ctaLabel={t.devices.scanBtn}
+            ctaHref="/scan/MATO-MAT12200-DEMO0001"
+          />
         )}
 
-        {!error && items && items.map((d) => (
+        {!error && items && items.length > 0 && filtered.length === 0 && (
+          <EmptyState icon="🔍" title="没有匹配的设备" hint="试试其他关键字或清除筛选" />
+        )}
+
+        {!error && filtered.map((d) => (
           <Link key={d.id} href={`/device/${d.id}`} className="card p-4 block">
             <div className="flex items-start gap-3">
               <div className="w-14 h-14 rounded-xl bg-matoo-light flex items-center justify-center text-matoo font-bold text-lg">M</div>

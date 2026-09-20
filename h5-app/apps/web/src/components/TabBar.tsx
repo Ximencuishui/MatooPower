@@ -7,6 +7,7 @@ const TABS = [
   { href: '/home', key: 'home' as const, icon: '⌂' },
   { href: '/devices', key: 'devices' as const, icon: '◧' },
   { href: '/shop', key: 'shop' as const, icon: '⬚' },
+  { href: '/messages', key: 'messages' as const, icon: '✉' },
   { href: '/profile', key: 'profile' as const, icon: '◯' },
 ];
 
@@ -19,7 +20,7 @@ export function TabBar() {
         const active = path?.startsWith(tb.href);
         return (
           <Link key={tb.href} href={tb.href} className={`tab ${active ? 'active' : ''}`}>
-            <span className="tab-icon text-lg">{tb.icon}</span>
+            <span className="tab-icon text-lg" aria-hidden="true">{tb.icon}</span>
             <span>{t.tabs[tb.key]}</span>
           </Link>
         );

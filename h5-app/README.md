@@ -5,7 +5,7 @@
 ## 子包
 
 - `apps/web` — Next.js 16 + React 19（生产化 H5 前端，已接 API）
-- `apps/api` — NestJS 10 + node:sqlite（演示期后端，18 端点，含 dealer + admin 角色鉴权）
+- `apps/api` — NestJS 10 + node:sqlite（演示期后端，21 端点，含 dealer + admin 角色鉴权 + Swagger + 趋势分析）
 - `packages/shared` — 共享 zod schema + 二维码 HMAC + 213 i18n keys
 
 ## 本地开发（演示期）
@@ -115,12 +115,28 @@ curl /admin/sku     with admin token    → 200
 | **配件商城基础版** | —（演示数据） | `/shop` 分类筛选 + SKU 兼容 + 收藏（localStorage） |
 | **多语言占位** | — | `zh / en` 完整；`bn / hi / ur` 占位（fallback 到 en + β 标识） |
 
+## P2 子集（生产就绪度，已本地完成）
+
+| 能力 | 状态 |
+|------|------|
+| **后端 OpenAPI / Swagger UI** | ✅ `/api` + `/api-json`，28 路径全文档化 |
+| **后端 e2e 测试** | ✅ 20 用例（auth / sku / warranty / device / ticket / dealer / admin / swagger / RBAC） |
+| **前端单元测试** | ✅ 34 用例（i18n 对称 / auth-store / API client / Shop filter / Compare logic / Ticket 状态机） |
+| **admin 列表搜索 + 分页** | ✅ SKU / 保修 / 设备 / 用户 / 工单 全部支持 `?q= ?page= ?pageSize=` |
+| **数据分析报表** | ✅ `/admin/analytics/trends` + `/breakdown` + SVG 趋势图 + 分布柱状图 |
+| **GitHub Actions CI** | ✅ 3 job pipeline（api-test / web-test / shared-test + all-pass 汇总） |
+| **部署指南** | ✅ `DEPLOY.md`：CF Pages + Render + Postgres 完整路径 + 成本估算 + Rollback |
+
 ## 部署
 
-- 前端：Cloudflare Pages（静态托管 Next.js 16 build）
-- 后端：Cloudflare Workers（演示期）
-- DB：演示期 SQLite → 生产期 Neon Postgres
-- CI/CD：GitHub Actions（占位，待 W3 配置）
+生产期完整部署路径 → 见 [DEPLOY.md](./DEPLOY.md)。
+
+要点：
+- **前端**：Cloudflare Pages（monorepo 根 → `apps/web`）
+- **后端**：演示期 Render / 生产期 Cloudflare VPS + Postgres
+- **DB**：Neon Postgres（生产）/ SQLite（演示）
+- **CI/CD**：`.github/workflows/ci.yml` 跑 3 job 完整流水线
+- **CI badge**：push 到 main 后 GitHub Actions 自动跑
 
 ## 环境变量（apps/web）
 

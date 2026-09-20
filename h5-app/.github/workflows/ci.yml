@@ -1,0 +1,127 @@
+# Matoo Power H5-App · CI
+# 跑后端 e2e + 前端单测 + 两端 build + OpenAPI 校验
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+# 同一 PR 取消旧的运行
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================
+  # 后端：e2e + build + OpenAPI 生成验证
+  # ============================================================
+  api-test:
+    name: API e2e + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: apps/api/package-lock.json
+
+      - name: Install deps
+        run: npm install --no-audit --no-fund --ignore-scripts
+
+      - name: Build
+        run: npm run build
+
+      - name: Run e2e tests (20 tests)
+        run: npm run test:e2e
+
+      # 启动后端 + 验证健康（10 秒）
+      - name: Boot smoke test
+        run: |
+          set -e
+          node prisma/init-sqlite.cjs /tmp/ci.db
+          DATABASE_URL=file:/tmp/ci.db node dist/src/main.js &
+          SERVER_PID=$!
+          sleep 3
+          # SKU 不存在 → 404
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3001/sku/UNKNOWN)" = "404"
+          # OpenAPI 存在
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3001/api-json)" = "200"
+          kill $SERVER_PID 2>/dev/null || true
+
+  # ============================================================
+  # 前端：vitest + build + 类型检查
+  # ============================================================
+  web-test:
+    name: Web tests + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests (vitest)
+        run: npm test
+
+      - name: Build (Next.js)
+        run: npm run build
+
+  # ============================================================
+  # 共享包：build + test
+  # ============================================================
+  shared-test:
+    name: Shared package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/shared
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: packages/shared/package-lock.json
+
+      - name: Install + build + test
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+          npm test
+
+  # ============================================================
+  # 总结：所有 job 通过则 ✓
+  # ============================================================
+  all-pass:
+    name: All checks
+    runs-on: ubuntu-latest
+    needs: [api-test, web-test, shared-test]
+    if: always()
+    steps:
+      - name: Check status
+        run: |
+          if [ "${{ needs.api-test.result }}" != "success" ] || \
+             [ "${{ needs.web-test.result }}" != "success" ] || \
+             [ "${{ needs.shared-test.result }}" != "success" ]; then
+            echo "::error::One or more jobs failed"
+            exit 1
+          fi
+          echo "✓ All CI checks passed"

@@ -1,11 +1,15 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar } from '@/components/TopBar';
+import { PageLoading, Spinner } from '@/components/Spinner';
+import { ErrorBlock } from '@/components/ErrorBlock';
 import { useT } from '@/lib/i18n';
 import { getSku, activateWarranty } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
+import { toast, toastSuccess } from '@/components/Toast';
 import type { SkuDto } from '@/lib/api/endpoints';
 import { getSession } from '@/lib/api/auth-store';
 
@@ -17,7 +21,7 @@ export default function ActivatePage() {
 
   const [sku, setSku] = useState<SkuDto | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<unknown>(null);
 
   const [step, setStep] = useState(1);
   const [country, setCountry] = useState('Bangladesh');
@@ -29,17 +33,23 @@ export default function ActivatePage() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [agree, setAgree] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<unknown>(null);
 
-  useEffect(() => {
+  function load() {
     setLoading(true);
+    setLoadError(null);
     getSku(id)
       .then((s) => { setSku(s); setLoading(false); })
       .catch((err: unknown) => {
-        setLoadError(err instanceof Error ? err.message : t.common.networkErr);
+        setLoadError(err);
         setLoading(false);
       });
-  }, [id, t.common.networkErr]);
+  }
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   function pickPhoto() {
     setPhoto(`inv-${Math.random().toString(36).slice(2, 7)}`);
@@ -49,7 +59,7 @@ export default function ActivatePage() {
     if (!sku) return;
     const session = getSession();
     if (!session?.token) {
-      setSubmitError(t.activate.needLogin);
+      setSubmitError(new ApiError(401, 'UNAUTHORIZED', t.activate.needLogin));
       return;
     }
     setSubmitting(true);
@@ -74,9 +84,11 @@ export default function ActivatePage() {
         invoiceCurrency: country === 'Bangladesh' ? 'BDT' : 'USD',
         policyAccepted: true,
       });
+      toastSuccess(t.activate.submit + ' ✓');
       router.push(`/warranty/${sku.id}`);
     } catch (err) {
-      setSubmitError(err instanceof ApiError ? err.message : (err instanceof Error ? err.message : t.activate.submitFailed));
+      setSubmitError(err);
+      if (err instanceof ApiError) toast(err.message, 'error');
     } finally {
       setSubmitting(false);
     }
@@ -86,7 +98,7 @@ export default function ActivatePage() {
     return (
       <PhoneShell>
         <TopBar title={t.activate.title} />
-        <main className="p-5 text-slate-400 text-sm">{t.scan.loadingHint}</main>
+        <main className="p-5"><PageLoading /></main>
       </PhoneShell>
     );
   }
@@ -95,9 +107,9 @@ export default function ActivatePage() {
     return (
       <PhoneShell>
         <TopBar title={t.activate.title} />
-        <main className="p-5">
-          <div role="alert" className="text-red-600 text-sm">{loadError ?? 'SKU not found'}</div>
-          <button onClick={() => router.back()} className="btn-secondary mt-4">{t.common.back}</button>
+        <main className="p-4 space-y-3">
+          <ErrorBlock error={loadError ?? 'SKU not found'} onRetry={load} />
+          <button onClick={() => router.back()} className="btn-secondary">{t.common.back}</button>
         </main>
       </PhoneShell>
     );
@@ -107,7 +119,10 @@ export default function ActivatePage() {
     <PhoneShell>
       <TopBar title={t.activate.title} />
       <main className="flex-1 overflow-auto p-4 space-y-4">
-        <div className="text-xs text-slate-500">{t.activate.step.replace('{n}', String(step)).replace('{t}', '3')}</div>
+        <div className="flex items-center justify-between text-xs text-slate-500">
+          <span>{t.activate.step.replace('{n}', String(step)).replace('{t}', '3')}</span>
+          <Link href="/warranty-policy" className="text-matoo underline">{t.legal.termsSection2Title} ?</Link>
+        </div>
 
         {step === 1 && (
           <div className="space-y-3">
@@ -124,13 +139,15 @@ export default function ActivatePage() {
             </div>
             <div>
               <label htmlFor="act-city" className="label">{t.activate.city}</label>
-              <input id="act-city" className="input" placeholder={t.activate.cityPh} value={city} onChange={(e) => setCity(e.target.value)} />
+              <input id="act-city" className="input" placeholder={t.activate.cityPh} value={city} onChange={(e) => setCity(e.target.value)}
+                autoComplete="address-level2" />
             </div>
             <div>
               <label htmlFor="act-dealer" className="label">{t.activate.dealer}</label>
-              <input id="act-dealer" className="input" placeholder={t.activate.dealerPh} value={dealer} onChange={(e) => setDealer(e.target.value)} />
+              <input id="act-dealer" className="input" placeholder={t.activate.dealerPh} value={dealer} onChange={(e) => setDealer(e.target.value)}
+                autoComplete="organization" />
             </div>
-            <div className="text-xs text-slate-500 mt-2">{t.activate.serialAuto}：<span className="font-mono">{sku.serial}</span></div>
+            <div className="text-xs text-slate-500 mt-2">{t.activate.serialAuto}:<span className="font-mono">{sku.serial}</span></div>
           </div>
         )}
 
@@ -139,7 +156,8 @@ export default function ActivatePage() {
             <h3 className="font-semibold">{t.activate.invoice}</h3>
             <div>
               <label htmlFor="act-invoice-no" className="label">{t.activate.invoiceNo}</label>
-              <input id="act-invoice-no" className="input" value={invNo} onChange={(e) => setInvNo(e.target.value)} placeholder="INV-2025-00123" />
+              <input id="act-invoice-no" className="input" value={invNo} onChange={(e) => setInvNo(e.target.value)} placeholder="INV-2025-00123"
+                autoComplete="off" maxLength={40} />
             </div>
             <div>
               <label htmlFor="act-invoice-date" className="label">{t.activate.invoiceDate}</label>
@@ -147,11 +165,11 @@ export default function ActivatePage() {
             </div>
             <div>
               <label htmlFor="act-invoice-amt" className="label">{t.activate.invoiceAmt}{t.activate.invoiceAmtUnit.replace('{c}', country === 'Bangladesh' ? 'BDT' : 'USD')}</label>
-              <input id="act-invoice-amt" inputMode="decimal" className="input" value={invAmt} onChange={(e) => setInvAmt(e.target.value)} placeholder="0.00" />
+              <input id="act-invoice-amt" type="number" inputMode="decimal" step="0.01" min="0" className="input" value={invAmt} onChange={(e) => setInvAmt(e.target.value)} placeholder="0.00" />
             </div>
             <div>
               <label htmlFor="act-invoice-photo" className="label">{t.activate.invoicePhoto}</label>
-              <button id="act-invoice-photo" onClick={pickPhoto} className="w-full h-28 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-500 text-sm hover:bg-slate-50">
+              <button id="act-invoice-photo" onClick={pickPhoto} className="w-full h-28 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 text-sm hover:bg-slate-50 dark:hover:bg-slate-800">
                 {photo ? (
                   <div className="flex items-center gap-2 text-matoo">
                     <span aria-hidden="true">📄</span><span className="font-mono">{photo}.jpg</span>
@@ -181,14 +199,14 @@ export default function ActivatePage() {
                 <div className="flex justify-between"><span className="text-slate-500">{t.activate.invoiceAmt}</span><span>{invAmt || '—'}</span></div>
               </div>
             </div>
-            <div className="text-xs text-slate-500 leading-relaxed bg-amber-50 p-3 rounded-xl text-amber-800">
+            <div className="text-xs text-slate-500 leading-relaxed bg-amber-50 dark:bg-amber-950/40 dark:text-amber-300 p-3 rounded-xl text-amber-800">
               {t.activate.rule}
             </div>
             <label className="flex items-start gap-2 text-sm">
               <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1" />
               <span>{t.activate.policyOk}</span>
             </label>
-            {submitError && <div role="alert" className="text-xs text-red-600 bg-red-50 p-3 rounded-xl">{submitError}</div>}
+            {submitError != null && <ErrorBlock error={submitError} />}
           </div>
         )}
 
@@ -198,8 +216,9 @@ export default function ActivatePage() {
               {t.activate.next}
             </button>
           ) : (
-            <button onClick={submit} disabled={!agree || submitting} className="btn-primary">
-              {submitting ? '…' : t.activate.submit}
+            <button onClick={submit} disabled={!agree || submitting} className="btn-primary inline-flex items-center justify-center gap-2">
+              {submitting ? <Spinner size="sm" /> : null}
+              {submitting ? t.common.loading : t.activate.submit}
             </button>
           )}
         </div>

@@ -95,6 +95,20 @@ export class WarrantyService {
     return { ...w, sku };
   }
 
+  /** P0-1:按 skuId 查最新保修,owner/admin 校验 */
+  async findBySku(skuId: string, userId?: string) {
+    const w = this.db.get<any>(
+      'SELECT * FROM Warranty WHERE skuId = ? ORDER BY createdAt DESC LIMIT 1',
+      skuId,
+    );
+    if (!w) return null;
+    if (userId && w.userId !== userId) {
+      throw new NotFoundException(`warranty for sku ${skuId} 不存在`);
+    }
+    const sku = this.db.get<any>('SELECT * FROM Sku WHERE id = ?', w.skuId);
+    return { ...w, sku };
+  }
+
   async listMine(userId: string) {
     const rows = this.db.all<any>(
       'SELECT w.*, s.sku AS s_sku, s.modelName AS s_modelName FROM Warranty w JOIN Sku s ON w.skuId = s.id WHERE w.userId = ? ORDER BY w.createdAt DESC',

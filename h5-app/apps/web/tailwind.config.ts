@@ -2,6 +2,7 @@ import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  darkMode: 'class', // 通过在 <html> 上加 .dark 切换
   theme: {
     extend: {
       colors: {

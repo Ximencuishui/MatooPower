@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar } from '@/components/TopBar';
+import { toast } from '@/components/Toast';
 import { useT } from '@/lib/i18n';
 
 type Kind = 'fake' | 'revoked' | 'network';
@@ -67,8 +68,11 @@ function FailInner() {
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
+      toast(t.fail.copied, 'success');
       setTimeout(() => setCopied(false), 1500);
-    } catch {}
+    } catch {
+      toast('Copy failed', 'error');
+    }
   }
 
   return (
@@ -91,8 +95,11 @@ function FailInner() {
 
         <div className="w-full space-y-3 mt-6">
           <button onClick={() => router.push('/scan')} className="btn-primary">{t.fail.retry}</button>
-          <Link href="/profile" className="btn-secondary">{t.fail.contact}</Link>
-          <Link href="/home" className="btn-ghost text-slate-500">{t.fail.backHome}</Link>
+          {/* P2-10:客服按钮 — 真实占位 wa.me(演示期号码占位,生产期替换) */}
+          <a href="https://wa.me/WHATSAPP_PLACEHOLDER" target="_blank" rel="noopener" className="btn-secondary block text-center">
+            {t.fail.contact}
+          </a>
+          <Link href="/home" className="btn-ghost text-slate-500 block text-center">{t.fail.backHome}</Link>
         </div>
       </main>
     </PhoneShell>

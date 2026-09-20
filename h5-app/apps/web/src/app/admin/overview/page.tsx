@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar } from '@/components/TopBar';
 import { LangSwitch } from '@/components/LangSwitch';
+import { PageLoading } from '@/components/Spinner';
+import { ErrorBlock } from '@/components/ErrorBlock';
 import { useT } from '@/lib/i18n';
 import { getAdminOverview } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
@@ -12,20 +14,23 @@ import type { AdminOverviewDto } from '@/lib/api/endpoints';
 export default function AdminOverviewPage() {
   const { t } = useT();
   const [overview, setOverview] = useState<AdminOverviewDto['overview'] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<unknown>(null);
 
-  useEffect(() => {
+  function load() {
+    setError(null);
     getAdminOverview()
       .then((r) => setOverview(r.overview))
-      .catch((e: unknown) => setError(e instanceof ApiError ? e.message : (e instanceof Error ? e.message : t.common.networkErr)));
-  }, [t.common.networkErr]);
+      .catch((e: unknown) => setError(e));
+  }
 
-  if (error) {
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+
+  if (error && !overview) {
     return (
       <PhoneShell>
         <TopBar title={t.adminOverview.title} right={<LangSwitch />} />
-        <main className="p-5">
-          <div role="alert" className="card p-4 text-sm text-red-600 bg-red-50">{error}</div>
+        <main className="p-4">
+          <ErrorBlock error={error} onRetry={load} showLoginLink={error instanceof ApiError && error.status === 401} loginNext="/admin/overview" />
         </main>
       </PhoneShell>
     );
@@ -35,7 +40,8 @@ export default function AdminOverviewPage() {
     <PhoneShell>
       <TopBar title={t.adminOverview.title} right={<LangSwitch />} />
       <main className="flex-1 overflow-auto p-4 space-y-4">
-        {/* 主 KPI */}
+        {!overview && <PageLoading />}
+
         {overview && (
           <>
             <section className="grid grid-cols-2 gap-3">
@@ -44,6 +50,14 @@ export default function AdminOverviewPage() {
               <Kpi label={t.adminOverview.warrantyActive} value={overview.warranty.active} sub={t.adminOverview.warrantyThisMonth.replace('{n}', String(overview.warranty.activeThisMonth))} highlight />
               <Kpi label={t.adminOverview.deviceTotal} value={overview.device.total} sub={t.adminOverview.deviceThisMonth.replace('{n}', String(overview.device.boundThisMonth))} />
             </section>
+
+            {/* P1-4:紧急阈值告警 */}
+            {overview.ticket.urgent >= 5 && (
+              <div className="card p-3 urgent-border text-sm">
+                <div className="font-semibold text-red-600 dark:text-red-300">⚠ 紧急工单达 {overview.ticket.urgent} 条</div>
+                <div className="text-xs text-slate-500 mt-1">建议立即在客服工作台处理。</div>
+              </div>
+            )}
 
             <section>
               <h3 className="text-sm font-semibold mb-2">{t.adminOverview.ticketsTitle}</h3>
@@ -66,9 +80,6 @@ export default function AdminOverviewPage() {
             </section>
           </>
         )}
-        {!overview && (
-          <div className="text-center text-slate-400 text-sm py-8">{t.scan.loadingHint}</div>
-        )}
       </main>
     </PhoneShell>
   );
@@ -78,7 +89,7 @@ function Kpi({ label, value, sub, highlight }: { label: string; value: number; s
   return (
     <div className={`card p-3 ${highlight ? 'bg-matoo-light' : ''}`}>
       <div className="text-[11px] text-slate-500">{label}</div>
-      <div className={`mt-1 text-2xl font-bold ${highlight ? 'text-matoo-dark' : 'text-slate-900'}`}>{value}</div>
+      <div className={`mt-1 text-2xl font-bold ${highlight ? 'text-matoo-dark' : 'text-slate-900 dark:text-slate-100'}`}>{value}</div>
       {sub && <div className="text-[10px] text-slate-400 mt-1">{sub}</div>}
     </div>
   );
@@ -88,7 +99,7 @@ function Stat({ label, value, warn }: { label: string; value: number; warn?: boo
   return (
     <div>
       <div className="text-[11px] text-slate-500">{label}</div>
-      <div className={`mt-1 text-2xl font-bold ${warn ? 'text-amber-600' : 'text-slate-900'}`}>{value}</div>
+      <div className={`mt-1 text-2xl font-bold ${warn ? 'text-amber-600' : 'text-slate-900 dark:text-slate-100'}`}>{value}</div>
     </div>
   );
 }

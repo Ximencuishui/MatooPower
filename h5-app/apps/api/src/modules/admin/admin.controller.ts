@@ -134,4 +134,24 @@ export class AdminController {
   async overview(@CurrentUser() _user: AuthUser) {
     return { ok: true, overview: await this.svc.overview() };
   }
+
+  @Get('analytics/trends')
+  @ApiOperation({ summary: 'Daily trends (warranty / device / ticket activations)' })
+  async trends(@CurrentUser() _user: AuthUser, @Query('days') days?: string) {
+    return { ok: true, ...await this.svc.trends(days ? Number(days) : 30) };
+  }
+
+  @Get('analytics/breakdown')
+  @ApiOperation({ summary: 'Dimensional breakdown (warranty / device / ticket)' })
+  async breakdown(
+    @CurrentUser() _user: AuthUser,
+    @Query('type') type?: string,
+    @Query('groupBy') groupBy?: string,
+  ) {
+    const validTypes = ['warranty', 'device', 'ticket'] as const;
+    const validGroups = ['sku', 'country', 'severity', 'role'] as const;
+    const t = (validTypes as readonly string[]).includes(type ?? '') ? type! : 'warranty';
+    const g = (validGroups as readonly string[]).includes(groupBy ?? '') ? groupBy! : 'sku';
+    return { ok: true, items: await this.svc.breakdown(t as any, g as any) };
+  }
 }

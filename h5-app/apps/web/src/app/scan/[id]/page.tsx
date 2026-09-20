@@ -67,7 +67,7 @@ export default function ScanPage() {
       });
   }, [id]);
 
-  // 失败态：渲染轻量占位（hydrate 后已跳走）
+  // 失败态:渲染轻量占位（hydrate 后已跳走）
   if (state === 'demo-fail' || state === 'api-fail' || (state === 'loading' && isDemoFail(id))) {
     return (
       <PhoneShell>
@@ -85,7 +85,10 @@ export default function ScanPage() {
     return (
       <PhoneShell>
         <TopBar title={t.scan.productTitle} />
-        <main className="p-5 text-slate-400 text-sm">{t.scan.loadingHint}</main>
+        <main className="p-5 flex items-center justify-center gap-2 text-slate-400 text-sm">
+          <span className="animate-spin inline-block w-4 h-4 border-2 border-slate-300 border-t-matoo rounded-full" aria-hidden="true" />
+          {t.scan.loadingHint}
+        </main>
       </PhoneShell>
     );
   }

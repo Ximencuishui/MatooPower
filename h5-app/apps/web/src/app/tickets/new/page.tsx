@@ -3,10 +3,12 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar } from '@/components/TopBar';
+import { Spinner } from '@/components/Spinner';
 import { useT } from '@/lib/i18n';
 import { createTicket, listMyDevices } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
 import { getSession } from '@/lib/api/auth-store';
+import { toast, toastSuccess } from '@/components/Toast';
 import type { DeviceDto, CreateTicketBody } from '@/lib/api/endpoints';
 
 function NewTicketInner() {
@@ -26,25 +28,30 @@ function NewTicketInner() {
   useEffect(() => {
     const s = getSession();
     if (!s?.token) { setError(t.ticket.needLogin); return; }
-    listMyDevices()
-      .then((r) => setDevices(r.items))
-      .catch(() => setDevices([]));
+    listMyDevices().then((r) => setDevices(r.items)).catch(() => setDevices([]));
   }, [t.ticket.needLogin]);
 
   function submit() {
     setError(null);
-    if (subject.length < 3 || description.length < 5) {
+    if (subject.trim().length < 3 || description.trim().length < 5) {
       setError(t.ticket.fillRequired);
       return;
     }
     setSubmitting(true);
     const body: CreateTicketBody = {
-      type, severity, subject, description,
+      type, severity, subject: subject.trim(), description: description.trim(),
       deviceId: deviceId || undefined,
     };
     createTicket(body)
-      .then((r) => router.push(`/tickets/${r.ticket.id}`))
-      .catch((e: unknown) => setError(e instanceof ApiError ? e.message : (e instanceof Error ? e.message : t.ticket.submitFailed)))
+      .then((r) => {
+        toastSuccess(t.ticket.submit + ' ✓');
+        router.push(`/tickets/${r.ticket.id}`);
+      })
+      .catch((e: unknown) => {
+        const msg = e instanceof ApiError ? e.message : (e instanceof Error ? e.message : t.ticket.submitFailed);
+        setError(msg);
+        toast(msg, 'error');
+      })
       .finally(() => setSubmitting(false));
   }
 
@@ -89,6 +96,7 @@ function NewTicketInner() {
         <div>
           <label className="label" htmlFor="t-subject">{t.ticket.subjectLabel}</label>
           <input id="t-subject" className="input" placeholder={t.ticket.subjectPh} value={subject} onChange={(e) => setSubject(e.target.value)} maxLength={120} />
+          <div className="text-[11px] text-slate-400 mt-1 text-right">{subject.length} / 120</div>
         </div>
 
         <div>
@@ -97,10 +105,11 @@ function NewTicketInner() {
           <div className="text-[11px] text-slate-400 mt-1 text-right">{description.length} / 1000</div>
         </div>
 
-        {error && <div role="alert" className="text-xs text-red-600 bg-red-50 p-3 rounded-xl">{error}</div>}
+        {error && <div role="alert" className="text-xs text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 p-3 rounded-xl">{error}</div>}
 
-        <button onClick={submit} disabled={submitting} className="btn-primary">
-          {submitting ? '…' : t.ticket.submit}
+        <button onClick={submit} disabled={submitting} className="btn-primary inline-flex items-center justify-center gap-2">
+          {submitting ? <Spinner size="sm" /> : null}
+          {submitting ? t.common.loading : t.ticket.submit}
         </button>
       </main>
     </PhoneShell>

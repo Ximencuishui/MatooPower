@@ -46,6 +46,15 @@ export class WarrantyController {
     return { ok: true, items: rows };
   }
 
+  /** P0-1:按 skuId 查保修(前端激活成功后跳转 /warranty/[skuId] 用) */
+  @Get('by-sku/:skuId')
+  @ApiOperation({ summary: 'Get warranty by skuId (owner or admin only)' })
+  async findBySku(@Param('skuId') skuId: string, @CurrentUser() user: AuthUser) {
+    const w = await this.svc.findBySku(skuId, user.role === 'admin' ? undefined : user.sub);
+    if (!w) return { ok: true, warranty: null };
+    return { ok: true, warranty: w };
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get warranty by id (owner or admin only)' })
   async findOne(@Param('id') id: string, @CurrentUser() user: AuthUser) {

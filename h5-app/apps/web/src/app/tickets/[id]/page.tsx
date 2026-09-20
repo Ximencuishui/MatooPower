@@ -4,9 +4,12 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar } from '@/components/TopBar';
+import { PageLoading, Spinner } from '@/components/Spinner';
+import { ErrorBlock } from '@/components/ErrorBlock';
 import { useT } from '@/lib/i18n';
 import { getTicketDetail, replyTicket, updateTicket } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
+import { toast, toastSuccess } from '@/components/Toast';
 import { getSession } from '@/lib/api/auth-store';
 import type { TicketDetail, TicketStatus } from '@/lib/api/endpoints';
 
@@ -17,30 +20,37 @@ export default function TicketDetailPage() {
 
   const [detail, setDetail] = useState<TicketDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<unknown>(null);
   const [replyText, setReplyText] = useState('');
   const [busy, setBusy] = useState(false);
   const [role, setRole] = useState<string | null>(null);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(null);
     const s = getSession();
     setRole(s?.role ?? null);
-    setLoading(true);
     getTicketDetail(id)
       .then((r) => { setDetail(r.ticket); setLoading(false); })
       .catch((e: unknown) => {
-        setError(e instanceof ApiError ? e.message : (e instanceof Error ? e.message : t.common.networkErr));
+        setError(e);
         setLoading(false);
       });
-  }, [id, t.common.networkErr]);
+  }
+
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [id]);
 
   function doReply() {
     if (!detail || !replyText.trim()) return;
     setBusy(true);
     replyTicket(detail.id, replyText.trim())
       .then(() => getTicketDetail(detail.id))
-      .then((r) => { setDetail(r.ticket); setReplyText(''); })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : t.common.networkErr))
+      .then((r) => { setDetail(r.ticket); setReplyText(''); toastSuccess(t.ticket.replySend + ' ✓'); })
+      .catch((e: unknown) => {
+        const msg = e instanceof ApiError ? e.message : (e instanceof Error ? e.message : t.common.networkErr);
+        setError(msg);
+        toast(msg, 'error');
+      })
       .finally(() => setBusy(false));
   }
 
@@ -49,8 +59,12 @@ export default function TicketDetailPage() {
     setBusy(true);
     updateTicket(detail.id, { status })
       .then(() => getTicketDetail(detail.id))
-      .then((r: { ticket: TicketDetail }) => setDetail(r.ticket))
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : t.common.networkErr))
+      .then((r) => setDetail(r.ticket))
+      .catch((e: unknown) => {
+        const msg = e instanceof Error ? e.message : t.common.networkErr;
+        setError(msg);
+        toast(msg, 'error');
+      })
       .finally(() => setBusy(false));
   }
 
@@ -58,7 +72,7 @@ export default function TicketDetailPage() {
     return (
       <PhoneShell>
         <TopBar title={t.ticket.detailTitle} />
-        <main className="p-5 text-slate-400 text-sm">{t.scan.loadingHint}</main>
+        <main className="p-5"><PageLoading /></main>
       </PhoneShell>
     );
   }
@@ -67,35 +81,44 @@ export default function TicketDetailPage() {
     return (
       <PhoneShell>
         <TopBar title={t.ticket.detailTitle} />
-        <main className="p-5">
-          <div role="alert" className="card p-4 text-sm text-red-600 bg-red-50">{error ?? '—'}</div>
-          <Link href="/tickets" className="btn-secondary mt-4 block text-center">{t.ticket.backList}</Link>
+        <main className="p-4 space-y-3">
+          <ErrorBlock
+            error={error ?? '—'}
+            onRetry={load}
+            showLoginLink={error instanceof ApiError && error.status === 401}
+            loginNext={`/tickets/${id}`}
+          />
+          <Link href="/tickets" className="btn-secondary block text-center">{t.ticket.backList}</Link>
         </main>
       </PhoneShell>
     );
   }
 
   const isAdmin = role === 'admin';
+  const isUrgent = detail.severity === 'urgent' || detail.severity === 'high';
 
   return (
     <PhoneShell>
       <TopBar title={t.ticket.detailTitle} />
       <main className="flex-1 overflow-auto p-4 space-y-4">
-        <div className="card p-4">
+        <div className={`card p-4 ${isUrgent ? 'urgent-border' : ''}`}>
           <div className="flex items-start justify-between gap-2 mb-2">
-            <h2 className="text-base font-bold">{detail.subject}</h2>
+            <h2 className="text-base font-bold">
+              {isUrgent && <span aria-label="urgent" className="mr-1">🔴</span>}
+              {detail.subject}
+            </h2>
             <span className={`chip ${detail.status === 'resolved' || detail.status === 'closed' ? 'chip-green' : 'chip-orange'}`}>
               {t.ticket[`status_${detail.status}` as keyof typeof t.ticket] as string}
             </span>
           </div>
           <div className="text-[11px] text-slate-500 space-y-0.5">
-            <div>{t.ticket.type}：{t.ticket[`type_${detail.type}` as keyof typeof t.ticket] as string}</div>
-            <div>{t.ticket.severityShortLabel}：{t.ticket[`sev_${detail.severity}` as keyof typeof t.ticket] as string}</div>
-            <div>{t.ticket.author}：{detail.author?.displayName ?? '—'}{detail.author?.phone ? ` (${detail.author.phone})` : ''}</div>
-            {detail.sku && <div>{t.ticket.device}：{detail.sku} {detail.serial ?? ''}</div>}
-            <div>{t.ticket.createdAtLabel}：{new Date(detail.createdAt).toLocaleString()}</div>
+            <div>{t.ticket.type}:{t.ticket[`type_${detail.type}` as keyof typeof t.ticket] as string}</div>
+            <div>{t.ticket.severityShortLabel}:{t.ticket[`sev_${detail.severity}` as keyof typeof t.ticket] as string}</div>
+            <div>{t.ticket.author}:{detail.author?.displayName ?? '—'}{detail.author?.phone ? ` (${detail.author.phone})` : ''}</div>
+            {detail.sku && <div>{t.ticket.device}:{detail.sku} {detail.serial ?? ''}</div>}
+            <div>{t.ticket.createdAtLabel}:{new Date(detail.createdAt).toLocaleString()}</div>
           </div>
-          <p className="mt-3 text-sm text-slate-700 whitespace-pre-wrap border-t pt-3">{detail.description}</p>
+          <p className="mt-3 text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap border-t dark:border-slate-700 pt-3">{detail.description}</p>
         </div>
 
         {/* 对话 */}
@@ -105,8 +128,8 @@ export default function TicketDetailPage() {
             {detail.messages.map((m) => (
               <div key={m.id} className={`text-sm rounded-lg p-3 ${
                 m.senderRole === 'support' ? 'bg-matoo-light text-matoo-dark ml-4' :
-                m.senderRole === 'system' ? 'bg-slate-100 text-slate-500 text-xs italic' :
-                'bg-slate-50 text-slate-700 mr-4'
+                m.senderRole === 'system' ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 text-xs italic' :
+                'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 mr-4'
               }`}>
                 <div className="text-[10px] text-slate-400 mb-1">
                   {m.senderRole === 'support' ? `🛠 ${detail.assignee?.displayName ?? 'Support'}` : m.senderRole === 'system' ? '⚙ System' : '👤 Customer'}
@@ -122,9 +145,10 @@ export default function TicketDetailPage() {
         {/* 用户回复 */}
         <div className="card p-4">
           <label htmlFor="t-reply" className="label">{t.ticket.replyLabel}</label>
-          <textarea id="t-reply" className="input min-h-[80px] py-2" placeholder={t.ticket.replyPlaceholder} value={replyText} onChange={(e) => setReplyText(e.target.value)} disabled={busy} />
-          <button onClick={doReply} disabled={busy || !replyText.trim()} className="btn-primary mt-2">
-            {t.ticket.replySend}
+          <textarea id="t-reply" className="input min-h-[80px] py-2" placeholder={t.ticket.replyPlaceholder} value={replyText} onChange={(e) => setReplyText(e.target.value)} disabled={busy} maxLength={1000} />
+          <button onClick={doReply} disabled={busy || !replyText.trim()} className="btn-primary mt-2 inline-flex items-center justify-center gap-2">
+            {busy ? <Spinner size="sm" /> : null}
+            {busy ? t.common.loading : t.ticket.replySend}
           </button>
         </div>
 

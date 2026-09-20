@@ -4,6 +4,7 @@ import { PhoneShell } from '@/components/PhoneShell';
 import { TabBar } from '@/components/TabBar';
 import { useT } from '@/lib/i18n';
 import { getDeviceHealth } from '@/lib/api/operations';
+import { toast } from '@/components/Toast';
 
 type PartCategory = 'connector' | 'monitor' | 'protection' | 'solar';
 type Part = {
@@ -12,18 +13,18 @@ type Part = {
   category: PartCategory;
   price: number;
   img: string;
-  compatibleSkus: string[];  // 兼容的 SKU id 列表
+  compatibleSkus: string[];
   description: string;
 };
 
 const PARTS: Part[] = [
-  { id: 'p-1', name: 'XT90 高电流连接线', category: 'connector', price: 18, img: '🟧', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12200-DEMO0003','MATO-MAT12300-DEMO0004'], description: '50A 持续电流，含防反插护套' },
-  { id: 'p-2', name: 'Anderson 50A 插头', category: 'connector', price: 6, img: '🟥', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12200-DEMO0003'], description: '快速插拔，适合便携场景' },
+  { id: 'p-1', name: 'XT90 高电流连接线', category: 'connector', price: 18, img: '🟧', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12200-DEMO0003','MATO-MAT12300-DEMO0004'], description: '50A 持续电流,含防反插护套' },
+  { id: 'p-2', name: 'Anderson 50A 插头', category: 'connector', price: 6, img: '🟥', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12200-DEMO0003'], description: '快速插拔,适合便携场景' },
   { id: 'p-3', name: 'Smart BMS 蓝牙显示器', category: 'monitor', price: 36, img: '📱', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12200-DEMO0003','MATO-MAT12300-DEMO0004'], description: '实时 SoC / SOH / 告警推送' },
-  { id: 'p-4', name: '20A MPPT 太阳能控制器', category: 'solar', price: 52, img: '☀️', compatibleSkus: ['MATO-MAT12200-DEMO0002','MATO-MAT12300-DEMO0004'], description: '12/24V 自适应，IP65 防水' },
-  { id: 'p-5', name: '200W 单晶硅太阳能板', category: 'solar', price: 138, img: '🌞', compatibleSkus: ['MATO-MAT12300-DEMO0004'], description: '含 MC4 连接器，铝框便携款' },
-  { id: 'p-6', name: '定制防水外壳', category: 'protection', price: 24, img: '📦', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12300-DEMO0004'], description: 'IP67，可定制尺寸' },
-  { id: 'p-7', name: '散热风扇模组', category: 'protection', price: 14, img: '🌀', compatibleSkus: ['MATO-MAT12300-DEMO0004'], description: '12V 静音版，含温控开关' },
+  { id: 'p-4', name: '20A MPPT 太阳能控制器', category: 'solar', price: 52, img: '☀️', compatibleSkus: ['MATO-MAT12200-DEMO0002','MATO-MAT12300-DEMO0004'], description: '12/24V 自适应,IP65 防水' },
+  { id: 'p-5', name: '200W 单晶硅太阳能板', category: 'solar', price: 138, img: '🌞', compatibleSkus: ['MATO-MAT12300-DEMO0004'], description: '含 MC4 连接器,铝框便携款' },
+  { id: 'p-6', name: '定制防水外壳', category: 'protection', price: 24, img: '📦', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12300-DEMO0004'], description: 'IP67,可定制尺寸' },
+  { id: 'p-7', name: '散热风扇模组', category: 'protection', price: 14, img: '🌀', compatibleSkus: ['MATO-MAT12300-DEMO0004'], description: '12V 静音版,含温控开关' },
 ];
 
 const CATEGORIES: Array<{ key: PartCategory | 'all'; label: string }> = [
@@ -40,23 +41,12 @@ export default function ShopPage() {
   const [fav, setFav] = useState<Set<string>>(new Set());
   const [activeSku, setActiveSku] = useState<string | null>(null);
 
-  // 读 URL ?sku= 自动激活兼容筛选（演示期与现有路由兼容）
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const sp = new URLSearchParams(window.location.search);
     const sku = sp.get('sku');
     if (sku) setActiveSku(sku);
   }, []);
-
-  function toggleFav(id: string) {
-    setFav((s) => {
-      const next = new Set(s);
-      next.has(id) ? next.delete(id) : next.add(id);
-      // 演示期 localStorage 持久化
-      if (typeof window !== 'undefined') window.localStorage.setItem('matoo.fav', JSON.stringify(Array.from(next)));
-      return next;
-    });
-  }
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -65,6 +55,22 @@ export default function ShopPage() {
       if (raw) setFav(new Set(JSON.parse(raw)));
     } catch {}
   }, []);
+
+  function toggleFav(id: string) {
+    setFav((s) => {
+      const next = new Set(s);
+      const had = next.has(id);
+      next.has(id) ? next.delete(id) : next.add(id);
+      if (typeof window !== 'undefined') window.localStorage.setItem('matoo.fav', JSON.stringify(Array.from(next)));
+      toast(had ? t.shop.unfav : t.shop.fav, 'success');
+      return next;
+    });
+  }
+
+  // P1-3:加购 disabled + tooltip
+  function onAddToCart(_p: Part) {
+    toast(t.common.comingSoon + ' / Coming soon', 'info');
+  }
 
   const filtered = PARTS.filter((p) => {
     if (cat !== 'all' && p.category !== cat) return false;
@@ -80,7 +86,6 @@ export default function ShopPage() {
       </header>
 
       <main className="flex-1 overflow-auto p-4 space-y-4">
-        {/* 兼容筛选 */}
         {activeSku && (
           <div className="card p-3 bg-matoo-light text-matoo-dark text-xs flex items-center justify-between">
             <span>仅显示与 <span className="font-mono font-bold">{activeSku}</span> 兼容的配件</span>
@@ -88,7 +93,6 @@ export default function ShopPage() {
           </div>
         )}
 
-        {/* 分类 tab */}
         <div role="tablist" className="flex gap-2 overflow-x-auto pb-1">
           {CATEGORIES.map((c) => (
             <button
@@ -97,7 +101,7 @@ export default function ShopPage() {
               aria-selected={cat === c.key}
               onClick={() => setCat(c.key)}
               className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap ${
-                cat === c.key ? 'bg-matoo text-white font-semibold' : 'bg-slate-100 text-slate-700'
+                cat === c.key ? 'bg-matoo text-white font-semibold' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200'
               }`}
             >
               {c.label}
@@ -105,7 +109,6 @@ export default function ShopPage() {
           ))}
         </div>
 
-        {/* 配件列表 */}
         {filtered.length === 0 && (
           <div className="card p-8 text-center text-slate-500 text-sm">{t.shop.empty}</div>
         )}
@@ -114,7 +117,7 @@ export default function ShopPage() {
             const faved = fav.has(p.id);
             return (
               <div key={p.id} className="card overflow-hidden">
-                <div className="h-24 bg-slate-50 flex items-center justify-center text-4xl relative">
+                <div className="h-24 bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-4xl relative">
                   {p.img}
                   <button
                     onClick={() => toggleFav(p.id)}
@@ -130,7 +133,14 @@ export default function ShopPage() {
                   <div className="text-[10px] text-slate-500 mt-0.5 line-clamp-2">{p.description}</div>
                   <div className="mt-2 flex items-center justify-between">
                     <span className="text-matoo font-bold">USD {p.price}</span>
-                    <button className="text-[10px] px-2 py-1 rounded-md bg-matoo text-white">{t.shop.addToCart}</button>
+                    <button
+                      onClick={() => onAddToCart(p)}
+                      title={t.common.comingSoon}
+                      disabled
+                      className="text-[10px] px-2 py-1 rounded-md bg-matoo text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {t.shop.addToCart}
+                    </button>
                   </div>
                 </div>
               </div>

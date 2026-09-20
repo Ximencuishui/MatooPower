@@ -8,27 +8,30 @@ import { useEffect } from 'react';
  * Registers the production Service Worker shipped at /sw.js.
  * Disabled in development to avoid stale cache during HMR.
  *
- * See public/sw.js for the full offline strategy.
+ * 新版本可用时通过 toast() 提示用户刷新(P2-1)。
  */
+import { toast } from './Toast';
+
 export default function ServiceWorkerRegister() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (process.env.NODE_ENV !== 'production') return;
     if (!('serviceWorker' in navigator)) return;
 
-    // Defer registration so it doesn't block first paint.
     window.addEventListener('load', () => {
       navigator.serviceWorker
         .register('/sw.js', { scope: '/' })
         .then((reg) => {
-          // Optional: listen for updates
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             if (!newWorker) return;
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New content is available; prompt the user to refresh.
-                console.info('[SW] New version available. Refresh to update.');
+                toast('新版本可用,请刷新页面 / New version available, please refresh', 'info');
+                // 让用户主动刷新时激活新 SW
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                  window.location.reload();
+                });
               }
             });
           });

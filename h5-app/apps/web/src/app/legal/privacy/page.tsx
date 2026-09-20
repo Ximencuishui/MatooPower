@@ -10,7 +10,7 @@ export default function PrivacyPage() {
       <TopBar title={t.legal.privacyTitle} />
       <main className="flex-1 overflow-auto p-4">
         <h1 className="text-lg font-bold mb-3">{t.legal.privacyTitle}</h1>
-        <div className="text-sm text-slate-700 space-y-3 leading-relaxed">
+        <div className="text-sm text-slate-700 dark:text-slate-300 space-y-3 leading-relaxed">
           <p>{t.legal.privacyIntro}</p>
           <h2 className="font-semibold mt-4">{t.legal.privacySection1Title}</h2>
           <p>{t.legal.privacySection1}</p>

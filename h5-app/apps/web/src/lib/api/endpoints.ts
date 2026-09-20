@@ -73,6 +73,23 @@ export type ActivateWarrantyResp = {
   status: 'active' | 'pending' | 'expired' | 'rejected';
 };
 
+/** P0-1:by-sku 查到的保修 + sku 关联 */
+export type WarrantyBySkuResp = {
+  ok: true;
+  warranty: (ActivateWarrantyResp & {
+    userId: string;
+    country: string;
+    city: string;
+    dealerName: string | null;
+    invoiceNo: string | null;
+    invoiceDate: string | null;
+    invoiceAmount: number | null;
+    reviewNotes: string | null;
+    createdAt: string;
+    sku: SkuDto;
+  }) | null;
+};
+
 export type DeviceDto = {
   id: string;
   skuId: string;

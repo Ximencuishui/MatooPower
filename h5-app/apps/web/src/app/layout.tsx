@@ -1,6 +1,8 @@
 import './globals.css';
 import { I18nProvider } from '@/lib/i18n';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import { ToastHost } from '@/components/Toast';
+import { Onboarding } from '@/components/Onboarding';
 import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
@@ -24,10 +26,17 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // suppressHydrationWarning：<html lang> 会在 I18nProvider 客户端水合后由 useEffect 同步为用户偏好语言
+    // suppressHydrationWarning:<html lang/dir/class> 会在 I18nProvider 客户端水合后由 useEffect 同步
     <html lang="zh-CN" suppressHydrationWarning>
       <body>
-        <I18nProvider>{children}</I18nProvider>
+        <a href="#main-content" className="skip-link">跳到主要内容</a>
+        <I18nProvider>
+          <div id="main-content" role="main">
+            {children}
+          </div>
+          <ToastHost />
+          <Onboarding />
+        </I18nProvider>
         {/* Registers /sw.js in production builds for offline support */}
         <ServiceWorkerRegister />
       </body>

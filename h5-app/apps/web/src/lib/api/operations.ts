@@ -36,6 +36,10 @@ export const getSku = (id: string) =>
 export const activateWarranty = (body: ActivateWarrantyBody) =>
   api.post<ActivateWarrantyResp>('/warranty/activate', body);
 
+// P0-1:按 skuId 查保修(用于激活后跳 /warranty/[skuId])
+export const getWarrantyBySku = (skuId: string) =>
+  api.get<{ ok: true; warranty: any | null }>(`/warranty/by-sku/${encodeURIComponent(skuId)}`);
+
 // Device
 export const bindDevice = (skuId: string) =>
   api.post<{ ok: true; device: DeviceDto }>('/device/bind', { skuId });
@@ -103,3 +107,13 @@ export const updateTicket = (id: string, body: UpdateTicketBody) =>
 
 export const getAdminOverview = () =>
   api.get<AdminOverviewDto>('/admin/overview');
+
+export const getAnalyticsTrends = (days = 30) =>
+  api.get<{ ok: true; days: number; warranty: Array<{ day: string; c: number }>; device: Array<{ day: string; c: number }>; ticket: Array<{ day: string; c: number }> }>(
+    `/admin/analytics/trends?days=${days}`,
+  );
+
+export const getAnalyticsBreakdown = (type: 'warranty' | 'device' | 'ticket', groupBy: 'sku' | 'country' | 'severity' | 'role') =>
+  api.get<{ ok: true; items: Array<{ key: string; c: number }> }>(
+    `/admin/analytics/breakdown?type=${type}&groupBy=${groupBy}`,
+  );
