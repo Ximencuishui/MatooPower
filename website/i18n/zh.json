@@ -6,87 +6,187 @@
     "note": "基础翻译版本"
   },
   "nav": {
-    "products": "产品",
+    "products": "商品",
     "technology": "技术",
     "manufacturing": "制造",
-    "partnership": "合作",
-    "insights": "洞察",
-    "about": "关于我们",
-    "contact": "联系我们"
+    "partnership": "合作伙伴关系",
+    "insights": "见解",
+    "about": "软件简介",
+    "contact": "联系方式"
   },
   "hero": {
-    "eyebrow": "中国制造 · 全球信赖",
-    "title": "为新兴市场，提供可靠的能源存储。",
-    "sub": "磷酸铁锂储能方案，覆盖离网生活、电动出行与商用备电 — 依托 20+ 年中国制造底蕴。",
-    "cta1": "预约工厂考察 →",
-    "cta2": "下载规格书 ↓"
+    "eyebrow": "在China中设计·备受信赖W全球",
+    "title": "为新兴市场提供动力，专为可靠性而设计。",
+    "sub": "用于离网生活、电动出行和商业备份的磷酸铁锂储能—以中国卓越制造的20+ years为基础。",
+    "cta1": "预约工厂参观 →",
+    "cta2": "下载规格 →"
   },
   "data": {
     "users": {
-      "label": "服务全球新兴市场用户",
-      "source": "基于累计出货量统计"
+      "label": "新兴市场的用户",
+      "source": "基于累计部署"
     },
     "outage": {
-      "label": "日均停电时长",
-      "source": "世界银行能源可及性报告"
+      "label": "每日平均停电小时数",
+      "source": "W世界银行能源准入报告"
     },
     "cycle": {
-      "label": "电池循环寿命（LFP）",
-      "source": "内部实验室测试数据"
+      "label": "电池循环寿命（ LFP ）",
+      "source": "内部实验室测试， LFP化学"
     },
     "margin": {
-      "label": "合作伙伴毛利率",
-      "source": "基于 2024 年渠道数据"
+      "label": "合作伙伴的毛利",
+      "source": "基于2024年渠道数据"
     }
   },
   "modules": {
-    "title": "三大引擎，一个使命。",
-    "sub": "从单体储能到 PACK 整线输出 — 我们覆盖全价值链。"
+    "title": "三个引擎，一个任务。",
+    "sub": "从单个存储单元到交钥匙PACK生产线，我们涵盖了整个价值链。"
   },
   "scenario": {
-    "title": "模块化设计，为场景而生。",
-    "desc": "选一个真实场景，看我们如何组合核心 4 件套 — 从离网海岛、家庭 UPS 到三轮车改装、夜市摊位。",
-    "cta": "打开搭配器 →"
+    "title": "模块化设计。为您的场景量身定制。",
+    "desc": "选择一个真实世界的场景。请参阅核心4件套和经过现场测试的组合。从离网岛屿到家庭UPS ，电动人力车改造到夜市。",
+    "cta": "打开配置器 →"
   },
   "map": {
     "title": "全球架构，本地执行。",
-    "sub": "新加坡持有 IP 与资本，深圳负责研发与制造，全球市场消化产能。"
+    "sub": "Singapore持有IP和资本。Shenzhen制造，全球市场消费。"
   },
   "trust": {
-    "title": "认证齐全。专利布局。量产验证。"
+    "title": "经过认证。获得专利。经过生产验证。"
   },
   "cta": {
     "title": "准备好开拓你的市场了吗？",
     "sub": "与我们的团队沟通，参观工厂，或提交询盘 — 24 小时内响应。",
-    "primary": "提交询盘",
-    "secondary": "💬 微信洽谈"
+    "primary": "Send Inquiry",
+    "secondary": "在💬 WhatsApp上聊天"
   },
   "footer": {
-    "brand": "磷酸铁锂储能，中国制造，赋能全球新兴市场。",
-    "products": "产品",
+    "brand": "磷酸铁锂储能，在China中为全球新兴市场设计。",
+    "products": "商品",
     "company": "公司",
-    "about": "关于我们",
-    "mfg": "制造能力",
-    "partnership": "合作",
-    "insights": "洞察",
-    "contact": "联系我们",
-    "legal": "© 2026 Matoo Power 版权所有",
-    "privacy": "隐私政策",
-    "cookies": "Cookie 设置",
-    "terms": "服务条款"
+    "about": "软件简介",
+    "mfg": "制造",
+    "partnership": "合作伙伴关系",
+    "insights": "见解",
+    "contact": "联系方式",
+    "legal": "© 2026 Matoo Power。保留所有权利。",
+    "privacy": "隐私条款",
+    "cookies": "Cookie设置",
+    "terms": "服務條款"
   },
   "insights": {
-    "section2_title": "每月获取文章",
-    "section2_sub": "每月一封精选邮件。无垃圾信息，随时退订。",
-    "subscribe": "订阅"
+    "section2_title": "Get Insights Monthly",
+    "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
+    "subscribe": "Subscribe"
   },
-  "mod1.title": "储能与绿能",
-  "mod1.desc": "从 1kWh 便携单元到模块化 Power Box — 为离网场景而生。",
-  "mod1.cta": "查看产品 →",
-  "mod2.title": "电控方案 Matoo Ready",
-  "mod2.desc": "即插即用的电控模组。整车产品力提升 20–40% — 无需自研电源系统。",
-  "mod2.cta": "了解方案 →",
-  "mod3.title": "PACK 产线合作",
-  "mod3.desc": "整线输出 PACK 产线。SKD/CKD 散件供应、技术培训与认证授权。",
-  "mod3.cta": "查看合作模式 →"
+  "mod2": {
+    "title": "EV控制& Matoo Ready",
+    "desc": "即插即用的电控模组。整车产品力提升 20–40% — 无需自研电源系统。",
+    "cta": "了解方案 →"
+  },
+  "body": {
+    "index": {
+      "matoo_power_rel": "Matoo Power ·面向新兴市场的可靠储能",
+      "26h": "20–40%QX01Q",
+      "brand_ip_capit": "品牌· IP ·资本",
+      "shenzhen_china": "Shenzhen、China",
+      "rd_manufacturin": "R&D ·制造业",
+      "south_asia_hub": "South Asia轮毂",
+      "global_markets": "环球市场",
+      "home_backup": "主页备份",
+      "evening_ups_kitc": "晚上UPS ，厨房，家庭办公室",
+      "outdoor": "户外",
+      "camping_rv_islan": "露营、房车、岛屿、海上",
+      "commercial": "商业化阶段",
+      "telecom_shop_ups": "电信、店铺UPS、诊所",
+      "emobility": "电动出行",
+      "erickshaw_escoot": "电动人力车、电动滑板车、电动嘟嘟车",
+      "configurator": "Configurator  |  【狗窝吧<a href=\"http://www.gouwo8.com\" target=\"_blank\" rel=\"noopener\">www.gouwo8.com</a> 薛定谔狗(QQ<a href=\"http://wpa.qq.com/msgrd?v=3&amp;uin=420218831&amp;site=qq&amp;menu=yes\" target=\"_blank\" rel=\"noopener\">420218831</a>)提供繁简中文汉化支持】",
+      "深圳华奕智能科技有限公司_rd": "深圳华奕智能科技有限公司 （ R&D ·制造） · 新加坡华奕科技技术有限公司 （品牌· IP ）",
+      "singapore": "Singapore",
+      "bangladesh": "Bangladesh",
+      "sea_africa_men": "SEA · Africa · MENA · LATAM",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "salesmatoopower": "✉ sales@matoopower.com",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "products": {
+      "products": "商品",
+      "open_configurato": "打开配置器 →",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "technology": {
+      "technology": "技术",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "manufacturing": {
+      "manufacturing": "制造",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "partnership": {
+      "partnership": "合作伙伴关系",
+      "chat_on_whatsap": "在💬 WhatsApp上聊天",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "insights": {
+      "insights": "见解",
+      "manufacturing": "制造",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "about": {
+      "about": "软件简介",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "contact": {
+      "contact": "联系方式",
+      "bangladesh": "Bangladesh",
+      "privacy_policy": "隐私条款",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "privacy": {
+      "privacy_policy_hop62": "隐私条款",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "cookies": {
+      "cookie_settings_tia53": "Cookie设置",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "terms": {
+      "contact": "联系方式",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "configurator": {
+      "chat_on_whatsap": "在💬 WhatsApp上聊天",
+      "chat_on_whatsap_1xop3": "在💬 WhatsApp上聊天",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    }
+  },
+  "mod1": {
+    "title": "储能与绿能",
+    "desc": "从 1kWh 便携单元到模块化 Power Box — 为离网场景而生。",
+    "cta": "查看产品 →"
+  },
+  "mod3": {
+    "title": "PACK 产线合作",
+    "desc": "整线输出 PACK 产线。SKD/CKD 散件供应、技术培训与认证授权。",
+    "cta": "查看合作模式 →"
+  }
 }

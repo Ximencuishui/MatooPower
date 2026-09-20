@@ -75,18 +75,24 @@
     "cookies": "Cài đặt Cookie",
     "terms": "Điều khoản dịch vụ"
   },
-  "mod1.title": "Lưu trữ năng lượng & Năng lượng xanh",
-  "mod1.desc": "Từ bộ 1kWh di động đến Power Box mô-đun — được thiết kế cho độ tin cậy ngoài lưới.",
-  "mod1.cta": "Khám phá sản phẩm →",
-  "mod2.title": "Điều khiển EV & Matoo Ready",
-  "mod2.desc": "Mô-đun điều khiển điện plug-in. Tăng giá trị xe 20–40% — không cần R&D nội bộ.",
-  "mod2.cta": "Xem giải pháp →",
-  "mod3.title": "Hợp tác dây chuyền PACK",
-  "mod3.desc": "Dây chuyền sản xuất pin trọn gói. Cung cấp SKD/CKD, đào tạo và chứng nhận.",
-  "mod3.cta": "Xem hợp tác →",
   "insights": {
     "section2_title": "Nhận thông tin mỗi tháng",
     "section2_sub": "Một email chọn lọc mỗi tháng. Không spam. Hủy đăng ký bất cứ lúc nào.",
     "subscribe": "Đăng ký"
+  },
+  "mod1": {
+    "title": "Lưu trữ năng lượng & Năng lượng xanh",
+    "desc": "Từ bộ 1kWh di động đến Power Box mô-đun — được thiết kế cho độ tin cậy ngoài lưới.",
+    "cta": "Khám phá sản phẩm →"
+  },
+  "mod2": {
+    "title": "Điều khiển EV & Matoo Ready",
+    "desc": "Mô-đun điều khiển điện plug-in. Tăng giá trị xe 20–40% — không cần R&D nội bộ.",
+    "cta": "Xem giải pháp →"
+  },
+  "mod3": {
+    "title": "Hợp tác dây chuyền PACK",
+    "desc": "Dây chuyền sản xuất pin trọn gói. Cung cấp SKD/CKD, đào tạo và chứng nhận.",
+    "cta": "Xem hợp tác →"
   }
 }

@@ -1,0 +1,198 @@
+===== Matoo Power · i18n 串语言专项审计（v3）=====
+
+判定标准：目标语言脚本 ≥ 30% 且 其它「完整」脚本字符 ≥ 5 个
+
+[A] 各语言翻译覆盖率
+
+Lang | 总 key | 已翻译 | 覆盖率
+-----|--------|--------|------
+en   |    938 |    933 | 99.5%
+zh   |    142 |     83 | 58.5%
+bn   |    125 |     84 | 67.2%
+ja   |    131 |     63 | 48.1%
+ko   |    143 |     81 | 56.6%
+vi   |    920 |    920 | 100.0%
+hi   |    125 |     83 | 66.4%
+ur   |    125 |     85 | 68.0%
+ta   |     65 |     37 | 56.9%
+te   |     53 |     18 | 34.0%
+ar   |     53 |     18 | 34.0%
+fr   |    920 |    920 | 100.0%
+pt   |    920 |    920 | 100.0%
+es   |    920 |    920 | 100.0%
+
+[B] 真串语言条目（剥离品牌/公司/邮箱/电话/地理/URL 后，目标语言里混入 ≥5 个其它脚本字符）
+
+  --- en (1 条) ---
+    body.contact.for_english_in
+      val: "For English / বাংলা inquiries"
+      串入: BENGALI=5; 目标脚本占比 80%
+
+  --- vi (1 条) ---
+    body.contact.for_english_in
+      val: "For English / বাংলা inquiries"
+      串入: BENGALI=5; 目标脚本占比 80%
+
+  --- fr (1 条) ---
+    body.contact.for_english_in
+      val: "For English / বাংলা inquiries"
+      串入: BENGALI=5; 目标脚本占比 80%
+
+  --- pt (1 条) ---
+    body.contact.for_english_in
+      val: "For English / বাংলা inquiries"
+      串入: BENGALI=5; 目标脚本占比 80%
+
+  --- es (1 条) ---
+    body.contact.for_english_in
+      val: "For English / বাংলা inquiries"
+      串入: BENGALI=5; 目标脚本占比 80%
+
+[C] 半翻译条目（目标语言 30-70%，可能是多语言混排的设计意图）
+
+  --- zh (10 条) ---
+    data.margin.source
+      val: "基于2024年渠道数据"
+      目标 64% / 拉丁 36%
+    cta.secondary
+      val: "在💬 WhatsApp上聊天"
+      目标 33% / 拉丁 67%
+    footer.legal
+      val: "© 2026 Matoo Power。保留所有权利。"
+      目标 33% / 拉丁 56%
+    body.index.matoo_power_rel
+      val: "Matoo Power ·面向新兴市场的可靠储能"
+      目标 65% / 拉丁 35%
+    body.index.brand_ip_capit
+      val: "品牌· IP ·资本"
+      目标 50% / 拉丁 50%
+    body.index.深圳华奕智能科技有限公司_rd
+      val: "深圳华奕智能科技有限公司 （ R&D ·制造） · 新加坡华奕科技技术有限公司 （品牌· IP ）"
+      目标 31% / 拉丁 38%
+    body.products.客厅断电_灯光电视wifi
+      val: "客厅断电 → 灯光、电视、WiFi"
+      目标 53% / 拉丁 27%
+
+  --- bn (7 条) ---
+    cta.secondary
+      val: "💬 WhatsApp-এ চ্যাট করুন"
+      目标 53% / 拉丁 47%
+    footer.legal
+      val: "© 2026 Matoo Power. সর্বস্বত্ব সংরক্ষিত ।"
+      目标 60% / 拉丁 37%
+    mod2.title
+      val: "EV কন্ট্রোল এবং Matoo Ready"
+      目标 69% / 拉丁 31%
+    body.index.south_asia_hub
+      val: "South Asia হাব"
+      目标 38% / 拉丁 63%
+
+  --- ja (16 条) ---
+    hero.eyebrow
+      val: "ZQX 01 Jで設計・信頼できるZQX 01 QWORLDWIDE"
+      目标 30% / 拉丁 70%
+    data.cycle.label
+      val: "バッテリーサイクル寿命（ ZQX 007 ）"
+      目标 58% / 拉丁 32%
+    data.cycle.source
+      val: "内部ラボ試験、ZQX 007化学"
+      目标 53% / 拉丁 40%
+    map.sub
+      val: "ZQX 01 FはZQX 00 Nと資本を保有しています。ZQX 01 Gは製造しています。世界市場は消費しています。"
+      目标 60% / 拉丁 34%
+    cta.secondary
+      val: "💬 ZQX 01 Eでチャット"
+      目标 45% / 拉丁 55%
+    footer.legal
+      val: "© 2026 ZQX 000.無断複写・転載を禁じます。"
+      目标 48% / 拉丁 48%
+    mod2.title
+      val: "ZQX 00 Cコントロール＆ ZQX 001"
+      目标 32% / 拉丁 63%
+    body.index.evening_ups_kitc
+      val: "夕方ZQX 00 D、キッチン、ホームオフィス"
+      目标 62% / 拉丁 29%
+    body.index.brand_ip_capit
+      val: "ブランド・ZQX 00 N・資本金"
+      目标 60% / 拉丁 40%
+    body.index.rd_manufacturin
+      val: "ZQX 00 G・製造"
+      目标 33% / 拉丁 67%
+    body.index.telecom_shop_ups
+      val: "電気通信、ショップZQX 00 D、クリニック"
+      目标 62% / 拉丁 29%
+    body.index.深圳华奕智能科技有限公司_rd
+      val: "ZQX 012 (ZQX 00 G・製造)・ZQX 017技术有限公司 (ブランド・ZQX 00 N)"
+      目标 35% / 拉丁 65%
+    body.products.客厅断电_灯光电视wifi
+      val: "客厅断电 → 灯光、电视、WiFi"
+      目标 53% / 拉丁 27%
+
+  --- ko (12 条) ---
+    data.margin.source
+      val: "2024 채널 데이터 기반"
+      目标 64% / 拉丁 36%
+    modules.title
+      val: "엔진 3개. 미션 1개."
+      目标 60% / 拉丁 40%
+    trust.title
+      val: "인증. 특허. 생산-검증."
+      目标 67% / 拉丁 33%
+    cta.secondary
+      val: "💬 WhatsApp에서 채팅하기"
+      目标 43% / 拉丁 57%
+    mod2.title
+      val: "EV 제어 및 Matoo Ready"
+      目标 38% / 拉丁 63%
+    body.index.brand_ip_capit
+      val: "브랜드 · IP · 자본"
+      目标 56% / 拉丁 44%
+    body.index.camping_rv_islan
+      val: "캠핑, RV, 섬, 해양"
+      目标 50% / 拉丁 50%
+    body.index.深圳华奕智能科技有限公司_rd
+      val: "深圳华奕智能科技有限公司 (R&D · 제조) · 新加坡华奕科技技术有限公司 (브랜드 · IP)"
+      目标 36% / 拉丁 64%
+    body.products.客厅断电_灯光电视wifi
+      val: "客厅断电 → 灯光、电视、WiFi"
+      目标 53% / 拉丁 27%
+
+  --- hi (7 条) ---
+    cta.secondary
+      val: "💬 WhatsApp पर चैट करें"
+      目标 53% / 拉丁 47%
+    footer.legal
+      val: "© 2026 Matoo Power. सर्वाधिकार सुरक्षित।"
+      目标 63% / 拉丁 37%
+    mod2.title
+      val: "EV कंट्रोल और Matoo Ready"
+      目标 64% / 拉丁 36%
+    body.index.深圳华奕智能科技有限公司_rd
+      val: "深圳华奕智能科技有限公司 (R&D · विनिर्माण) · 新加坡华奕科技技术有限公司 (ब्रांड · IP)"
+      目标 63% / 拉丁 38%
+
+  --- ur (7 条) ---
+    cta.secondary
+      val: "💬 WhatsApp پر چیٹ کریں"
+      目标 53% / 拉丁 47%
+    footer.legal
+      val: "© 2026 Matoo Power. جملہ حقوق محفوظ ہیں ۔"
+      目标 61% / 拉丁 39%
+    body.index.深圳华奕智能科技有限公司_rd
+      val: "深圳华奕智能科技有限公司 (R&D · مینوفیکچرنگ) · 新加坡华奕科技技术有限公司 (برانڈ · IP)"
+      目标 64% / 拉丁 36%
+    mod2.title
+      val: "EV کنٹرول اور Matoo Ready"
+      目标 64% / 拉丁 36%
+
+  --- ta (2 条) ---
+    hero.eyebrow
+      val: "China இல் வடிவமைக்கப்பட்டது · நம்பகமான ZQX01Worldwide"
+      目标 65% / 拉丁 35%
+    mod2.title
+      val: "EV கண்ட்ரோல் & Matoo Ready"
+      目标 60% / 拉丁 40%
+
+[D] 总结
+  真串语言条目（去重）: 5 条
+  半翻译条目（去重）:    43 条

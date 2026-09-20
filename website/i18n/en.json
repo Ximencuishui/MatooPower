@@ -75,18 +75,24 @@
     "cookies": "Cookie Settings",
     "terms": "Terms"
   },
-  "mod1.title": "Energy Storage & Green Energy",
-  "mod1.desc": "From 1kWh portable units to modular power boxes — built for off-grid reliability.",
-  "mod1.cta": "Explore products →",
-  "mod2.title": "EV Control & Matoo Ready",
-  "mod2.desc": "Drop-in electric control modules. Increase your vehicle's value 20–40% — without in-house R&D.",
-  "mod2.cta": "See solutions →",
-  "mod3.title": "PACK Line Cooperation",
-  "mod3.desc": "Turnkey battery pack production lines. SKD/CKD supply, training, and certification.",
-  "mod3.cta": "View cooperation →",
   "insights": {
     "section2_title": "Get Insights Monthly",
     "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
     "subscribe": "Subscribe"
+  },
+  "mod1": {
+    "title": "Energy Storage & Green Energy",
+    "desc": "From 1kWh portable units to modular power boxes — built for off-grid reliability.",
+    "cta": "Explore products →"
+  },
+  "mod2": {
+    "title": "EV Control & Matoo Ready",
+    "desc": "Drop-in electric control modules. Increase your vehicle's value 20–40% — without in-house R&D.",
+    "cta": "See solutions →"
+  },
+  "mod3": {
+    "title": "PACK Line Cooperation",
+    "desc": "Turnkey battery pack production lines. SKD/CKD supply, training, and certification.",
+    "cta": "View cooperation →"
   }
 }

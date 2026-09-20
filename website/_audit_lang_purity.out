@@ -1,0 +1,648 @@
+===== Matoo Power · i18n 语言纯度最终审计 =====
+
+[A] 各语言翻译覆盖率（已剥离公司主体名、emoji、标点、数字）
+
+Lang | 总 key | 含目标脚本 | 覆盖率
+-----|--------|-----------|------
+en   |    938 |       933 | 99.5%
+zh   |    142 |        90 | 63.4%
+bn   |    125 |        84 | 67.2%
+ja   |    131 |        90 | 68.7%
+ko   |    143 |        96 | 67.1%
+vi   |    920 |       920 | 100.0%
+hi   |    125 |        85 | 68.0%
+ur   |    125 |        86 | 68.8%
+ta   |     65 |        37 | 56.9%
+te   |     53 |        18 | 34.0%
+ar   |     53 |        17 | 32.1%
+fr   |    920 |       920 | 100.0%
+pt   |    920 |       920 | 100.0%
+es   |    920 |       920 | 100.0%
+
+[B] 严重串语言详情（目标语言里出现毫不相干语种文字，去除公司主体名/emoji）
+
+  --- en (6 条) ---
+    body.products.客厅断电_灯光电视wifi = "客厅断电 → 灯光、电视、WiFi"
+        ↳ 串入 CJK (53%)，本语言脚本 (27%)
+    body.products.冰箱小家电应急照明 = "冰箱、小家电、应急照明"
+        ↳ 串入 CJK (82%)，本语言脚本 (0%)
+    body.products.笔记本网络显示器 = "笔记本、网络、显示器"
+        ↳ 串入 CJK (80%)，本语言脚本 (0%)
+    body.manufacturing.深圳华奕智能科技_自有产权工厂 = "深圳华奕智能科技 · 自有产权工厂"
+        ↳ 串入 CJK (86%)，本语言脚本 (14%)
+    body.contact.for_english_in = "For English / বাংলা inquiries"
+        ↳ 串入 BENGALI (21%)，本语言脚本 (79%)
+    body.contact.微信企业号 = "微信企业号"
+        ↳ 串入 CJK (100%)，本语言脚本 (0%)
+  --- zh (57 条) ---
+    hero.eyebrow = "在China中设计·备受信赖W全球"
+        ↳ 串入 ASCII (35%)，本语言脚本 (59%)
+    data.cycle.label = "电池循环寿命（ LFP ）"
+        ↳ 串入 ASCII (27%)，本语言脚本 (55%)
+    data.cycle.source = "内部实验室测试， LFP化学"
+        ↳ 串入 ASCII (23%)，本语言脚本 (69%)
+    map.sub = "Singapore持有IP和资本。Shenzhen制造，全球市场消费。"
+        ↳ 串入 ASCII (54%)，本语言脚本 (37%)
+    cta.secondary = "在💬 WhatsApp上聊天"
+        ↳ 串入 ASCII (62%)，本语言脚本 (31%)
+    footer.brand = "磷酸铁锂储能，在China中为全球新兴市场设计。"
+        ↳ 串入 ASCII (21%)，本语言脚本 (71%)
+    footer.legal = "© 2026 Matoo Power。保留所有权利。"
+        ↳ 串入 ASCII (53%)，本语言脚本 (32%)
+    footer.cookies = "Cookie设置"
+        ↳ 串入 ASCII (75%)，本语言脚本 (25%)
+    mod2.title = "EV控制& Matoo Ready"
+        ↳ 串入 ASCII (86%)，本语言脚本 (14%)
+    body.index.matoo_power_rel = "Matoo Power ·面向新兴市场的可靠储能"
+        ↳ 串入 ASCII (45%)，本语言脚本 (50%)
+    body.index.26h = "20–40%QX01Q"
+        ↳ 串入 ASCII (80%)，本语言脚本 (0%)
+    body.index.brand_ip_capit = "品牌· IP ·资本"
+        ↳ 串入 ASCII (25%)，本语言脚本 (50%)
+    body.index.shenzhen_china = "Shenzhen、China"
+        ↳ 串入 ASCII (93%)，本语言脚本 (0%)
+    body.index.rd_manufacturin = "R&D ·制造业"
+        ↳ 串入 ASCII (33%)，本语言脚本 (50%)
+    body.index.south_asia_hub = "South Asia轮毂"
+        ↳ 串入 ASCII (82%)，本语言脚本 (18%)
+    body.index.evening_ups_kitc = "晚上UPS ，厨房，家庭办公室"
+        ↳ 串入 ASCII (21%)，本语言脚本 (64%)
+    body.index.camping_rv_islan = "露营、房车、岛屿、海上"
+        ↳ 串入 OTHER (27%)，本语言脚本 (73%)
+    body.index.telecom_shop_ups = "电信、店铺UPS、诊所"
+        ↳ 串入 ASCII (27%)，本语言脚本 (55%)
+    body.index.configurator = "Configurator  |  【狗窝吧<a href=\"http://www.gouwo8.com\" target=\"_blank\" rel=\"noopen"
+        ↳ 串入 ASCII (88%)，本语言脚本 (11%)
+    body.index.深圳华奕智能科技有限公司_rd = "深圳华奕智能科技有限公司 （ R&D ·制造） · 新加坡华奕科技技术有限公司 （品牌· IP ）"
+        ↳ 串入 ASCII (27%)，本语言脚本 (27%)
+    body.index.singapore = "Singapore"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.bangladesh = "Bangladesh"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.sea_africa_men = "SEA · Africa · MENA · LATAM"
+        ↳ 串入 ASCII (86%)，本语言脚本 (0%)
+    body.index.salesmatoopower = "✉ sales@matoopower.com"
+        ↳ 串入 ASCII (95%)，本语言脚本 (0%)
+    body.index.whatsapp_65_xxx = "💬 WhatsApp: +65 XXXX XXXX"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    body.index.singapore_shen = "📍 Singapore · Shenzhen · Dhaka"
+        ↳ 串入 ASCII (88%)，本语言脚本 (0%)
+    mod1.desc = "从 1kWh 便携单元到模块化 Power Box — 为离网场景而生。"
+        ↳ 串入 ASCII (38%)，本语言脚本 (55%)
+    mod3.title = "PACK 产线合作"
+        ↳ 串入 ASCII (50%)，本语言脚本 (50%)
+    mod3.desc = "整线输出 PACK 产线。SKD/CKD 散件供应、技术培训与认证授权。"
+        ↳ 串入 ASCII (31%)，本语言脚本 (59%)
+    body.products.客厅断电_灯光电视wifi = "客厅断电 → 灯光、电视、WiFi"
+        ↳ 串入 ASCII (27%)，本语言脚本 (53%)
+  --- bn (44 条) ---
+    hero.eyebrow = "China তে প্রকৌশলী · বিশ্বস্ত sales@matoopower.comorldwide"
+        ↳ 串入 ASCII (62%)，本语言脚本 (36%)
+    data.outage.source = "sales@matoopower.comorld Bank Energy Access Report"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    map.sub = "Singapore IP এবং মূলধন ধারণ করে । Shenzhen উৎপাদন করে । গ্লোবাল মার্কেট গ্রাস কর"
+        ↳ 串入 ASCII (28%)，本语言脚本 (68%)
+    cta.secondary = "💬 WhatsApp-এ চ্যাট করুন"
+        ↳ 串入 ASCII (42%)，本语言脚本 (53%)
+    footer.legal = "© 2026 Matoo Power. সর্বস্বত্ব সংরক্ষিত ।"
+        ↳ 串入 ASCII (33%)，本语言脚本 (60%)
+    mod2.title = "EV কন্ট্রোল এবং Matoo Ready"
+        ↳ 串入 ASCII (52%)，本语言脚本 (48%)
+    body.index.matoo_power_rel = "Matoo Power · উদীয়মান বাজারের জন্য নির্ভরযোগ্য শক্তি সঞ্চয়"
+        ↳ 串入 ASCII (19%)，本语言脚本 (79%)
+    body.index.26h = "20–40%QX01Q"
+        ↳ 串入 ASCII (80%)，本语言脚本 (0%)
+    body.index.rd_manufacturin = "R&D · উৎপাদন"
+        ↳ 串入 ASCII (22%)，本语言脚本 (67%)
+    body.index.south_asia_hub = "South Asia হাব"
+        ↳ 串入 ASCII (75%)，本语言脚本 (25%)
+    body.index.singapore = "Singapore"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.shenzhen_china = "Shenzhen, China"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.bangladesh = "Bangladesh"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.sea_africa_men = "SEA · Africa · MENA · LATAM"
+        ↳ 串入 ASCII (86%)，本语言脚本 (0%)
+    body.index.salesmatoopower = "✉ sales@matoopower.com"
+        ↳ 串入 ASCII (95%)，本语言脚本 (0%)
+    body.index.whatsapp_65_xxx = "💬 WhatsApp: +65 XXXX XXXX"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    body.index.singapore_shen = "📍 Singapore · Shenzhen · Dhaka"
+        ↳ 串入 ASCII (88%)，本语言脚本 (0%)
+    mod3.title = "PACK লাইন সহযোগিতা"
+        ↳ 串入 ASCII (25%)，本语言脚本 (75%)
+  --- ja (50 条) ---
+    hero.eyebrow = "ZQX 01 Jで設計・信頼できるZQX 01 QWORLDWIDE"
+        ↳ 串入 ASCII (65%)，本语言脚本 (35%)
+    data.cycle.label = "バッテリーサイクル寿命（ ZQX 007 ）"
+        ↳ 串入 ASCII (19%)，本语言脚本 (69%)
+    data.cycle.source = "内部ラボ試験、ZQX 007化学"
+        ↳ 串入 ASCII (25%)，本语言脚本 (67%)
+    map.sub = "ZQX 01 FはZQX 00 Nと資本を保有しています。ZQX 01 Gは製造しています。世界市場は消費しています。"
+        ↳ 串入 ASCII (26%)，本语言脚本 (68%)
+    cta.secondary = "💬 ZQX 01 Eでチャット"
+        ↳ 串入 ASCII (40%)，本语言脚本 (50%)
+    footer.legal = "© 2026 ZQX 000.無断複写・転載を禁じます。"
+        ↳ 串入 ASCII (18%)，本语言脚本 (71%)
+    mod2.title = "ZQX 00 Cコントロール＆ ZQX 001"
+        ↳ 串入 ASCII (50%)，本语言脚本 (43%)
+    body.index.26h = "ZQX 00 ZQX 01 Q"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.shenzhen_china = "ZQX 01 G、ZQX 01 J"
+        ↳ 串入 ASCII (89%)，本语言脚本 (0%)
+    body.index.south_asia_hub = "ZQX 01 Nハブ"
+        ↳ 串入 ASCII (67%)，本语言脚本 (33%)
+    body.index.sea_africa_men = "ZQX 00 J・ZQX 01 M・ZQX 00 H・ZQX 00 I"
+        ↳ 串入 ASCII (84%)，本语言脚本 (16%)
+    body.index.evening_ups_kitc = "夕方ZQX 00 D、キッチン、ホームオフィス"
+        ↳ 串入 ASCII (21%)，本语言脚本 (68%)
+    body.index.camping_rv_islan = "キャンプ、RV、島、マリン"
+        ↳ 串入 OTHER (23%)，本语言脚本 (62%)
+    body.index.salesmatoopower = "✉ ZQX 01 C"
+        ↳ 串入 ASCII (80%)，本语言脚本 (0%)
+    body.index.whatsapp_65_xxx = "💬 ZQX 01 E ： ZQX 01 D"
+        ↳ 串入 ASCII (80%)，本语言脚本 (0%)
+    body.index.singapore_shen = "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+        ↳ 串入 ASCII (80%)，本语言脚本 (13%)
+    body.index.brand_ip_capit = "ブランド・ZQX 00 N・資本金"
+        ↳ 串入 ASCII (31%)，本语言脚本 (69%)
+    body.index.rd_manufacturin = "ZQX 00 G・製造"
+        ↳ 串入 ASCII (57%)，本语言脚本 (43%)
+    body.index.telecom_shop_ups = "電気通信、ショップZQX 00 D、クリニック"
+        ↳ 串入 ASCII (21%)，本语言脚本 (68%)
+    body.index.深圳华奕智能科技有限公司_rd = "ZQX 012 (ZQX 00 G・製造)・ZQX 017技术有限公司 (ブランド・ZQX 00 N)"
+        ↳ 串入 ASCII (48%)，本语言脚本 (52%)
+    mod3.title = "PACK ライン協力"
+        ↳ 串入 ASCII (44%)，本语言脚本 (56%)
+    mod3.desc = "バッテリーパック生産ラインのターンキー供給。SKD/CKD 供給、研修、認証。"
+        ↳ 串入 ASCII (16%)，本语言脚本 (73%)
+    body.products.客厅断电_灯光电视wifi = "客厅断电 → 灯光、电视、WiFi"
+        ↳ 串入 ASCII (27%)，本语言脚本 (53%)
+    insights.section2_sub = "One curated email per month. No spam. Unsubscribe anytime."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    insights.subscribe = "Subscribe"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+  --- ko (54 条) ---
+    hero.eyebrow = "China · Trusted Worldwide에서 엔지니어링"
+        ↳ 串入 ASCII (72%)，本语言脚本 (24%)
+    data.cycle.label = "배터리 사이클 수명 (LFP)"
+        ↳ 串入 ASCII (27%)，本语言脚本 (73%)
+    data.cycle.source = "내부 실험실 테스트, LFP 화학"
+        ↳ 串入 ASCII (23%)，本语言脚本 (77%)
+    map.sub = "Singapore는 IP과 자본을 보유하고 있습니다. Shenzhen가 제조합니다. 글로벌 시장이 소비합니다."
+        ↳ 串入 ASCII (39%)，本语言脚本 (61%)
+    cta.secondary = "💬 WhatsApp에서 채팅하기"
+        ↳ 串入 ASCII (53%)，本语言脚本 (40%)
+    footer.legal = "© 2026 Matoo Power. 판권 소유."
+        ↳ 串入 ASCII (67%)，本语言脚本 (27%)
+    mod2.title = "EV 제어 및 Matoo Ready"
+        ↳ 串入 ASCII (80%)，本语言脚本 (20%)
+    body.index.matoo_power_rel = "Matoo Power · 신흥 시장을 위한 신뢰할 수 있는 에너지 저장 장치"
+        ↳ 串入 ASCII (32%)，本语言脚本 (65%)
+    body.index.26h = "20–40%QX01Q"
+        ↳ 串入 ASCII (80%)，本语言脚本 (0%)
+    body.index.brand_ip_capit = "브랜드 · IP · 자본"
+        ↳ 串入 ASCII (22%)，本语言脚本 (56%)
+    body.index.rd_manufacturin = "R&D · 제조"
+        ↳ 串入 ASCII (40%)，本语言脚本 (40%)
+    body.index.south_asia_hub = "South Asia 허브"
+        ↳ 串入 ASCII (82%)，本语言脚本 (18%)
+    body.index.evening_ups_kitc = "저녁 UPS, 주방, 홈 오피스"
+        ↳ 串入 ASCII (27%)，本语言脚本 (73%)
+    body.index.camping_rv_islan = "캠핑, RV, 섬, 해양"
+        ↳ 串入 ASCII (29%)，本语言脚本 (71%)
+    body.index.telecom_shop_ups = "통신, UPS 쇼핑, 클리닉"
+        ↳ 串入 ASCII (30%)，本语言脚本 (70%)
+    body.index.深圳华奕智能科技有限公司_rd = "深圳华奕智能科技有限公司 (R&D · 제조) · 新加坡华奕科技技术有限公司 (브랜드 · IP)"
+        ↳ 串入 ASCII (33%)，本语言脚本 (42%)
+    body.index.singapore = "Singapore"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.shenzhen_china = "Shenzhen, China"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.bangladesh = "Bangladesh"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.sea_africa_men = "SEA · Africa · MENA · LATAM"
+        ↳ 串入 ASCII (86%)，本语言脚本 (0%)
+    body.index.outdoor = "Outdoor"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.salesmatoopower = "✉ sales@matoopower.com"
+        ↳ 串入 ASCII (95%)，本语言脚本 (0%)
+    body.index.whatsapp_65_xxx = "💬 WhatsApp: +65 XXXX XXXX"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    body.index.singapore_shen = "📍 Singapore · Shenzhen · Dhaka"
+        ↳ 串入 ASCII (88%)，本语言脚本 (0%)
+    mod1.desc = "1kWh 휴대용부터 모듈식 Power Box까지 — 오프그리드 신뢰성을 위해 설계."
+        ↳ 串入 ASCII (31%)，本语言脚本 (66%)
+    mod3.title = "PACK 라인 협력"
+        ↳ 串入 ASCII (50%)，本语言脚本 (50%)
+    mod3.desc = "배터리 팩 생산 라인 턴키. SKD/CKD 공급, 교육, 인증."
+        ↳ 串入 ASCII (27%)，本语言脚本 (73%)
+    body.products.客厅断电_灯光电视wifi = "客厅断电 → 灯光、电视、WiFi"
+        ↳ 串入 ASCII (27%)，本语言脚本 (53%)
+  --- vi (1 条) ---
+    body.contact.for_english_in = "For English / বাংলা inquiries"
+        ↳ 串入 BENGALI (21%)，本语言脚本 (79%)
+  --- hi (45 条) ---
+    hero.eyebrow = "China में इंजीनियर · विश्वसनीय ZQX01दुनिया भर में"
+        ↳ 串入 ASCII (20%)，本语言脚本 (78%)
+    data.outage.source = "sales@matoopower.comorld Bank Energy Access Report"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    map.sub = "Singapore के पास IP और पूंजी है। Shenzhen निर्माण करता है। वैश्विक बाजार उपभोग क"
+        ↳ 串入 ASCII (26%)，本语言脚本 (74%)
+    cta.secondary = "💬 WhatsApp पर चैट करें"
+        ↳ 串入 ASCII (44%)，本语言脚本 (50%)
+    footer.legal = "© 2026 Matoo Power. सर्वाधिकार सुरक्षित।"
+        ↳ 串入 ASCII (33%)，本语言脚本 (63%)
+    mod2.title = "EV कंट्रोल और Matoo Ready"
+        ↳ 串入 ASCII (57%)，本语言脚本 (43%)
+    body.index.matoo_power_rel = "Matoo Power · उभरते बाजारों के लिए विश्वसनीय ऊर्जा भंडारण"
+        ↳ 串入 ASCII (21%)，本语言脚本 (77%)
+    body.index.26h = "20–40%QX01Q"
+        ↳ 串入 ASCII (80%)，本语言脚本 (0%)
+    body.index.rd_manufacturin = "R&D · विनिर्माण"
+        ↳ 串入 ASCII (17%)，本语言脚本 (75%)
+    body.index.south_asia_hub = "South Asia हब"
+        ↳ 串入 ASCII (82%)，本语言脚本 (18%)
+    body.index.深圳华奕智能科技有限公司_rd = "深圳华奕智能科技有限公司 (R&D · विनिर्माण) · 新加坡华奕科技技术有限公司 (ब्रांड · IP)"
+        ↳ 串入 ASCII (18%)，本语言脚本 (68%)
+    body.index.singapore = "Singapore"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.shenzhen_china = "Shenzhen, China"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.bangladesh = "Bangladesh"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.sea_africa_men = "SEA · Africa · MENA · LATAM"
+        ↳ 串入 ASCII (86%)，本语言脚本 (0%)
+    body.index.salesmatoopower = "✉ sales@matoopower.com"
+        ↳ 串入 ASCII (95%)，本语言脚本 (0%)
+    body.index.whatsapp_65_xxx = "💬 WhatsApp: +65 XXXX XXXX"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    body.index.singapore_shen = "📍 Singapore · Shenzhen · Dhaka"
+        ↳ 串入 ASCII (88%)，本语言脚本 (0%)
+    mod3.title = "PACK लाइन सहयोग"
+        ↳ 串入 ASCII (31%)，本语言脚本 (69%)
+  --- ur (42 条) ---
+    hero.eyebrow = "China میں انجنیئر · قابل اعتماد ZQX01 دنیا بھر میں"
+        ↳ 串入 ASCII (21%)，本语言脚本 (77%)
+    map.sub = "Singapore کے پاس IP اور سرمایہ ہے ۔ Shenzhen تیار کرتا ہے ۔ عالمی مارکیٹیں استعم"
+        ↳ 串入 ASCII (25%)，本语言脚本 (75%)
+    cta.secondary = "💬 WhatsApp پر چیٹ کریں"
+        ↳ 串入 ASCII (44%)，本语言脚本 (50%)
+    footer.legal = "© 2026 Matoo Power. جملہ حقوق محفوظ ہیں ۔"
+        ↳ 串入 ASCII (36%)，本语言脚本 (61%)
+    body.index.26h = "20–40%QX01Q"
+        ↳ 串入 ASCII (80%)，本语言脚本 (0%)
+    body.index.shenzhen_china = "Shenzhen، China"
+        ↳ 串入 ASCII (93%)，本语言脚本 (7%)
+    body.index.south_asia_hub = "South Asia ہب"
+        ↳ 串入 ASCII (82%)，本语言脚本 (18%)
+    body.index.深圳华奕智能科技有限公司_rd = "深圳华奕智能科技有限公司 (R&D · مینوفیکچرنگ) · 新加坡华奕科技技术有限公司 (برانڈ · IP)"
+        ↳ 串入 ASCII (17%)，本语言脚本 (70%)
+    body.index.singapore = "Singapore"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.bangladesh = "Bangladesh"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    body.index.sea_africa_men = "SEA · Africa · MENA · LATAM"
+        ↳ 串入 ASCII (86%)，本语言脚本 (0%)
+    body.index.salesmatoopower = "✉ sales@matoopower.com"
+        ↳ 串入 ASCII (95%)，本语言脚本 (0%)
+    body.index.whatsapp_65_xxx = "💬 WhatsApp: +65 XXXX XXXX"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    body.index.singapore_shen = "📍 Singapore · Shenzhen · Dhaka"
+        ↳ 串入 ASCII (88%)，本语言脚本 (0%)
+    mod2.title = "EV کنٹرول اور Matoo Ready"
+        ↳ 串入 ASCII (57%)，本语言脚本 (43%)
+    mod3.title = "PACK لائن تعاون"
+        ↳ 串入 ASCII (31%)，本语言脚本 (69%)
+  --- ta (29 条) ---
+    hero.eyebrow = "China இல் வடிவமைக்கப்பட்டது · நம்பகமான ZQX01Worldwide"
+        ↳ 串入 ASCII (37%)，本语言脚本 (61%)
+    hero.sub = "Lithium iron phosphate energy storage for off-grid living, e-mobility, and comme"
+        ↳ 串入 ASCII (99%)，本语言脚本 (0%)
+    hero.cta1 = "Book a Factory Visit →"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    hero.cta2 = "Download Specifications ↓"
+        ↳ 串入 ASCII (96%)，本语言脚本 (0%)
+    data.users.label = "Users across emerging markets"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.users.source = "Based on cumulative deployments"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.outage.label = "Average daily outage hours"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.outage.source = "World Bank Energy Access Report"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.cycle.label = "Battery cycle life (LFP)"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.cycle.source = "Internal lab testing, LFP chemistry"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.margin.label = "Gross margin for partners"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.margin.source = "Based on 2024 channel data"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    modules.title = "Three Engines. One Mission."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    modules.sub = "From individual storage units to turnkey PACK lines — we cover the full value ch"
+        ↳ 串入 ASCII (99%)，本语言脚本 (0%)
+    scenario.title = "Modular by Design. Built for Your Scenario."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    scenario.desc = "Pick a real-world scenario. See the core 4-piece kit and field-tested combinatio"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    scenario.cta = "Open Configurator →"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    map.title = "Global Architecture, Local Execution."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    map.sub = "Singapore holds IP and capital. Shenzhen manufactures. Global markets consume."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    trust.title = "Certified. Patented. Production-Proven."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    cta.secondary = "💬 Chat on WhatsApp"
+        ↳ 串入 ASCII (93%)，本语言脚本 (0%)
+    footer.brand = "Lithium iron phosphate energy storage, engineered in China for emerging markets "
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.company = "Company"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.legal = "© 2026 Matoo Power. All rights reserved."
+        ↳ 串入 ASCII (96%)，本语言脚本 (0%)
+    footer.privacy = "Privacy Policy"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.cookies = "Cookie Settings"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.terms = "Terms"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    mod2.title = "EV கண்ட்ரோல் & Matoo Ready"
+        ↳ 串入 ASCII (57%)，本语言脚本 (43%)
+    mod3.title = "PACK வரி ஒத்துழைப்பு"
+        ↳ 串入 ASCII (22%)，本语言脚本 (78%)
+  --- te (36 条) ---
+    nav.products = "Products"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.technology = "Technology"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.manufacturing = "Manufacturing"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.partnership = "Partnership"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.insights = "Insights"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.about = "About"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.contact = "Contact"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    hero.eyebrow = "Engineered in China · Trusted Worldwide"
+        ↳ 串入 ASCII (97%)，本语言脚本 (0%)
+    hero.title = "Powering Emerging Markets, Engineered for Reliability."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    hero.sub = "Lithium iron phosphate energy storage for off-grid living, e-mobility, and comme"
+        ↳ 串入 ASCII (99%)，本语言脚本 (0%)
+    hero.cta1 = "Book a Factory Visit →"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    hero.cta2 = "Download Specifications ↓"
+        ↳ 串入 ASCII (96%)，本语言脚本 (0%)
+    data.users.label = "Users across emerging markets"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.users.source = "Based on cumulative deployments"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.outage.label = "Average daily outage hours"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.outage.source = "World Bank Energy Access Report"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.cycle.label = "Battery cycle life (LFP)"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.cycle.source = "Internal lab testing, LFP chemistry"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.margin.label = "Gross margin for partners"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.margin.source = "Based on 2024 channel data"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    modules.title = "Three Engines. One Mission."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    modules.sub = "From individual storage units to turnkey PACK lines — we cover the full value ch"
+        ↳ 串入 ASCII (99%)，本语言脚本 (0%)
+    scenario.title = "Modular by Design. Built for Your Scenario."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    scenario.desc = "Pick a real-world scenario. See the core 4-piece kit and field-tested combinatio"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    scenario.cta = "Open Configurator →"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    map.title = "Global Architecture, Local Execution."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    map.sub = "Singapore holds IP and capital. Shenzhen manufactures. Global markets consume."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    trust.title = "Certified. Patented. Production-Proven."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    cta.secondary = "💬 Chat on WhatsApp"
+        ↳ 串入 ASCII (93%)，本语言脚本 (0%)
+    footer.brand = "Lithium iron phosphate energy storage, engineered in China for emerging markets "
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.company = "Company"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.legal = "© 2026 Matoo Power. All rights reserved."
+        ↳ 串入 ASCII (96%)，本语言脚本 (0%)
+    footer.privacy = "Privacy Policy"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.cookies = "Cookie Settings"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.terms = "Terms"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    mod3.title = "PACK లైన్ సహకారం"
+        ↳ 串入 ASCII (29%)，本语言脚本 (71%)
+  --- ar (36 条) ---
+    nav.products = "Products"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.technology = "Technology"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.manufacturing = "Manufacturing"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.partnership = "Partnership"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.insights = "Insights"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.about = "About"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    nav.contact = "Contact"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    hero.eyebrow = "Engineered in China · Trusted Worldwide"
+        ↳ 串入 ASCII (97%)，本语言脚本 (0%)
+    hero.title = "Powering Emerging Markets, Engineered for Reliability."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    hero.sub = "Lithium iron phosphate energy storage for off-grid living, e-mobility, and comme"
+        ↳ 串入 ASCII (99%)，本语言脚本 (0%)
+    hero.cta1 = "Book a Factory Visit →"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    hero.cta2 = "Download Specifications ↓"
+        ↳ 串入 ASCII (96%)，本语言脚本 (0%)
+    data.users.label = "Users across emerging markets"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.users.source = "Based on cumulative deployments"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.outage.label = "Average daily outage hours"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.outage.source = "World Bank Energy Access Report"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.cycle.label = "Battery cycle life (LFP)"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.cycle.source = "Internal lab testing, LFP chemistry"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.margin.label = "Gross margin for partners"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    data.margin.source = "Based on 2024 channel data"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    modules.title = "Three Engines. One Mission."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    modules.sub = "From individual storage units to turnkey PACK lines — we cover the full value ch"
+        ↳ 串入 ASCII (99%)，本语言脚本 (0%)
+    scenario.title = "Modular by Design. Built for Your Scenario."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    scenario.desc = "Pick a real-world scenario. See the core 4-piece kit and field-tested combinatio"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    scenario.cta = "Open Configurator →"
+        ↳ 串入 ASCII (94%)，本语言脚本 (0%)
+    map.title = "Global Architecture, Local Execution."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    map.sub = "Singapore holds IP and capital. Shenzhen manufactures. Global markets consume."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    trust.title = "Certified. Patented. Production-Proven."
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    cta.secondary = "💬 Chat on WhatsApp"
+        ↳ 串入 ASCII (93%)，本语言脚本 (0%)
+    footer.brand = "Lithium iron phosphate energy storage, engineered in China for emerging markets "
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.company = "Company"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.legal = "© 2026 Matoo Power. All rights reserved."
+        ↳ 串入 ASCII (96%)，本语言脚本 (0%)
+    footer.privacy = "Privacy Policy"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.cookies = "Cookie Settings"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    footer.terms = "Terms"
+        ↳ 串入 ASCII (100%)，本语言脚本 (0%)
+    mod3.title = "تعاون خط PACK"
+        ↳ 串入 ASCII (36%)，本语言脚本 (64%)
+  --- fr (1 条) ---
+    body.contact.for_english_in = "For English / বাংলা inquiries"
+        ↳ 串入 BENGALI (21%)，本语言脚本 (79%)
+  --- pt (1 条) ---
+    body.contact.for_english_in = "For English / বাংলা inquiries"
+        ↳ 串入 BENGALI (21%)，本语言脚本 (79%)
+  --- es (1 条) ---
+    body.contact.for_english_in = "For English / বাংলা inquiries"
+        ↳ 串入 BENGALI (21%)，本语言脚本 (79%)
+
+[C] 半翻译详情（本地语言字符 30-70%，含大量拉丁字符）
+
+  --- zh (16 条) ---
+    hero.eyebrow = "在China中设计·备受信赖W全球"
+        ↳ 本地 59% / 拉丁 41%
+    data.cycle.label = "电池循环寿命（ LFP ）"
+        ↳ 本地 55% / 拉丁 27%
+    map.sub = "Singapore持有IP和资本。Shenzhen制造，全球市场消费。"
+        ↳ 本地 37% / 拉丁 54%
+    cta.secondary = "在💬 WhatsApp上聊天"
+        ↳ 本地 31% / 拉丁 62%
+    footer.legal = "© 2026 Matoo Power。保留所有权利。"
+        ↳ 本地 32% / 拉丁 58%
+    body.index.matoo_power_rel = "Matoo Power ·面向新兴市场的可靠储能"
+        ↳ 本地 50% / 拉丁 50%
+    body.index.brand_ip_capit = "品牌· IP ·资本"
+        ↳ 本地 50% / 拉丁 50%
+    body.index.rd_manufacturin = "R&D ·制造业"
+        ↳ 本地 50% / 拉丁 50%
+    body.index.telecom_shop_ups = "电信、店铺UPS、诊所"
+        ↳ 本地 55% / 拉丁 27%
+    mod1.desc = "从 1kWh 便携单元到模块化 Power Box — 为离网场景而生。"
+        ↳ 本地 55% / 拉丁 38%
+    mod3.title = "PACK 产线合作"
+        ↳ 本地 50% / 拉丁 50%
+    mod3.desc = "整线输出 PACK 产线。SKD/CKD 散件供应、技术培训与认证授权。"
+        ↳ 本地 59% / 拉丁 31%
+    body.products.客厅断电_灯光电视wifi = "客厅断电 → 灯光、电视、WiFi"
+        ↳ 本地 53% / 拉丁 27%
+  --- bn (9 条) ---
+    hero.eyebrow = "China তে প্রকৌশলী · বিশ্বস্ত sales@matoopower.comorldwide"
+        ↳ 本地 36% / 拉丁 64%
+    map.sub = "Singapore IP এবং মূলধন ধারণ করে । Shenzhen উৎপাদন করে । গ্লোবাল মার্কেট গ্রাস কর"
+        ↳ 本地 68% / 拉丁 28%
+    cta.secondary = "💬 WhatsApp-এ চ্যাট করুন"
+        ↳ 本地 53% / 拉丁 42%
+    footer.legal = "© 2026 Matoo Power. সর্বস্বত্ব সংরক্ষিত ।"
+        ↳ 本地 60% / 拉丁 37%
+    mod2.title = "EV কন্ট্রোল এবং Matoo Ready"
+        ↳ 本地 48% / 拉丁 52%
+    body.index.rd_manufacturin = "R&D · উৎপাদন"
+        ↳ 本地 67% / 拉丁 33%
+  --- ja (13 条) ---
+    hero.eyebrow = "ZQX 01 Jで設計・信頼できるZQX 01 QWORLDWIDE"
+        ↳ 本地 35% / 拉丁 65%
+    map.sub = "ZQX 01 FはZQX 00 Nと資本を保有しています。ZQX 01 Gは製造しています。世界市場は消費しています。"
+        ↳ 本地 68% / 拉丁 26%
+    cta.secondary = "💬 ZQX 01 Eでチャット"
+        ↳ 本地 50% / 拉丁 40%
+    mod2.title = "ZQX 00 Cコントロール＆ ZQX 001"
+        ↳ 本地 43% / 拉丁 50%
+    body.index.south_asia_hub = "ZQX 01 Nハブ"
+        ↳ 本地 33% / 拉丁 67%
+    body.index.brand_ip_capit = "ブランド・ZQX 00 N・資本金"
+        ↳ 本地 69% / 拉丁 31%
+    body.index.rd_manufacturin = "ZQX 00 G・製造"
+        ↳ 本地 43% / 拉丁 57%
+    body.index.深圳华奕智能科技有限公司_rd = "ZQX 012 (ZQX 00 G・製造)・ZQX 017技术有限公司 (ブランド・ZQX 00 N)"
+        ↳ 本地 52% / 拉丁 48%
+    mod3.title = "PACK ライン協力"
+        ↳ 本地 56% / 拉丁 44%
+    body.products.客厅断电_灯光电视wifi = "客厅断电 → 灯光、电视、WiFi"
+        ↳ 本地 53% / 拉丁 27%
+  --- ko (12 条) ---
+    map.sub = "Singapore는 IP과 자본을 보유하고 있습니다. Shenzhen가 제조합니다. 글로벌 시장이 소비합니다."
+        ↳ 本地 61% / 拉丁 39%
+    cta.secondary = "💬 WhatsApp에서 채팅하기"
+        ↳ 本地 40% / 拉丁 53%
+    body.index.matoo_power_rel = "Matoo Power · 신흥 시장을 위한 신뢰할 수 있는 에너지 저장 장치"
+        ↳ 本地 65% / 拉丁 35%
+    body.index.brand_ip_capit = "브랜드 · IP · 자본"
+        ↳ 本地 56% / 拉丁 44%
+    body.index.rd_manufacturin = "R&D · 제조"
+        ↳ 本地 40% / 拉丁 60%
+    body.index.深圳华奕智能科技有限公司_rd = "深圳华奕智能科技有限公司 (R&D · 제조) · 新加坡华奕科技技术有限公司 (브랜드 · IP)"
+        ↳ 本地 42% / 拉丁 58%
+    mod1.desc = "1kWh 휴대용부터 모듈식 Power Box까지 — 오프그리드 신뢰성을 위해 설계."
+        ↳ 本地 66% / 拉丁 31%
+    mod3.title = "PACK 라인 협력"
+        ↳ 本地 50% / 拉丁 50%
+    body.products.客厅断电_灯光电视wifi = "客厅断电 → 灯光、电视、WiFi"
+        ↳ 本地 53% / 拉丁 27%
+  --- hi (8 条) ---
+    cta.secondary = "💬 WhatsApp पर चैट करें"
+        ↳ 本地 50% / 拉丁 44%
+    footer.legal = "© 2026 Matoo Power. सर्वाधिकार सुरक्षित।"
+        ↳ 本地 63% / 拉丁 37%
+    mod2.title = "EV कंट्रोल और Matoo Ready"
+        ↳ 本地 43% / 拉丁 57%
+    body.index.深圳华奕智能科技有限公司_rd = "深圳华奕智能科技有限公司 (R&D · विनिर्माण) · 新加坡华奕科技技术有限公司 (ब्रांड · IP)"
+        ↳ 本地 68% / 拉丁 32%
+    mod3.title = "PACK लाइन सहयोग"
+        ↳ 本地 69% / 拉丁 31%
+  --- ur (8 条) ---
+    cta.secondary = "💬 WhatsApp پر چیٹ کریں"
+        ↳ 本地 50% / 拉丁 44%
+    footer.legal = "© 2026 Matoo Power. جملہ حقوق محفوظ ہیں ۔"
+        ↳ 本地 61% / 拉丁 39%
+    body.index.深圳华奕智能科技有限公司_rd = "深圳华奕智能科技有限公司 (R&D · مینوفیکچرنگ) · 新加坡华奕科技技术有限公司 (برانڈ · IP)"
+        ↳ 本地 70% / 拉丁 30%
+    mod2.title = "EV کنٹرول اور Matoo Ready"
+        ↳ 本地 43% / 拉丁 57%
+    mod3.title = "PACK لائن تعاون"
+        ↳ 本地 69% / 拉丁 31%
+  --- ta (2 条) ---
+    hero.eyebrow = "China இல் வடிவமைக்கப்பட்டது · நம்பகமான ZQX01Worldwide"
+        ↳ 本地 61% / 拉丁 39%
+    mod2.title = "EV கண்ட்ரோல் & Matoo Ready"
+        ↳ 本地 43% / 拉丁 57%
+  --- ar (1 条) ---
+    mod3.title = "تعاون خط PACK"
+        ↳ 本地 64% / 拉丁 36%
+
+[D] 总结
+  严重串语言条目: 403 条（去重后 247 条）
+  半翻译条目:     69 条（去重后 51 条）

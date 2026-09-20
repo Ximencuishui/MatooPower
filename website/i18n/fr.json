@@ -75,18 +75,24 @@
     "cookies": "Paramètres des cookies",
     "terms": "Conditions de service"
   },
-  "mod1.title": "Stockage d'énergie et énergie verte",
-  "mod1.desc": "Des unités portables 1kWh aux Power Boxes modulaires — conçues pour la fiabilité hors réseau.",
-  "mod1.cta": "Explorer les produits →",
-  "mod2.title": "Contrôle EV & Matoo Ready",
-  "mod2.desc": "Modules de contrôle électrique plug-in. Augmentez la valeur de votre véhicule de 20 à 40 % — sans R&D interne.",
-  "mod2.cta": "Voir les solutions →",
-  "mod3.title": "Coopération ligne PACK",
-  "mod3.desc": "Lignes de production de batteries clés en main. Fourniture SKD/CKD, formation et certification.",
-  "mod3.cta": "Voir la coopération →",
   "insights": {
     "section2_title": "Recevez des perspectives mensuelles",
     "section2_sub": "Un e-mail sélectionné par mois. Pas de spam. Désabonnement à tout moment.",
     "subscribe": "S'abonner"
+  },
+  "mod1": {
+    "title": "Stockage d'énergie et énergie verte",
+    "desc": "Des unités portables 1kWh aux Power Boxes modulaires — conçues pour la fiabilité hors réseau.",
+    "cta": "Explorer les produits →"
+  },
+  "mod2": {
+    "title": "Contrôle EV & Matoo Ready",
+    "desc": "Modules de contrôle électrique plug-in. Augmentez la valeur de votre véhicule de 20 à 40 % — sans R&D interne.",
+    "cta": "Voir les solutions →"
+  },
+  "mod3": {
+    "title": "Coopération ligne PACK",
+    "desc": "Lignes de production de batteries clés en main. Fourniture SKD/CKD, formation et certification.",
+    "cta": "Voir la coopération →"
   }
 }

@@ -9,26 +9,26 @@
     "products": "مصنوعات",
     "technology": "ٹیکنالوجی",
     "manufacturing": "مینوفیکچرنگ",
-    "partnership": "شراکت",
-    "insights": "بصیرتیں",
-    "about": "ہمارے بارے میں",
-    "contact": "رابطہ کریں"
+    "partnership": "شراکت داری ",
+    "insights": "بصیرت",
+    "about": "متعلق",
+    "contact": "رابطہ"
   },
   "hero": {
-    "eyebrow": "چین میں تیار · دنیا بھر میں قابل اعتماد",
-    "title": "ابھرتے ہوئے بازاروں کے لیے، قابل اعتماد توانائی۔",
-    "sub": "آف گرڈ زندگی، ای موبلٹی، اور تجارتی بیک اپ کے لیے لیتھیم آئرن فاسفیٹ توانائی ذخیرہ — 20+ سال کی چینی مینوفیکچرنگ کی مہارت پر مبنی۔",
-    "cta1": "فیکٹری وزٹ بک کریں →",
-    "cta2": "نشانات ڈاؤن لوڈ کریں ↓"
+    "eyebrow": "China میں انجنیئر · قابل اعتماد ZQX01 دنیا بھر میں",
+    "title": "ابھرتی ہوئی مارکیٹوں کو طاقت بخش بنانا، وشوسنییتا کے لئے انجنیئر ۔",
+    "sub": "آف گرڈ لونگ، ای موبلٹی، اور کمرشل بیک اپ کے لئے لتیم آئرن فاسفیٹ انرجی اسٹوریج — چینی مینوفیکچرنگ اتکرجتا کے 20+ years پر بنایا گیا ۔",
+    "cta1": "فیکٹری کا دورہ بک کریں →",
+    "cta2": "تفصیلات ڈاؤن لوڈ کریں →"
   },
   "data": {
     "users": {
-      "label": "ابھرتے ہوئے بازاروں میں صارفین",
-      "source": "مجموعی تعیناتی کی بنیاد پر"
+      "label": "ابھرتی ہوئی مارکیٹوں میں صارفین",
+      "source": "مجموعی تعیناتیوں کی بنیاد پر"
     },
     "outage": {
-      "label": "اوسط روزانہ آؤٹیج گھنٹے",
-      "source": "عالمی بینک توانائی رسائی رپورٹ"
+      "label": "اوسط یومیہ بندش کے اوقات",
+      "source": "ZQX01 ورلڈ بینک انرجی ایکسیس رپورٹ"
     },
     "cycle": {
       "label": "بیٹری سائیکل لائف (LFP)",
@@ -36,57 +36,158 @@
     },
     "margin": {
       "label": "پارٹنرز کے لیے مجموعی مارجن",
-      "source": "2024 چینل ڈیٹا کی بنیاد پر"
+      "source": "2024 کے چینل کے ڈیٹا کی بنیاد پر"
     }
   },
   "modules": {
-    "title": "تین انجن۔ ایک مشن۔",
-    "sub": "انفرادی ذخیرہ اکائیوں سے لے کر ٹرن کی PACK لائنوں تک — ہم مکمل قدر کی زنجیر کا احاطہ کرتے ہیں۔"
+    "title": "تین انجن ۔ ایک مشن ۔",
+    "sub": "انفرادی اسٹوریج یونٹس سے لے کر ٹرنکی PACK لائنز تک - ہم پوری ویلیو چین کا احاطہ کرتے ہیں ۔"
   },
   "scenario": {
-    "title": "ماڈیولر ڈیزائن، آپ کے منظرنامے کے لیے بنایا گیا۔",
-    "desc": "ایک حقیقی دنیا کا منظرنامہ منتخب کریں۔ بنیادی 4 ٹکڑا کٹ اور فیلڈ ٹیسٹ شدہ امتزاج دیکھیں۔ آف گرڈ جزائر سے لے کر فیملی UPS، ای رکشا ریٹرو فٹ سے لے کر نائٹ مارکیٹس تک۔",
-    "cta": "کنفیگریٹر کھولیں →"
+    "title": "ماڈیولر بلحاظ ڈیزائن ۔ آپ کے منظر نامے کے لیے بنایا گیا ۔",
+    "desc": "حقیقی دنیا کا منظر نامہ منتخب کریں ۔ بنیادی 4 -پیس کٹ اور فیلڈ ٹیسٹ شدہ امتزاج دیکھیں ۔ آف گرڈ جزائر سے لے کر فیملی UPS تک، ای- رکشا ریٹروفٹس سے لے کر نائٹ مارکیٹس تک ۔",
+    "cta": "کنفیگوریٹر کھولیں →"
   },
   "map": {
-    "title": "عالمی فن تعمیر، مقامی عمل درآمد۔",
-    "sub": "سنگاپور میں IP اور سرمایہ ہے۔ شینزین تیار کرتا ہے۔ عالمی مارکیٹیں استعمال کرتی ہیں۔"
+    "title": "عالمی فن تعمیر، مقامی عملدرآمد ۔",
+    "sub": "Singapore کے پاس IP اور سرمایہ ہے ۔ Shenzhen تیار کرتا ہے ۔ عالمی مارکیٹیں استعمال کرتی ہیں ۔"
   },
   "trust": {
-    "title": "تصدیق شدہ۔ پیٹنٹ شدہ۔ پیداواری ثابت شدہ۔"
+    "title": "مصدقہ ۔ پیٹنٹ شدہ ۔ پیداوار سے ثابت ۔"
   },
   "cta": {
     "title": "اپنا مارکیٹ پاور کرنے کے لیے تیار ہیں؟",
     "sub": "ہماری ٹیم سے بات کریں۔ ہماری فیکٹری دیکھیں۔ یا فوری استفسار بھیجیں — ہم 24 گھنٹوں کے اندر جواب دیتے ہیں۔",
-    "primary": "استفسار بھیجیں",
+    "primary": "Send Inquiry",
     "secondary": "💬 WhatsApp پر چیٹ کریں"
   },
   "footer": {
-    "brand": "لیتھیم آئرن فاسفیٹ توانائی ذخیرہ، ابھرتے ہوئے بازاروں کے لیے چین میں تیار۔",
+    "brand": "دنیا بھر میں ابھرتی ہوئی مارکیٹوں کے لئے China میں انجنیئر لتیم آئرن فاسفیٹ انرجی اسٹوریج ۔",
     "products": "مصنوعات",
     "company": "کمپنی",
-    "about": "ہمارے بارے میں",
-    "mfg": "مینوفیکچرنگ صلاحیت",
-    "partnership": "شراکت",
-    "insights": "بصیرتیں",
-    "contact": "رابطہ کریں",
-    "legal": "© 2026 Matoo Power. جملہ حقوق محفوظ ہیں۔",
+    "about": "متعلق",
+    "mfg": "مینوفیکچرنگ",
+    "partnership": "شراکت داری ",
+    "insights": "بصیرت",
+    "contact": "رابطہ",
+    "legal": "© 2026 Matoo Power. جملہ حقوق محفوظ ہیں ۔",
     "privacy": "رازداری کی پالیسی",
-    "cookies": "کوکی سیٹنگز",
-    "terms": "سروس کی شرائط"
+    "cookies": "کوکی کی ترتیبات دیکھیں",
+    "terms": "شرائط"
   },
-  "mod1.title": "توانائی ذخیرہ اور سبز توانائی",
-  "mod1.desc": "1kWh پورٹیبل اکائیوں سے ماڈیولر پاور باکس تک — آف گرڈ قابل اعتمادیت کے لیے بنایا گیا۔",
-  "mod1.cta": "مصنوعات دیکھیں →",
-  "mod2.title": "EV کنٹرول اور Matoo Ready",
-  "mod2.desc": "ڈراپ اِن الیکٹرک کنٹرول ماڈیولز۔ گاڑی کی قدر 20–40% بڑھائیں — بغیر ان ہاؤس R&D کے۔",
-  "mod2.cta": "حل دیکھیں →",
-  "mod3.title": "PACK لائن تعاون",
-  "mod3.desc": "ٹرن کی بیٹری پیک پیداواری لائنیں۔ SKD/CKD سپلائی، تربیت، اور تصدیق۔",
-  "mod3.cta": "تعاون دیکھیں →",
   "insights": {
-    "section2_title": "ماہانہ بصیرتیں حاصل کریں",
-    "section2_sub": "ماہ میں ایک ترتیب شدہ ای میل۔ کوئی اسپیم نہیں۔ کسی بھی وقت اندراج خارج کریں۔",
-    "subscribe": "سبسکرائب"
+    "section2_title": "Get Insights Monthly",
+    "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
+    "subscribe": "Subscribe"
+  },
+  "body": {
+    "index": {
+      "matoo_power_rel": "Matoo Power · ابھرتی ہوئی مارکیٹوں کے لیے قابل اعتماد توانائی کا ذخیرہ",
+      "26h": "20–40%QX01Q",
+      "brand_ip_capit": "برانڈ · IP · سرمایہ",
+      "shenzhen_china": "Shenzhen، China",
+      "rd_manufacturin": "R&D · مینوفیکچرنگ",
+      "south_asia_hub": "South Asia ہب",
+      "global_markets": "عالمی مارکیٹس",
+      "home_backup": "ہوم بیک اپ",
+      "evening_ups_kitc": "شام UPS، باورچی خانہ، ہوم آفس",
+      "outdoor": "بیرونی",
+      "camping_rv_islan": "کیمپنگ، آر وی، جزیرہ، میرین",
+      "commercial": "تجارتی",
+      "telecom_shop_ups": "ٹیلی کام، شاپ UPS، کلینک",
+      "emobility": "ای موبلٹی",
+      "erickshaw_escoot": "ای- رکشہ، ای- اسکوٹر، ای- ٹک ٹک",
+      "configurator": "کنفیگوریٹر",
+      "深圳华奕智能科技有限公司_rd": "深圳华奕智能科技有限公司 (R&D · مینوفیکچرنگ) · 新加坡华奕科技技术有限公司 (برانڈ · IP)",
+      "singapore": "Singapore",
+      "bangladesh": "Bangladesh",
+      "sea_africa_men": "SEA · Africa · MENA · LATAM",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "salesmatoopower": "✉ sales@matoopower.com",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "products": {
+      "products": "مصنوعات",
+      "open_configurato": "کنفیگوریٹر کھولیں →",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "technology": {
+      "technology": "ٹیکنالوجی",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "manufacturing": {
+      "manufacturing": "مینوفیکچرنگ",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "partnership": {
+      "partnership": "شراکت داری ",
+      "chat_on_whatsap": "💬 WhatsApp پر چیٹ کریں",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "insights": {
+      "insights": "بصیرت",
+      "manufacturing": "مینوفیکچرنگ",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "about": {
+      "about": "متعلق",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "contact": {
+      "contact": "رابطہ",
+      "bangladesh": "Bangladesh",
+      "privacy_policy": "رازداری کی پالیسی",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "privacy": {
+      "privacy_policy_hop62": "رازداری کی پالیسی",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "cookies": {
+      "cookie_settings_tia53": "کوکی کی ترتیبات دیکھیں",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "terms": {
+      "contact": "رابطہ",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "terms": "شرائط"
+    },
+    "configurator": {
+      "chat_on_whatsap": "💬 WhatsApp پر چیٹ کریں",
+      "chat_on_whatsap_1xop3": "💬 WhatsApp پر چیٹ کریں",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    }
+  },
+  "mod1": {
+    "title": "توانائی ذخیرہ اور سبز توانائی",
+    "desc": "1kWh پورٹیبل اکائیوں سے ماڈیولر پاور باکس تک — آف گرڈ قابل اعتمادیت کے لیے بنایا گیا۔",
+    "cta": "مصنوعات دیکھیں →"
+  },
+  "mod2": {
+    "title": "EV کنٹرول اور Matoo Ready",
+    "desc": "ڈراپ اِن الیکٹرک کنٹرول ماڈیولز۔ گاڑی کی قدر 20–40% بڑھائیں — بغیر ان ہاؤس R&D کے۔",
+    "cta": "حل دیکھیں →"
+  },
+  "mod3": {
+    "title": "PACK لائن تعاون",
+    "desc": "ٹرن کی بیٹری پیک پیداواری لائنیں۔ SKD/CKD سپلائی، تربیت، اور تصدیق۔",
+    "cta": "تعاون دیکھیں →"
   }
 }

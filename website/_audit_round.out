@@ -1,0 +1,83 @@
+======== 审计 1: i18n-data 块可解析性 ======
+
+  [OK]   index.html
+  [OK]   products.html
+  [OK]   technology.html
+  [OK]   manufacturing.html
+  [OK]   partnership.html
+  [OK]   insights.html
+  [OK]   about.html
+  [OK]   contact.html
+  [OK]   privacy.html
+  [OK]   cookies.html
+  [OK]   terms.html
+  [OK]   configurator.html
+  [OK]   i18n/ar.json
+  [OK]   i18n/bn.json
+  [OK]   i18n/en.json
+  [OK]   i18n/es.json
+  [OK]   i18n/fr.json
+  [OK]   i18n/hi.json
+  [OK]   i18n/ja.json
+  [OK]   i18n/ko.json
+  [OK]   i18n/pt.json
+  [OK]   i18n/ta.json
+  [OK]   i18n/te.json
+  [OK]   i18n/ur.json
+  [OK]   i18n/vi.json
+  [OK]   i18n/zh.json
+
+解析失败: 0 个
+
+======== 审计 2: 各 lang 字典的 key 集合（以 en 为基准） ======
+
+  ar   missing=889 extra=0
+  bn   missing=813 extra=0
+  en   missing=0 extra=0
+  es   missing=18 extra=0
+  fr   missing=18 extra=0
+  hi   missing=813 extra=0
+  ja   missing=818 extra=5
+  ko   missing=795 extra=0
+  pt   missing=18 extra=0
+  ta   missing=873 extra=0
+  te   missing=889 extra=0
+  ur   missing=813 extra=0
+  vi   missing=18 extra=0
+  zh   missing=796 extra=0
+
+======== 审计 3: 重复 key（嵌套+扁平） ======
+
+  [OK] index.html
+  [OK] products.html
+  [OK] technology.html
+  [OK] manufacturing.html
+  [OK] partnership.html
+  [OK] insights.html
+  [OK] about.html
+  [OK] contact.html
+  [OK] privacy.html
+  [OK] cookies.html
+  [OK] terms.html
+  [OK] configurator.html
+
+总重复 key: 0 个
+
+======== 审计 4: 模拟前端 lookup 行为 ======
+
+Lang | 命中 | fallback(en) | 完全 miss
+-----|------|--------------|----------
+ar   |  175 |          911 |        0 / 1086
+bn   |  273 |          813 |        0 / 1086
+en   | 1086 |            0 |        0 / 1086
+es   | 1068 |           18 |        0 / 1086
+fr   | 1068 |           18 |        0 / 1086
+hi   |  273 |          813 |        0 / 1086
+ja   |  268 |          818 |        0 / 1086
+ko   |  291 |          795 |        0 / 1086
+pt   | 1068 |           18 |        0 / 1086
+ta   |  213 |          873 |        0 / 1086
+te   |  175 |          911 |        0 / 1086
+ur   |  273 |          813 |        0 / 1086
+vi   | 1068 |           18 |        0 / 1086
+zh   |  290 |          796 |        0 / 1086

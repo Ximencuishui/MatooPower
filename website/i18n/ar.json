@@ -6,87 +6,86 @@
     "note": "الترجمة العربية — بمساعدة الذكاء الاصطناعي، تم التحقق من الترجمة الآلية."
   },
   "nav": {
-    "products": "المنتجات",
-    "technology": "التقنية",
-    "manufacturing": "التصنيع",
-    "partnership": "الشراكة",
-    "insights": "رؤى",
-    "about": "من نحن",
-    "contact": "اتصل بنا"
+    "products": "Products",
+    "technology": "Technology",
+    "manufacturing": "Manufacturing",
+    "partnership": "Partnership",
+    "insights": "Insights",
+    "about": "About",
+    "contact": "Contact"
   },
   "hero": {
-    "eyebrow": "صُنع في الصين · موثوق به عالمياً",
-    "title": "للأسواق الناشئة، طاقة موثوقة.",
-    "sub": "حلول تخزين الطاقة بفوسفات الحديد الليثيوم للحياة خارج الشبكة، والتنقل الكهربائي، والاحتياطي التجاري — مبنية على أكثر من 20 عاماً من التميز التصنيعي الصيني.",
-    "cta1": "احجز زيارة المصنع →",
-    "cta2": "تحميل المواصفات ↓"
+    "eyebrow": "Engineered in China · Trusted Worldwide",
+    "title": "Powering Emerging Markets, Engineered for Reliability.",
+    "sub": "Lithium iron phosphate energy storage for off-grid living, e-mobility, and commercial backup — built on 20+ years of Chinese manufacturing excellence.",
+    "cta1": "Book a Factory Visit →",
+    "cta2": "Download Specifications ↓"
   },
   "data": {
     "users": {
-      "label": "المستخدمون في الأسواق الناشئة",
-      "source": "بناءً على التراكمات"
+      "label": "Users across emerging markets",
+      "source": "Based on cumulative deployments"
     },
     "outage": {
-      "label": "متوسط ساعات الانقطاع اليومية",
-      "source": "تقرير البنك الدولي لوصول الطاقة"
+      "label": "Average daily outage hours",
+      "source": "World Bank Energy Access Report"
     },
     "cycle": {
-      "label": "عمر دورة البطارية (LFP)",
-      "source": "اختبار داخلي، كيمياء LFP"
+      "label": "Battery cycle life (LFP)",
+      "source": "Internal lab testing, LFP chemistry"
     },
     "margin": {
-      "label": "هامش الربح الإجمالي للشركاء",
-      "source": "بناءً على بيانات قنوات 2024"
+      "label": "Gross margin for partners",
+      "source": "Based on 2024 channel data"
     }
   },
   "modules": {
-    "title": "ثلاثة محركات. مهمة واحدة.",
-    "sub": "من وحدات التخزين الفردية إلى خطوط PACK الجاهزة — نغطي سلسلة القيمة الكاملة."
+    "title": "Three Engines. One Mission.",
+    "sub": "From individual storage units to turnkey PACK lines — we cover the full value chain."
   },
   "scenario": {
-    "title": "تصميم معياري، مبني لسيناريوهك.",
-    "desc": "اختر سيناريو حقيقياً. شاهد المجموعة الأساسية المكونة من 4 قطع والتركيبات المختبرة ميدانياً. من الجزر خارج الشبكة، إلى UPS المنزلي، إلى تعديلات الريكشا الكهربائية، إلى أسواق الليل.",
-    "cta": "افتح المُكوِّن →"
+    "title": "Modular by Design. Built for Your Scenario.",
+    "desc": "Pick a real-world scenario. See the core 4-piece kit and field-tested combinations. From off-grid islands to family UPS, e-rickshaw retrofits to night markets.",
+    "cta": "Open Configurator →"
   },
   "map": {
-    "title": "هندسة عالمية، تنفيذ محلي.",
-    "sub": "سنغافورة تحتفظ بـ IP ورأس المال. شنتشن تصنع. الأسواق العالمية تستهلك."
+    "title": "Global Architecture, Local Execution.",
+    "sub": "Singapore holds IP and capital. Shenzhen manufactures. Global markets consume."
   },
   "trust": {
-    "title": "معتمد. حاصل على براءة اختراع. مُجرَّب إنتاجياً."
+    "title": "Certified. Patented. Production-Proven."
   },
   "cta": {
     "title": "هل أنت مستعد لتشغيل سوقك؟",
     "sub": "تحدث إلى فريقنا. قم بزيارة مصنعنا. أو أرسل استفساراً سريعاً — نرد خلال 24 ساعة.",
-    "primary": "إرسال استفسار",
-    "secondary": "💬 الدردشة على WhatsApp"
+    "primary": "Send Inquiry",
+    "secondary": "💬 Chat on WhatsApp"
   },
   "footer": {
-    "brand": "تخزين الطاقة بفوسفات الحديد الليثيوم، صُنع في الصين للأسواق الناشئة.",
-    "products": "المنتجات",
-    "company": "الشركة",
-    "about": "من نحن",
-    "mfg": "القدرة التصنيعية",
-    "partnership": "الشراكة",
-    "insights": "رؤى",
-    "contact": "اتصل بنا",
-    "legal": "© 2026 Matoo Power. جميع الحقوق محفوظة.",
-    "privacy": "سياسة الخصوصية",
-    "cookies": "إعدادات ملفات تعريف الارتباط",
-    "terms": "شروط الخدمة"
+    "brand": "Lithium iron phosphate energy storage, engineered in China for emerging markets worldwide.",
+    "company": "Company",
+    "legal": "© 2026 Matoo Power. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Settings",
+    "terms": "Terms"
   },
-  "mod1.title": "تخزين الطاقة والطاقة الخضراء",
-  "mod1.desc": "من وحدات محمولة بقدرة 1kWh إلى صناديق طاقة معيارية — مصممة للموثوقية خارج الشبكة.",
-  "mod1.cta": "استكشف المنتجات →",
-  "mod2.title": "التحكم في EV و Matoo Ready",
-  "mod2.desc": "وحدات تحكم كهربائية قابلة للإدراج. زد قيمة سيارتك بنسبة 20–40% — دون البحث والتطوير الداخلي.",
-  "mod2.cta": "شاهد الحلول →",
-  "mod3.title": "تعاون خط PACK",
-  "mod3.desc": "خطوط إنتاج حزم البطاريات الجاهزة. توريد SKD/CKD، والتدريب، والشهادات.",
-  "mod3.cta": "عرض التعاون →",
   "insights": {
-    "section2_title": "احصل على رؤى شهرية",
-    "section2_sub": "بريد إلكتروني منتقى شهرياً. لا رسائل مزعجة. إلغاء الاشتراك في أي وقت.",
-    "subscribe": "اشترك"
+    "section2_title": "Get Insights Monthly",
+    "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
+    "subscribe": "Subscribe"
+  },
+  "mod1": {
+    "title": "تخزين الطاقة والطاقة الخضراء",
+    "desc": "من وحدات محمولة بقدرة 1kWh إلى صناديق طاقة معيارية — مصممة للموثوقية خارج الشبكة.",
+    "cta": "استكشف المنتجات →"
+  },
+  "mod2": {
+    "desc": "وحدات تحكم كهربائية قابلة للإدراج. زد قيمة سيارتك بنسبة 20–40% — دون البحث والتطوير الداخلي.",
+    "cta": "شاهد الحلول →"
+  },
+  "mod3": {
+    "title": "تعاون خط PACK",
+    "desc": "خطوط إنتاج حزم البطاريات الجاهزة. توريد SKD/CKD، والتدريب، والشهادات.",
+    "cta": "عرض التعاون →"
   }
 }

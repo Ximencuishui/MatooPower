@@ -75,18 +75,24 @@
     "cookies": "Configuración de cookies",
     "terms": "Términos de servicio"
   },
-  "mod1.title": "Almacenamiento de Energía y Energía Verde",
-  "mod1.desc": "Desde unidades portátiles de 1kWh hasta Power Boxes modulares — construidas para confiabilidad fuera de la red.",
-  "mod1.cta": "Explorar productos →",
-  "mod2.title": "Control EV y Matoo Ready",
-  "mod2.desc": "Módulos de control eléctrico enchufables. Aumenta el valor de tu vehículo 20–40% — sin I+D interna.",
-  "mod2.cta": "Ver soluciones →",
-  "mod3.title": "Cooperación de Línea PACK",
-  "mod3.desc": "Líneas de producción de paquetes de baterías llave en mano. Suministro SKD/CKD, capacitación y certificación.",
-  "mod3.cta": "Ver cooperación →",
   "insights": {
     "section2_title": "Recibe perspectivas mensuales",
     "section2_sub": "Un correo electrónico seleccionado por mes. Sin spam. Cancela la suscripción en cualquier momento.",
     "subscribe": "Suscribirse"
+  },
+  "mod1": {
+    "title": "Almacenamiento de Energía y Energía Verde",
+    "desc": "Desde unidades portátiles de 1kWh hasta Power Boxes modulares — construidas para confiabilidad fuera de la red.",
+    "cta": "Explorar productos →"
+  },
+  "mod2": {
+    "title": "Control EV y Matoo Ready",
+    "desc": "Módulos de control eléctrico enchufables. Aumenta el valor de tu vehículo 20–40% — sin I+D interna.",
+    "cta": "Ver soluciones →"
+  },
+  "mod3": {
+    "title": "Cooperación de Línea PACK",
+    "desc": "Líneas de producción de paquetes de baterías llave en mano. Suministro SKD/CKD, capacitación y certificación.",
+    "cta": "Ver cooperación →"
   }
 }

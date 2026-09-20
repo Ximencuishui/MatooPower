@@ -6,87 +6,174 @@
     "note": "日本語翻訳 — AI支援、機械翻訳検証済み。"
   },
   "nav": {
-    "products": "製品",
-    "technology": "技術",
-    "manufacturing": "製造",
+    "technology": "テクノロジー",
     "partnership": "パートナーシップ",
     "insights": "インサイト",
-    "about": "会社概要",
-    "contact": "お問い合わせ"
+    "about": "詳細",
+    "contact": "連絡先",
+    "products": "製品",
+    "manufacturing": "製造"
   },
   "hero": {
-    "eyebrow": "中国製 · 世界中で信頼",
-    "title": "新興市場へ、 信頼性の高いエネルギーを。",
-    "sub": "オフグリッド生活、電動モビリティ、商用バックアップ向けリン酸鉄リチウム蓄電ソリューション — 20年以上の中国製造実績に基づく。",
-    "cta1": "工場見学を予約 →",
-    "cta2": "仕様書をダウンロード ↓"
+    "cta1": "工場見学を予約する →",
+    "cta2": "仕様書のダウンロード →",
+    "eyebrow": "ZQX 01 Jで設計・信頼できるZQX 01 QWORLDWIDE",
+    "title": "信頼性のために設計された新興市場への電力供給。",
+    "sub": "中国の卓越した製造業のZQX 010に基づいて構築された、オフグリッド生活、eモビリティ、および商用バックアップ用のリン酸鉄リチウムエネルギー貯蔵。"
   },
   "data": {
     "users": {
-      "label": "新興市場ユーザー数",
-      "source": "累計出荷台数に基づく"
-    },
-    "outage": {
-      "label": "1日平均停電時間",
-      "source": "世界銀行エネルギーアクセスレポート"
+      "label": "新興市場のユーザー",
+      "source": "累積デプロイメントに基づく"
     },
     "cycle": {
-      "label": "バッテリーサイクル寿命 (LFP)",
-      "source": "社内ラボテスト、LFP化学"
+      "label": "バッテリーサイクル寿命（ ZQX 007 ）",
+      "source": "内部ラボ試験、ZQX 007化学"
     },
     "margin": {
-      "label": "パートナー粗利率",
-      "source": "2024年チャネルデータに基づく"
+      "label": "パートナーの売上総利益",
+      "source": "2024年のチャネルデータに基づく"
+    },
+    "outage": {
+      "label": "1日あたりの平均停電時間",
+      "source": "ZQX 01 Q世界銀行エネルギーアクセスレポート"
     }
   },
   "modules": {
-    "title": "3つのエンジン、1つの使命。",
-    "sub": "単体蓄電から PACK ターンキーまで — バリューチェーン全体をカバー。"
+    "title": "3つのエンジン。1つのミッション。",
+    "sub": "個々のストレージユニットからターンキーZQX 00 Bラインまで、バリューチェーン全体を網羅しています。"
   },
   "scenario": {
-    "title": "モジュラー設計、 あなたの現場のために。",
-    "desc": "実際のシナリオを選んで、コア4点セットと実戦テスト済みの組み合わせを確認。離島オフグリッド、家庭用 UPS、電動リキシャ改装、夜市まで。",
-    "cta": "コンフィギュレーターを開く →"
+    "cta": "コンフィグレータを開く →",
+    "title": "設計によるモジュラー。シナリオに合わせて構築されています。",
+    "desc": "現実世界のシナリオを選択してください。コア4ピースキットと実地試験済みの組み合わせをご覧ください。オフグリッドアイランドからファミリーZQX 00 Dまで、e - rickshawは夜市に改装されています。"
   },
   "map": {
-    "title": "グローバルアーキテクチャ、 ローカル実行。",
-    "sub": "シンガポールが IP と資本を保持。深圳が研究開発と製造を担当。世界市場が生産を吸収。"
+    "title": "グローバルアーキテクチャ、ローカル実行。",
+    "sub": "ZQX 01 FはZQX 00 Nと資本を保有しています。ZQX 01 Gは製造しています。世界市場は消費しています。"
   },
   "trust": {
-    "title": "認証取得済み。 特許取得済み。 量産検証済み。"
+    "title": "認定済み。特許取得済み。生産実績あり。"
   },
   "cta": {
-    "title": "あなたの市場へ エネルギーを供給する準備はできましたか？",
-    "sub": "チームに相談、工場見学、または簡単なお問い合わせ — 24時間以内にご返信します。",
-    "primary": "お問い合わせを送信",
-    "secondary": "💬 WhatsApp でチャット"
+    "primary": "Send Inquiry",
+    "secondary": "💬 ZQX 01 Eでチャット"
   },
   "footer": {
-    "brand": "リン酸鉄リチウム蓄電、中国製、新興市場向けに設計。",
-    "products": "製品",
-    "company": "会社",
-    "about": "会社概要",
-    "mfg": "製造能力",
+    "company": "会社名",
+    "about": "詳細",
     "partnership": "パートナーシップ",
     "insights": "インサイト",
-    "contact": "お問い合わせ",
-    "legal": "© 2026 Matoo Power. 全著作権所有。",
+    "contact": "連絡先",
     "privacy": "プライバシーポリシー",
-    "cookies": "Cookie 設定",
-    "terms": "利用規約"
+    "terms": "利用規約",
+    "brand": "世界の新興市場向けにZQX 01 Jで設計されたリン酸鉄リチウムエネルギー貯蔵。",
+    "legal": "© 2026 ZQX 000.無断複写・転載を禁じます。",
+    "cookies": "クッキー設定"
   },
-  "mod1.title": "蓄電・グリーンエネルギー",
-  "mod1.desc": "1kWh ポータブルからモジュラー Power Box まで — オフグリッドの信頼性のために設計。",
-  "mod1.cta": "製品を見る →",
-  "mod2.title": "EV制御 & Matoo Ready",
-  "mod2.desc": "ドロップイン電動制御モジュール。社内 R&D 不要で車両価値を 20–40% 向上。",
-  "mod2.cta": "ソリューションを見る →",
-  "mod3.title": "PACK ライン協力",
-  "mod3.desc": "バッテリーパック生産ラインのターンキー供給。SKD/CKD 供給、研修、認証。",
-  "mod3.cta": "協力を見る →",
   "insights": {
-    "section2_title": "毎月インサイトを受け取る",
-    "section2_sub": "月に1回の厳選メール。スパムなし。いつでも解除可能。",
-    "subscribe": "購読"
+    "section2_title": "Get Insights Monthly",
+    "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
+    "subscribe": "Subscribe"
+  },
+  "mod2": {
+    "title": "ZQX 00 Cコントロール＆ ZQX 001",
+    "cta": "ソリューションを見る →"
+  },
+  "body": {
+    "index": {
+      "matoo_power_rel": "ZQX 000・新興市場向けの信頼性の高いエネルギー貯蔵",
+      "26h": "ZQX 00 ZQX 01 Q",
+      "singapore": "ZQX 01 F",
+      "shenzhen_china": "ZQX 01 G、ZQX 01 J",
+      "bangladesh": "ZQX 01 I",
+      "south_asia_hub": "ZQX 01 Nハブ",
+      "sea_africa_men": "ZQX 00 J・ZQX 01 M・ZQX 00 H・ZQX 00 I",
+      "un383": "ZQX 00 F",
+      "iso_9001": "ZQX 00 E",
+      "home_backup": "ホームバックアップ",
+      "evening_ups_kitc": "夕方ZQX 00 D、キッチン、ホームオフィス",
+      "outdoor": "屋外",
+      "camping_rv_islan": "キャンプ、RV、島、マリン",
+      "commercial": "商用",
+      "emobility": "Eモビリティ",
+      "configurator": "マスカスタマイゼーション",
+      "salesmatoopower": "✉ ZQX 01 C",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H",
+      "brand_ip_capit": "ブランド・ZQX 00 N・資本金",
+      "rd_manufacturin": "ZQX 00 G・製造",
+      "global_markets": "国際金融",
+      "telecom_shop_ups": "電気通信、ショップZQX 00 D、クリニック",
+      "erickshaw_escoot": "電動リクショー、電動スクーター、電動トゥクトゥク",
+      "深圳华奕智能科技有限公司_rd": "ZQX 012 (ZQX 00 G・製造)・ZQX 017技术有限公司 (ブランド・ZQX 00 N)"
+    },
+    "products": {
+      "open_configurato": "コンフィグレータを開く →",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    },
+    "technology": {
+      "technology": "テクノロジー",
+      "un383": "ZQX 00 F",
+      "iso_9001": "ZQX 00 E",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    },
+    "manufacturing": {
+      "un383": "ZQX 00 F",
+      "iso_9001": "ZQX 00 E",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    },
+    "partnership": {
+      "partnership": "パートナーシップ",
+      "chat_on_whatsap": "💬 ZQX 01 Eでチャット",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    },
+    "insights": {
+      "insights": "インサイト",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    },
+    "about": {
+      "about": "詳細",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    },
+    "contact": {
+      "contact": "連絡先",
+      "bangladesh": "ZQX 01 I",
+      "privacy_policy": "プライバシーポリシー",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    },
+    "privacy": {
+      "privacy_policy_hop62": "プライバシーポリシー",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    },
+    "cookies": {
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    },
+    "terms": {
+      "contact": "連絡先",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H",
+      "terms": "利用規約"
+    },
+    "configurator": {
+      "chat_on_whatsap": "💬 ZQX 01 Eでチャット",
+      "chat_on_whatsap_1xop3": "💬 ZQX 01 Eでチャット",
+      "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
+      "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
+    }
+  },
+  "mod3": {
+    "title": "PACK ライン協力",
+    "desc": "バッテリーパック生産ラインのターンキー供給。SKD/CKD 供給、研修、認証。",
+    "cta": "協力を見る →"
   }
 }

@@ -1,0 +1,49 @@
+
+===== Matoo Power · 硬编码英文与 RTL 审计 =====
+
+[A] 每页硬编码英文文本（body 内非空文本，不在 data-i18n 标记内）
+
+  index.html          : 47 处 body 文本未带 data-i18n 标记
+  products.html       : 57 处 body 文本未带 data-i18n 标记
+  technology.html     : 40 处 body 文本未带 data-i18n 标记
+  manufacturing.html  : 44 处 body 文本未带 data-i18n 标记
+  partnership.html    : 76 处 body 文本未带 data-i18n 标记
+  insights.html       : 68 处 body 文本未带 data-i18n 标记
+  about.html          : 32 处 body 文本未带 data-i18n 标记
+  contact.html        : 35 处 body 文本未带 data-i18n 标记
+  privacy.html        : 114 处 body 文本未带 data-i18n 标记
+  cookies.html        : 51 处 body 文本未带 data-i18n 标记
+  terms.html          : 98 处 body 文本未带 data-i18n 标记
+  configurator.html   : 86 处 body 文本未带 data-i18n 标记
+  总计：748 处（应在翻译系统中）
+
+[B] UTF-8 BOM 检查（应为 0 — 影响 JSON 解析）
+
+  index.html          : ✓ 无 BOM
+  products.html       : ✓ 无 BOM
+  technology.html     : ✓ 无 BOM
+  manufacturing.html  : ✓ 无 BOM
+  partnership.html    : ✓ 无 BOM
+  insights.html       : ✓ 无 BOM
+  about.html          : ✓ 无 BOM
+  contact.html        : ✓ 无 BOM
+  privacy.html        : ✓ 无 BOM
+  cookies.html        : ✓ 无 BOM
+  terms.html          : ✓ 无 BOM
+  configurator.html   : ✓ 无 BOM
+
+[C] RTL CSS 规则检查（ur / ar 必须启用）
+
+  CSS 大小: 17.1 KB
+  含 RTL 选择器 (dir="rtl"): ⚠ 无
+  RTL 规则数: 0
+  全局 RTL 规则 (html[dir=rtl]): 0
+
+[D] body 区出现的脚本字体字符样本（应为产品型号/专有名名等少量合法样本）
+
+  index.html: {"cjk":1}
+  products.html: {"cjk":1}
+  contact.html: {"bn":1}
+
+===== 结束 =====
+

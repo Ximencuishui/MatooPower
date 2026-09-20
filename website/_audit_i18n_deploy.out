@@ -1,0 +1,111 @@
+
+===== Matoo Power · i18n 部署就绪审计 =====
+
+[1] 12 个页面的 i18n-data 注入与键统计
+
+Page                | i18nData | Langs | pageKeys | enKeys | uniqueKeys
+--------------------|----------|-------|----------|--------|-----------
+index.html          | true    | 14   | 78      | 81    | 81       
+products.html       | true    | 14   | 105     | 148   | 150      
+technology.html     | true    | 14   | 73      | 116   | 120      
+manufacturing.html  | true    | 14   | 80      | 122   | 126      
+partnership.html    | true    | 14   | 112     | 154   | 156      
+insights.html       | true    | 14   | 82      | 121   | 123      
+about.html          | true    | 14   | 54      | 96    | 98       
+contact.html        | true    | 14   | 68      | 111   | 114      
+privacy.html        | true    | 14   | 102     | 145   | 147      
+cookies.html        | true    | 14   | 75      | 118   | 120      
+terms.html          | true    | 14   | 105     | 148   | 150      
+configurator.html   | true    | 14   | 152     | 194   | 196      
+
+[2] 各语言对页面 data-i18n 键的覆盖率
+
+Lang | Total page keys | Missing | Coverage
+-----|-----------------|---------|---------
+en  | 11256          | 9702   | 13.8%
+zh  | 11256          | 10498  | 6.7%
+bn  | 11256          | 10515  | 6.6%
+ja  | 11256          | 10691  | 5.0%
+ko  | 11256          | 10497  | 6.7%
+vi  | 11256          | 9720   | 13.6%
+hi  | 11256          | 10515  | 6.6%
+ur  | 11256          | 10515  | 6.6%
+ta  | 11256          | 10575  | 6.1%
+te  | 11256          | 10624  | 5.6%
+ar  | 11256          | 10624  | 5.6%
+fr  | 11256          | 9720   | 13.6%
+pt  | 11256          | 9720   | 13.6%
+es  | 11256          | 9720   | 13.6%
+
+[3] body 区硬编码中文（应为零；除法定的公司主体名外）
+
+  index.html:
+    > 深圳华奕智能科技有限公司 (R&D · Manufacturing) · 新加坡华奕科技技术有限公司 (Brand · IP)
+  products.html:
+    > 客厅断电 → 灯光、电视、WiFi
+    > 冰箱、小家电、应急照明
+    > 笔记本、网络、显示器
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  technology.html:
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  manufacturing.html:
+    > 深圳华奕智能科技 · 自有产权工厂
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  partnership.html:
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  insights.html:
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  about.html:
+    > 深圳华奕智能科技有限公司
+    > 新加坡华奕科技有限公司
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  contact.html:
+    > 深圳华奕智能科技有限公司
+    > 微信企业号
+    > 扫描二维码或搜索企业号
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  privacy.html:
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  cookies.html:
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  terms.html:
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+  configurator.html:
+    > 深圳华奕智能科技有限公司 · 新加坡华奕科技有限公司
+
+[4] 不可见 / 替换 / PUA 字符检测
+
+Page                | PUA | U+FFFD | Mojibake
+--------------------|-----|--------|---------
+index.html          | 0  | 0     | 78
+products.html       | 0  | 0     | 188
+technology.html     | 0  | 0     | 189
+manufacturing.html  | 0  | 0     | 188
+partnership.html    | 0  | 0     | 188
+insights.html       | 0  | 0     | 177
+about.html          | 0  | 0     | 188
+contact.html        | 0  | 0     | 189
+privacy.html        | 0  | 0     | 189
+cookies.html        | 0  | 0     | 192
+terms.html          | 0  | 0     | 190
+configurator.html   | 0  | 0     | 188
+
+[5] i18n-data 块完整性 (en vs 其它语言键一致性)
+
+en 参照键总数: 81
+  zh: 81/81 (缺 0) ✓
+  bn: 81/81 (缺 0) ✓
+  ja: 71/81 (缺 10) ⚠️ cta.title,cta.sub,footer.products
+  ko: 81/81 (缺 0) ✓
+  vi: 81/81 (缺 0) ✓
+  hi: 81/81 (缺 0) ✓
+  ur: 81/81 (缺 0) ✓
+  ta: 56/81 (缺 25) ⚠️ body.index.matoo_power_rel,body.index.26h,body.index.singapore
+  te: 49/81 (缺 32) ⚠️ footer.products,footer.about,footer.mfg
+  ar: 49/81 (缺 32) ⚠️ footer.products,footer.about,footer.mfg
+  fr: 81/81 (缺 0) ✓
+  pt: 81/81 (缺 0) ✓
+  es: 81/81 (缺 0) ✓
+
+===== 审计完成 =====
+

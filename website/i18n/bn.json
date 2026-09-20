@@ -6,87 +6,188 @@
     "note": "基础翻译版本，待人工审核"
   },
   "nav": {
-    "products": "পণ্য",
+    "products": "পণ্যসমূহ",
     "technology": "প্রযুক্তি",
-    "manufacturing": "উৎপাদন",
+    "manufacturing": "প্রস্তুতকারী প্রতিষ্ঠান",
     "partnership": "অংশীদারিত্ব",
-    "insights": "অন্তর্দৃষ্টি",
-    "about": "আমাদের সম্পর্কে",
+    "insights": "ইনসাইট",
+    "about": "সম্বন্ধে",
     "contact": "যোগাযোগ"
   },
   "hero": {
-    "eyebrow": "চীনে তৈরি · বিশ্বজুড়ে বিশ্বস্ত",
-    "title": "উদীয়মান বাজারে শক্তি সরবরাহ, নির্ভরযোগ্যতার জন্য প্রকৌশলী।",
-    "sub": "অফ-গ্রিড জীবন, ই-মোবিলিটি এবং বাণিজ্যিক ব্যাকআপের জন্য লিথিয়াম আয়রন ফসফেট শক্তি সঞ্চয় — 20+ বছরের চীনা উৎপাদন দক্ষতার উপর ভিত্তি করে।",
-    "cta1": "কারখানা পরিদর্শন বুক করুন →",
-    "cta2": "স্পেসিফিকেশন ডাউনলোড করুন ↓"
+    "eyebrow": "China তে প্রকৌশলী · বিশ্বস্ত sales@matoopower.comorldwide",
+    "title": "পাওয়ারিং ইমার্জিং মার্কেটস, নির্ভরযোগ্যতার জন্য প্রকৌশলী ।",
+    "sub": "অফ-গ্রিড লিভিং, ই-গতিশীলতা এবং বাণিজ্যিক ব্যাকআপের জন্য লিথিয়াম লোহা ফসফেট শক্তি সঞ্চয় — চীনা উত্পাদন উৎকর্ষতার 20+ years-এ নির্মিত ।",
+    "cta1": "ফ্যাক্টরি ভিজিট বুক করুন →",
+    "cta2": "স্পেসিফিকেশন ডাউনলোড করুন →"
   },
   "data": {
     "users": {
-      "label": "উদীয়মান বাজার জুড়ে ব্যবহারকারী",
-      "source": "সম্মিলিত স্থাপনার উপর ভিত্তি করে"
+      "label": "উদীয়মান বাজার জুড়ে ব্যবহারকারীরা",
+      "source": "সমষ্টিগত মোতায়েনের উপর ভিত্তি করে"
     },
     "outage": {
-      "label": "গড় দৈনিক বিদ্যুৎ বিভ্রাট ঘণ্টা",
-      "source": "ওয়ার্ল্ড ব্যাংক এনার্জি অ্যাক্সেস রিপোর্ট"
+      "label": "গড় দৈনিক আউটেজ সময়",
+      "source": "sales@matoopower.comorld Bank Energy Access Report"
     },
     "cycle": {
-      "label": "ব্যাটারি চক্র জীবন (LFP)",
-      "source": "অভ্যন্তরীণ ল্যাব পরীক্ষা"
+      "label": "ব্যাটারি চক্রের জীবন (LFP)",
+      "source": "অভ্যন্তরীণ ল্যাব টেস্টিং, LFP রসায়ন"
     },
     "margin": {
       "label": "অংশীদারদের জন্য মোট মার্জিন",
-      "source": "2024 চ্যানেল ডেটার উপর ভিত্তি করে"
+      "source": "2024 চ্যানেলের ডেটার উপর ভিত্তি করে"
     }
   },
   "modules": {
-    "title": "তিনটি ইঞ্জিন। একটি লক্ষ্য।",
-    "sub": "স্বতন্ত্র সঞ্চয় ইউনিট থেকে টার্নকি PACK লাইন পর্যন্ত — আমরা সম্পূর্ণ মূল্য শৃঙ্খল কভার করি।"
+    "title": "তিনটি ইঞ্জিন । একটি মিশন ।",
+    "sub": "পৃথক স্টোরেজ ইউনিট থেকে কারাপরিদর্শক PACK লাইন পর্যন্ত - আমরা সম্পূর্ণ ভ্যালু চেইন কভার করি ।"
   },
   "scenario": {
-    "title": "মডুলার ডিজাইনে তৈরি। আপনার পরিস্থিতির জন্য নির্মিত।",
-    "desc": "একটি বাস্তব পরিস্থিতি বেছে নিন। মূল 4-পিস কিট এবং ক্ষেত্র-পরীক্ষিত সংমিশ্রণ দেখুন।",
+    "title": "ডিজাইন দ্বারা মডুলার । আপনার দৃশ্যকল্পের জন্য নির্মিত ।",
+    "desc": "একটি বাস্তব-বিশ্বের দৃশ্যপট বেছে নিন । কোর 4-পিস কিট এবং ফিল্ড-টেস্টেড কম্বিনেশন দেখুন । অফ-গ্রিড দ্বীপ থেকে পরিবার UPS, ই-রিকশা রেট্রোফিট থেকে রাতের বাজারে ।",
     "cta": "কনফিগারেটর খুলুন →"
   },
   "map": {
-    "title": "বিশ্বব্যাপী স্থাপত্য, স্থানীয় সম্পাদন।",
-    "sub": "সিঙ্গাপুর IP এবং মূলধন ধারণ করে। শেনজেন উৎপাদন করে। বিশ্বব্যাপী বাজার গ্রহণ করে।"
+    "title": "গ্লোবাল আর্কিটেকচার, স্থানীয় এক্সিকিউশন ।",
+    "sub": "Singapore IP এবং মূলধন ধারণ করে । Shenzhen উৎপাদন করে । গ্লোবাল মার্কেট গ্রাস করে ।"
   },
   "trust": {
-    "title": "প্রত্যয়িত। পেটেন্টযুক্ত। উৎপাদন-প্রমাণিত।"
+    "title": "প্রত্যয়িত । পেটেন্টকৃত । উৎপাদন-প্রমাণিত ।"
   },
   "cta": {
     "title": "আপনার বাজারে শক্তি সরবরাহ করতে প্রস্তুত?",
     "sub": "আমাদের দলের সাথে কথা বলুন। আমাদের কারখানা পরিদর্শন করুন। অথবা একটি দ্রুত অনুসন্ধান পাঠান — আমরা 24 ঘণ্টার মধ্যে উত্তর দিই।",
-    "primary": "অনুসন্ধান পাঠান",
+    "primary": "Send Inquiry",
     "secondary": "💬 WhatsApp-এ চ্যাট করুন"
   },
   "footer": {
-    "brand": "লিথিয়াম আয়রন ফসফেট শক্তি সঞ্চয়, চীনে প্রকৌশলী এবং বিশ্বজুড়ে উদীয়মান বাজারের জন্য।",
-    "products": "পণ্য",
+    "brand": "লিথিয়াম লোহা ফসফেট শক্তি সঞ্চয়, বিশ্বব্যাপী উদীয়মান বাজারের জন্য China তে প্রকৌশল ।",
+    "products": "পণ্যসমূহ",
     "company": "কোম্পানি",
-    "about": "আমাদের সম্পর্কে",
-    "mfg": "উৎপাদন",
+    "about": "সম্বন্ধে",
+    "mfg": "প্রস্তুতকারী প্রতিষ্ঠান",
     "partnership": "অংশীদারিত্ব",
-    "insights": "অন্তর্দৃষ্টি",
+    "insights": "ইনসাইট",
     "contact": "যোগাযোগ",
-    "legal": "© 2026 Matoo Power। সর্বস্বত্ব সংরক্ষিত।",
-    "privacy": "গোপনীয়তা নীতি",
+    "legal": "© 2026 Matoo Power. সর্বস্বত্ব সংরক্ষিত ।",
+    "privacy": "ব্যক্তিগত গোপনীয়তার নীতি",
     "cookies": "কুকি সেটিংস",
     "terms": "শর্তাবলী"
   },
   "insights": {
-    "section2_title": "মাসিক অন্তর্দৃষ্টি পান",
-    "section2_sub": "মাসে একটি নির্বাচিত ইমেল। স্প্যাম নেই। যেকোনো সময় আনসাবস্ক্রাইব করুন।",
-    "subscribe": "সাবস্ক্রাইব"
+    "section2_title": "Get Insights Monthly",
+    "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
+    "subscribe": "Subscribe"
   },
-  "mod1.title": "শক্তি সঞ্চয় ও সবুজ শক্তি",
-  "mod1.desc": "1kWh পোর্টেবল ইউনিট থেকে মডুলার পাওয়ার বক্স পর্যন্ত — অফ-গ্রিড নির্ভরযোগ্যতার জন্য নির্মিত।",
-  "mod1.cta": "পণ্য অন্বেষণ করুন →",
-  "mod2.title": "EV কন্ট্রোল ও Matoo Ready",
-  "mod2.desc": "ড্রপ-ইন ইলেকট্রিক কন্ট্রোল মডিউল। আপনার যানবাহনের মূল্য 20-40% বাড়ান — ইন-হাউস R&D ছাড়াই।",
-  "mod2.cta": "সমাধান দেখুন →",
-  "mod3.title": "PACK লাইন সহযোগিতা",
-  "mod3.desc": "টার্নকি ব্যাটারি প্যাক উৎপাদন লাইন। SKD/CKD সরবরাহ, প্রশিক্ষণ এবং সার্টিফিকেশন।",
-  "mod3.cta": "সহযোগিতা দেখুন →"
+  "mod2": {
+    "title": "EV কন্ট্রোল এবং Matoo Ready",
+    "desc": "ড্রপ-ইন ইলেকট্রিক কন্ট্রোল মডিউল। আপনার যানবাহনের মূল্য 20-40% বাড়ান — ইন-হাউস R&D ছাড়াই।",
+    "cta": "সমাধান দেখুন →"
+  },
+  "body": {
+    "index": {
+      "matoo_power_rel": "Matoo Power · উদীয়মান বাজারের জন্য নির্ভরযোগ্য শক্তি সঞ্চয়",
+      "26h": "20–40%QX01Q",
+      "brand_ip_capit": "ব্র্যান্ড · IP · মূলধন",
+      "rd_manufacturin": "R&D · উৎপাদন",
+      "south_asia_hub": "South Asia হাব",
+      "global_markets": "গ্লোবাল মার্কেটস",
+      "home_backup": "হোম ব্যাকআপ",
+      "evening_ups_kitc": "সান্ধ্য UPS, রান্নাঘর, হোম অফিস",
+      "outdoor": "আউটডোর",
+      "camping_rv_islan": "ক্যাম্পিং, আরভি, দ্বীপ, সামুদ্রিক",
+      "commercial": "বাণিজ্যিক",
+      "telecom_shop_ups": "টেলিকম, দোকান UPS, ক্লিনিক",
+      "emobility": "ই-গতিশীলতা",
+      "erickshaw_escoot": "ই-রিকশা, ই-স্কুটার, ই-তুক্তুক",
+      "configurator": "কনফিগারেটর",
+      "深圳华奕智能科技有限公司_rd": "深圳华奕智能科技有限公司 (R&D · ম্যানুফ্যাকচারিং) · 新加坡华奕科技技术有限公司 (ব্র্যান্ড · IP)",
+      "singapore": "Singapore",
+      "shenzhen_china": "Shenzhen, China",
+      "bangladesh": "Bangladesh",
+      "sea_africa_men": "SEA · Africa · MENA · LATAM",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "salesmatoopower": "✉ sales@matoopower.com",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "products": {
+      "products": "পণ্যসমূহ",
+      "open_configurato": "কনফিগারেটর খুলুন →",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "technology": {
+      "technology": "প্রযুক্তি",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "manufacturing": {
+      "manufacturing": "প্রস্তুতকারী প্রতিষ্ঠান",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "partnership": {
+      "partnership": "অংশীদারিত্ব",
+      "chat_on_whatsap": "💬 WhatsApp-এ চ্যাট করুন",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "insights": {
+      "insights": "ইনসাইট",
+      "manufacturing": "প্রস্তুতকারী প্রতিষ্ঠান",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "about": {
+      "about": "সম্বন্ধে",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "contact": {
+      "contact": "যোগাযোগ",
+      "bangladesh": "Bangladesh",
+      "privacy_policy": "ব্যক্তিগত গোপনীয়তার নীতি",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "privacy": {
+      "privacy_policy_hop62": "ব্যক্তিগত গোপনীয়তার নীতি",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "cookies": {
+      "cookie_settings_tia53": "কুকি সেটিংস",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "terms": {
+      "contact": "যোগাযোগ",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "terms": "শর্তাবলী"
+    },
+    "configurator": {
+      "chat_on_whatsap": "💬 WhatsApp-এ চ্যাট করুন",
+      "chat_on_whatsap_1xop3": "💬 WhatsApp-এ চ্যাট করুন",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    }
+  },
+  "mod1": {
+    "title": "শক্তি সঞ্চয় ও সবুজ শক্তি",
+    "desc": "1kWh পোর্টেবল ইউনিট থেকে মডুলার পাওয়ার বক্স পর্যন্ত — অফ-গ্রিড নির্ভরযোগ্যতার জন্য নির্মিত।",
+    "cta": "পণ্য অন্বেষণ করুন →"
+  },
+  "mod3": {
+    "title": "PACK লাইন সহযোগিতা",
+    "desc": "টার্নকি ব্যাটারি প্যাক উৎপাদন লাইন। SKD/CKD সরবরাহ, প্রশিক্ষণ এবং সার্টিফিকেশন।",
+    "cta": "সহযোগিতা দেখুন →"
+  }
 }

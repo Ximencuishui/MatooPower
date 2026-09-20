@@ -75,18 +75,24 @@
     "cookies": "Configurações de cookies",
     "terms": "Termos de serviço"
   },
-  "mod1.title": "Armazenamento de Energia & Energia Verde",
-  "mod1.desc": "De unidades portáteis de 1kWh a Power Boxes modulares — construídas para confiabilidade off-grid.",
-  "mod1.cta": "Explorar produtos →",
-  "mod2.title": "Controle EV & Matoo Ready",
-  "mod2.desc": "Módulos de controle elétrico plug-in. Aumente o valor do seu veículo em 20–40% — sem P&D interno.",
-  "mod2.cta": "Ver soluções →",
-  "mod3.title": "Cooperação de Linha PACK",
-  "mod3.desc": "Linhas de produção de pacotes de bateria turnkey. Fornecimento SKD/CKD, treinamento e certificação.",
-  "mod3.cta": "Ver cooperação →",
   "insights": {
     "section2_title": "Receba perspectivas mensalmente",
     "section2_sub": "Um e-mail selecionado por mês. Sem spam. Cancele a inscrição a qualquer momento.",
     "subscribe": "Inscrever-se"
+  },
+  "mod1": {
+    "title": "Armazenamento de Energia & Energia Verde",
+    "desc": "De unidades portáteis de 1kWh a Power Boxes modulares — construídas para confiabilidade off-grid.",
+    "cta": "Explorar produtos →"
+  },
+  "mod2": {
+    "title": "Controle EV & Matoo Ready",
+    "desc": "Módulos de controle elétrico plug-in. Aumente o valor do seu veículo em 20–40% — sem P&D interno.",
+    "cta": "Ver soluções →"
+  },
+  "mod3": {
+    "title": "Cooperação de Linha PACK",
+    "desc": "Linhas de produção de pacotes de bateria turnkey. Fornecimento SKD/CKD, treinamento e certificação.",
+    "cta": "Ver cooperação →"
   }
 }

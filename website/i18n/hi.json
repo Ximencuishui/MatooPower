@@ -9,84 +9,185 @@
     "products": "उत्पाद",
     "technology": "तकनीक",
     "manufacturing": "विनिर्माण",
-    "partnership": "साझेदारी",
+    "partnership": "भागीदारी",
     "insights": "अंतर्दृष्टि",
-    "about": "हमारे बारे में",
+    "about": "परिचय",
     "contact": "संपर्क करें"
   },
   "hero": {
-    "eyebrow": "चीन में निर्मित · दुनिया भर में भरोसेमंद",
-    "title": "उभरते बाजारों के लिए, विश्वसनीय ऊर्जा।",
-    "sub": "ऑफ-ग्रिड जीवन, ई-मोबिलिटी और वाणिज्यिक बैकअप के लिए लिथियम आयरन फॉस्फेट ऊर्जा भंडारण — 20+ वर्षों के चीनी विनिर्माण उत्कृष्टता पर आधारित।",
-    "cta1": "फैक्ट्री विज़िट बुक करें →",
-    "cta2": "विनिर्देश डाउनलोड करें ↓"
+    "eyebrow": "China में इंजीनियर · विश्वसनीय ZQX01दुनिया भर में",
+    "title": "उभरते बाजारों को सशक्त बनाना, विश्वसनीयता के लिए इंजीनियर।",
+    "sub": "ऑफ - ग्रिड लिविंग, ई - मोबिलिटी और कमर्शियल बैकअप के लिए लिथियम आयरन फॉस्फेट ऊर्जा भंडारण — चीनी विनिर्माण उत्कृष्टता के 20+ years पर बनाया गया है।",
+    "cta1": "फ़ैक्टरी विज़िट बुक करें →",
+    "cta2": "विनिर्देश डाउनलोड करें →"
   },
   "data": {
     "users": {
-      "label": "उभरते बाजारों में उपयोगकर्ता",
+      "label": "उभरते बाज़ारों में यूज़र",
       "source": "संचयी तैनाती के आधार पर"
     },
     "outage": {
       "label": "औसत दैनिक आउटेज घंटे",
-      "source": "विश्व बैंक ऊर्जा पहुँच रिपोर्ट"
+      "source": "sales@matoopower.comorld Bank Energy Access Report"
     },
     "cycle": {
       "label": "बैटरी चक्र जीवन (LFP)",
-      "source": "आंतरिक लैब परीक्षण, LFP रसायन"
+      "source": "आंतरिक प्रयोगशाला परीक्षण, LFP रसायन विज्ञान"
     },
     "margin": {
-      "label": "भागीदारों के लिए सकल मार्जिन",
+      "label": "भागीदारों के लिए कुल मार्जिन",
       "source": "2024 चैनल डेटा के आधार पर"
     }
   },
   "modules": {
     "title": "तीन इंजन। एक मिशन।",
-    "sub": "व्यक्तिगत भंडारण इकाइयों से लेकर टर्नकी PACK लाइनों तक — हम पूर्ण मूल्य श्रृंखला को कवर करते हैं।"
+    "sub": "व्यक्तिगत भंडारण इकाइयों से टर्नकी PACK लाइनों तक - हम पूर्ण मूल्य श्रृंखला को कवर करते हैं।"
   },
   "scenario": {
-    "title": "मॉड्यूलर डिज़ाइन, आपके परिदृश्य के लिए बनाया गया।",
-    "desc": "एक वास्तविक परिदृश्य चुनें। कोर 4-पीस किट और क्षेत्र-परीक्षण संयोजन देखें। ऑफ-ग्रिड द्वीपों से लेकर पारिवारिक UPS, ई-रिक्शा रेट्रोफिट से लेकर रात के बाज़ारों तक।",
-    "cta": "कॉन्फ़िगरेटर खोलें →"
+    "title": "डिज़ाइन के हिसाब से मॉड्यूलर। आपके परिदृश्य के लिए बनाया गया।",
+    "desc": "वास्तविक दुनिया का परिदृश्य चुनें। कोर 4 - पीस किट और फ़ील्ड - टेस्ट किए गए कॉम्बिनेशन देखें। ऑफ - ग्रिड द्वीपों से लेकर परिवार UPS तक, ई - रिक्शा रेट्रोफिट से लेकर नाइट मार्केट तक।",
+    "cta": "कॉन्फ़िगरेशन खोलें →"
   },
   "map": {
-    "title": "वैश्विक वास्तुकाला, स्थानीय निष्पादन।",
-    "sub": "सिंगापुर IP और पूंजी रखता है। शेन्ज़ेन निर्माण करता है। वैश्विक बाजार खपत करते हैं।"
+    "title": "वैश्विक वास्तुकला, स्थानीय निष्पादन।",
+    "sub": "Singapore के पास IP और पूंजी है। Shenzhen निर्माण करता है। वैश्विक बाजार उपभोग करते हैं।"
   },
   "trust": {
-    "title": "प्रमाणित। पेटेंट। उत्पादन-सिद्ध।"
+    "title": "प्रमाणित। पेटेंट। उत्पादन - सिद्ध।"
   },
   "cta": {
     "title": "अपने बाज़ार को पावर देने के लिए तैयार हैं?",
     "sub": "हमारी टीम से बात करें। हमारी फैक्ट्री देखें। या त्वरित पूछताछ भेजें — हम 24 घंटों के भीतर जवाब देते हैं।",
-    "primary": "पूछता�्ध भेजें",
+    "primary": "Send Inquiry",
     "secondary": "💬 WhatsApp पर चैट करें"
   },
   "footer": {
-    "brand": "लिथियम आयरन फॉस्फेट ऊर्जा भंडारण, उभरते बाजारों के लिए चीन में निर्मित।",
+    "brand": "लिथियम आयरन फॉस्फेट ऊर्जा भंडारण, दुनिया भर के उभरते बाजारों के लिए China में इंजीनियर।",
     "products": "उत्पाद",
     "company": "कंपनी",
-    "about": "हमारे बारे में",
-    "mfg": "विनिर्माण क्षमता",
-    "partnership": "साझेदारी",
+    "about": "परिचय",
+    "mfg": "विनिर्माण",
+    "partnership": "भागीदारी",
     "insights": "अंतर्दृष्टि",
     "contact": "संपर्क करें",
     "legal": "© 2026 Matoo Power. सर्वाधिकार सुरक्षित।",
-    "privacy": "गोपनीयता नीति",
-    "cookies": "कुकी सेटिंग्स",
-    "terms": "सेवा की शर्तें"
+    "privacy": "गोपनियता नीति",
+    "cookies": "कुकी सेटिंग",
+    "terms": "शर्तें"
   },
-  "mod1.title": "ऊर्जा भंडारण और हरित ऊर्जा",
-  "mod1.desc": "1kWh पोर्टेबल इकाइयों से मॉड्यूलर पावर बॉक्स तक — ऑफ-ग्रिड विश्वसनीयता के लिए निर्मित।",
-  "mod1.cta": "उत्पाद देखें →",
-  "mod2.title": "EV नियंत्रण और Matoo Ready",
-  "mod2.desc": "ड्रॉप-इन इलेक्ट्रिक नियंत्रण मॉड्यूल। वाहन का मान 20–40% बढ़ाएँ — बिना इन-हाउस R&D के।",
-  "mod2.cta": "समाधान देखें →",
-  "mod3.title": "PACK लाइन सहयोग",
-  "mod3.desc": "टर्नकी बैटरी पैक उत्पादन लाइनें। SKD/CKD आपूर्ति, प्रशिक्षण और प्रमाणन।",
-  "mod3.cta": "सहयोग देखें →",
   "insights": {
-    "section2_title": "हर महीने अंतर्दृष्टि प्राप्त करें",
-    "section2_sub": "हर महीने एक क्यूरेटेड ईमेल। कोई स्पैम नहीं। कभी भी सदस्यता रद्द करें।",
-    "subscribe": "सदस्य लें"
+    "section2_title": "Get Insights Monthly",
+    "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
+    "subscribe": "Subscribe"
+  },
+  "mod2": {
+    "title": "EV कंट्रोल और Matoo Ready",
+    "desc": "ड्रॉप-इन इलेक्ट्रिक नियंत्रण मॉड्यूल। वाहन का मान 20–40% बढ़ाएँ — बिना इन-हाउस R&D के।",
+    "cta": "समाधान देखें →"
+  },
+  "body": {
+    "index": {
+      "matoo_power_rel": "Matoo Power · उभरते बाजारों के लिए विश्वसनीय ऊर्जा भंडारण",
+      "26h": "20–40%QX01Q",
+      "brand_ip_capit": "ब्रांड · IP · पूंजी",
+      "rd_manufacturin": "R&D · विनिर्माण",
+      "south_asia_hub": "South Asia हब",
+      "global_markets": "वैश्विक बाजार",
+      "home_backup": "होम बैकअप",
+      "evening_ups_kitc": "शाम UPS, किचन, होम ऑफ़िस",
+      "outdoor": "घर के बाहर ",
+      "camping_rv_islan": "कैम्पिंग, आरवी, द्वीप, समुद्री",
+      "commercial": "व्यावसायिक",
+      "telecom_shop_ups": "दूरसंचार, दुकान UPS, क्लिनिक",
+      "emobility": "ई - मोबिलिटी",
+      "erickshaw_escoot": "ई - रिक्शा, ई - स्कूटर, ई - टुकटुक",
+      "configurator": "कॉन्फ़िगरेशन",
+      "深圳华奕智能科技有限公司_rd": "深圳华奕智能科技有限公司 (R&D · विनिर्माण) · 新加坡华奕科技技术有限公司 (ब्रांड · IP)",
+      "singapore": "Singapore",
+      "shenzhen_china": "Shenzhen, China",
+      "bangladesh": "Bangladesh",
+      "sea_africa_men": "SEA · Africa · MENA · LATAM",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "salesmatoopower": "✉ sales@matoopower.com",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "products": {
+      "products": "उत्पाद",
+      "open_configurato": "कॉन्फ़िगरेशन खोलें →",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "technology": {
+      "technology": "तकनीक",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "manufacturing": {
+      "manufacturing": "विनिर्माण",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "partnership": {
+      "partnership": "भागीदारी",
+      "chat_on_whatsap": "💬 WhatsApp पर चैट करें",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "insights": {
+      "insights": "अंतर्दृष्टि",
+      "manufacturing": "विनिर्माण",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "about": {
+      "about": "परिचय",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "contact": {
+      "contact": "संपर्क करें",
+      "bangladesh": "Bangladesh",
+      "privacy_policy": "गोपनियता नीति",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "privacy": {
+      "privacy_policy_hop62": "गोपनियता नीति",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "cookies": {
+      "cookie_settings_tia53": "कुकी सेटिंग",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "terms": {
+      "contact": "संपर्क करें",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "terms": "शर्तें"
+    },
+    "configurator": {
+      "chat_on_whatsap": "💬 WhatsApp पर चैट करें",
+      "chat_on_whatsap_1xop3": "💬 WhatsApp पर चैट करें",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    }
+  },
+  "mod1": {
+    "title": "ऊर्जा भंडारण और हरित ऊर्जा",
+    "desc": "1kWh पोर्टेबल इकाइयों से मॉड्यूलर पावर बॉक्स तक — ऑफ-ग्रिड विश्वसनीयता के लिए निर्मित।",
+    "cta": "उत्पाद देखें →"
+  },
+  "mod3": {
+    "title": "PACK लाइन सहयोग",
+    "desc": "टर्नकी बैटरी पैक उत्पादन लाइनें। SKD/CKD आपूर्ति, प्रशिक्षण और प्रमाणन।",
+    "cta": "सहयोग देखें →"
   }
 }

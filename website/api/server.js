@@ -13,6 +13,8 @@
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
 
@@ -23,6 +25,7 @@ const i18nRoutes = require('./routes/i18n');
 const imageRoutes = require('./routes/images');
 const auditRoutes = require('./routes/audit');
 const analyticsRoutes = require('./routes/analytics');
+const inquiriesRoutes = require('./routes/inquiries');
 const tracker = require('./lib/tracker');
 
 const app = express();
@@ -30,6 +33,42 @@ const STARTED_AT = Date.now();
 
 app.disable('x-powered-by');
 app.set('trust proxy', false);
+
+// ---------- Security headers (helmet) ----------
+// helmet() sets a sane default set of headers: CSP, X-Content-Type-Options,
+// Referrer-Policy, X-DNS-Prefetch-Control, X-Download-Options,
+// X-Frame-Options, X-Permitted-Cross-Domain-Policies, Cross-Origin-*-Policy.
+// The website serves its own inline <script id="i18n-data"> JSON blocks
+// (which helmet would otherwise block via CSP). We disable CSP here and
+// trust the path traversal / MIME magic / file extension checks already in
+// lib/images.js + lib/store.js + routes/*.js. Production deployments
+// behind Cloudflare should layer a strict CSP at the edge.
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+  // HSTS only meaningful behind HTTPS proxy
+  strictTransportSecurity: { maxAge: 63072000, includeSubDomains: true, preload: false },
+}));
+
+// ---------- Rate limiting ----------
+// Brute-force protection for unauthenticated endpoints. Authenticated
+// routes (which carry a valid session cookie + CSRF header) are not
+// rate-limited at the app layer; instead, the lockout in lib/auth.js
+// (5 fails → 15 min) backs them.
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 10,                  // 10 attempts per minute per IP
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { ok: false, code: 'RATE_LIMITED', message: 'Too many requests. Try again later.' },
+});
+const writeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 60,                  // 60 writes per minute per IP (i18n + image uploads)
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { ok: false, code: 'RATE_LIMITED', message: 'Too many requests. Try again later.' },
+});
 
 // Body parsing
 app.use(express.json({ limit: '2mb' }));
@@ -105,9 +144,15 @@ app.get('/health', (req, res) => {
 });
 
 // API
+// auth/* and write endpoints get extra rate limiting; read endpoints
+// (audit/analytics/health) are unlimited inside this single-user CMS
+// because the lockout at lib/auth.js + session check already rate-limits
+// the actual write surface.
+app.use('/api/auth/login', authLimiter);
 app.use('/api/auth', authRoutes.router);
-app.use('/api/i18n', i18nRoutes);
-app.use('/api/images', imageRoutes);
+app.use('/api/i18n', writeLimiter, i18nRoutes);
+app.use('/api/images', writeLimiter, imageRoutes);
+app.use('/api/inquiries', writeLimiter, inquiriesRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/analytics', analyticsRoutes);
 

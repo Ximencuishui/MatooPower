@@ -1,0 +1,141 @@
+
+===== 1. 乱码 / 编码异常（PUA / Replacement / Latin1 残留） =====
+
+  [index.html] OK (PUA=0 REPL=0 Latin1=121)
+  [products.html] OK (PUA=0 REPL=0 Latin1=289)
+  [technology.html] OK (PUA=0 REPL=0 Latin1=291)
+  [manufacturing.html] OK (PUA=0 REPL=0 Latin1=289)
+  [partnership.html] OK (PUA=0 REPL=0 Latin1=289)
+  [insights.html] OK (PUA=0 REPL=0 Latin1=272)
+  [about.html] OK (PUA=0 REPL=0 Latin1=301)
+  [contact.html] OK (PUA=0 REPL=0 Latin1=290)
+  [privacy.html] OK (PUA=0 REPL=0 Latin1=294)
+  [cookies.html] OK (PUA=0 REPL=0 Latin1=294)
+  [terms.html] OK (PUA=0 REPL=0 Latin1=291)
+  [configurator.html] OK (PUA=0 REPL=0 Latin1=289)
+
+  Total: PUA=0, U+FFFD=0, Latin1-charset=3310
+
+  [BOM] 全部 HTML 应无 UTF-8 BOM（避免 JSON 解析失败）
+    index.html: ✓ 无 BOM
+    products.html: ✓ 无 BOM
+    technology.html: ✓ 无 BOM
+    manufacturing.html: ✓ 无 BOM
+    partnership.html: ✓ 无 BOM
+    insights.html: ✓ 无 BOM
+    about.html: ✓ 无 BOM
+    contact.html: ✓ 无 BOM
+    privacy.html: ✓ 无 BOM
+    cookies.html: ✓ 无 BOM
+    terms.html: ✓ 无 BOM
+    configurator.html: ✓ 无 BOM
+
+===== 2. 路由完整性 =====
+
+  [2a] 页内锚点 (#id) 链接是否指向本文件存在的 id
+    ✓ index.html: 1 个锚点全部命中 (ids=8)
+    ✓ products.html: 1 个锚点全部命中 (ids=7)
+    ✓ technology.html: 1 个锚点全部命中 (ids=2)
+    ✓ manufacturing.html: 1 个锚点全部命中 (ids=2)
+    ✓ partnership.html: 1 个锚点全部命中 (ids=2)
+    ✓ insights.html: 1 个锚点全部命中 (ids=2)
+    ✓ about.html: 1 个锚点全部命中 (ids=2)
+    ✓ contact.html: 1 个锚点全部命中 (ids=24)
+    ✓ privacy.html: 14 个锚点全部命中 (ids=15)
+    ✓ cookies.html: 1 个锚点全部命中 (ids=12)
+    ✓ terms.html: 16 个锚点全部命中 (ids=17)
+    ✓ configurator.html: 1 个锚点全部命中 (ids=3)
+
+  [2b] 跨页面链接 (href="other.html") 目标文件是否真实存在
+    ✓ index.html: 11 个相对链接 + 0 个绝对链接均命中
+    ✓ products.html: 11 个相对链接 + 1 个绝对链接均命中
+    ✓ technology.html: 10 个相对链接 + 1 个绝对链接均命中
+    ✓ manufacturing.html: 10 个相对链接 + 1 个绝对链接均命中
+    ✓ partnership.html: 10 个相对链接 + 1 个绝对链接均命中
+    ✓ insights.html: 10 个相对链接 + 1 个绝对链接均命中
+    ✓ about.html: 10 个相对链接 + 1 个绝对链接均命中
+    ✓ contact.html: 10 个相对链接 + 1 个绝对链接均命中
+    ✓ privacy.html: 10 个相对链接 + 1 个绝对链接均命中
+    ✓ cookies.html: 10 个相对链接 + 1 个绝对链接均命中
+    ✓ terms.html: 10 个相对链接 + 1 个绝对链接均命中
+    ✓ configurator.html: 10 个相对链接 + 1 个绝对链接均命中
+
+  [2c] 资源引用（assets/styles/scripts/*.js）是否存在
+    ✓ index.html: 16 个资源引用全部命中
+    ✓ products.html: 40 个资源引用全部命中
+    ✓ technology.html: 11 个资源引用全部命中
+    ✓ manufacturing.html: 15 个资源引用全部命中
+    ✓ partnership.html: 20 个资源引用全部命中
+    ✓ insights.html: 18 个资源引用全部命中
+    ✓ about.html: 12 个资源引用全部命中
+    ✓ contact.html: 11 个资源引用全部命中
+    ✓ privacy.html: 11 个资源引用全部命中
+    ✓ cookies.html: 11 个资源引用全部命中
+    ✓ terms.html: 11 个资源引用全部命中
+    ✓ configurator.html: 11 个资源引用全部命中
+
+  [2d] srcset 多档位图片是否全部存在
+    ✓ 所有 srcset 档位完整
+
+  [2e] sitemap.xml 与实际 HTML 列表是否一致
+    sitemap.xml 共 12 条 loc
+    ✓ sitemap 全部命中实际文件
+
+===== 3. 冗余代码 =====
+
+  [3a] 同一脚本资源被同一页面多次引入
+
+  [3b] 同一 CSS 被同一页面多次引入
+
+  [3c] scripts/*.js 是否都被引用
+    ✓ scripts/main.js
+    ⚠ scripts/smoke-admin.js 未被任何页面引用
+    ✓ scripts/whatsapp-config.js
+
+  [3d] styles/*.css 是否都被引用
+    ✓ styles/main.css
+    ✓ styles/tokens.css
+
+  [3e] i18n 块中存在但页面未引用的"孤儿键"
+    [index.html] 3 个 en 孤儿键: insights.section2_title, insights.section2_sub, insights.subscribe
+    [products.html] 43 个 en 孤儿键: nav.products, hero.eyebrow, hero.title, hero.sub, hero.cta1...
+    [technology.html] 43 个 en 孤儿键: nav.technology, hero.eyebrow, hero.title, hero.sub, hero.cta1...
+    [manufacturing.html] 42 个 en 孤儿键: hero.eyebrow, hero.title, hero.sub, hero.cta1, hero.cta2...
+    [partnership.html] 42 个 en 孤儿键: hero.eyebrow, hero.title, hero.sub, hero.cta1, hero.cta2...
+    [insights.html] 39 个 en 孤儿键: hero.eyebrow, hero.title, hero.sub, hero.cta1, hero.cta2...
+    [about.html] 42 个 en 孤儿键: hero.eyebrow, hero.title, hero.sub, hero.cta1, hero.cta2...
+    [contact.html] 43 个 en 孤儿键: nav.contact, hero.eyebrow, hero.title, hero.sub, hero.cta1...
+    [privacy.html] 43 个 en 孤儿键: hero.eyebrow, hero.title, hero.sub, hero.cta1, hero.cta2...
+    [cookies.html] 43 个 en 孤儿键: hero.eyebrow, hero.title, hero.sub, hero.cta1, hero.cta2...
+    [terms.html] 43 个 en 孤儿键: hero.eyebrow, hero.title, hero.sub, hero.cta1, hero.cta2...
+    [configurator.html] 42 个 en 孤儿键: hero.eyebrow, hero.title, hero.sub, hero.cta1, hero.cta2...
+    总计: 468 个孤儿键（各页面的 en i18n 块内）
+
+  [3f] data-i18n 引用键在同页 i18n 块中是否齐全（缺失将回退 en）
+    总计: 0 处缺失引用
+
+  [3g] 全站 data-i18n 键 vs 全站 en i18n 块键的覆盖率
+    union refs=938, union en keys=938
+    ⚠ 引用了 en 块没有的键: 0 个
+    孤儿 en 键: 0 个
+
+  [3h] HTML 内嵌脚本/样式块长度 (KiB) — 过长值得拆分
+    [index.html] inline-script=59.9KB inline-style=0.0KB
+    [products.html] inline-script=79.3KB inline-style=0.0KB
+    [technology.html] inline-script=68.5KB inline-style=0.0KB
+    [manufacturing.html] inline-script=71.5KB inline-style=0.0KB
+    [partnership.html] inline-script=79.7KB inline-style=0.0KB
+    [insights.html] inline-script=73.1KB inline-style=2.2KB
+    [about.html] inline-script=64.3KB inline-style=0.0KB
+    [contact.html] inline-script=62.7KB inline-style=0.0KB
+    [privacy.html] inline-script=77.2KB inline-style=2.0KB
+    [cookies.html] inline-script=69.6KB inline-style=3.9KB
+    [terms.html] inline-script=97.4KB inline-style=2.3KB
+    [configurator.html] inline-script=93.7KB inline-style=3.1KB
+
+  [3i] HTML 注释中残留的 TODO/FIXME/DEBUG 标记
+    ✓ 无残留 TODO/FIXME 标记
+
+  [3j] 内联脚本中残留的 console.log / debugger
+
+===== 审计完成 =====

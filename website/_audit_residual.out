@@ -1,0 +1,107 @@
+======== ZQX 残留扫描（全 14 lang） ======
+
+  index.html/ja/hero.eyebrow = ZQX 01 Jで設計・信頼できるZQX 01 QWORLDWIDE
+  index.html/ja/hero.sub = 中国の卓越した製造業のZQX 010に基づいて構築された、オフグリッド生活、eモビリティ、および商用バックアップ用のリン酸鉄リチウムエネルギー貯蔵。
+  index.html/ja/data.cycle.label = バッテリーサイクル寿命（ ZQX 007 ）
+  index.html/ja/data.cycle.source = 内部ラボ試験、ZQX 007化学
+  index.html/ja/data.outage.source = ZQX 01 Q世界銀行エネルギーアクセスレポート
+  index.html/ja/modules.sub = 個々のストレージユニットからターンキーZQX 00 Bラインまで、バリューチェーン全体を網羅しています。
+  index.html/ja/scenario.desc = 現実世界のシナリオを選択してください。コア4ピースキットと実地試験済みの組み合わせをご覧ください。オフグリッドアイランドからファミリーZQX 00 Dまで、e - rickshawは夜市に改装されてい
+  index.html/ja/map.sub = ZQX 01 FはZQX 00 Nと資本を保有しています。ZQX 01 Gは製造しています。世界市場は消費しています。
+  index.html/ja/cta.secondary = 💬 ZQX 01 Eでチャット
+  index.html/ja/footer.brand = 世界の新興市場向けにZQX 01 Jで設計されたリン酸鉄リチウムエネルギー貯蔵。
+  index.html/ja/footer.legal = © 2026 ZQX 000.無断複写・転載を禁じます。
+  index.html/ja/mod2.title = ZQX 00 Cコントロール＆ ZQX 001
+  index.html/ja/body.index.matoo_power_rel = ZQX 000・新興市場向けの信頼性の高いエネルギー貯蔵
+  index.html/ja/body.index.26h = ZQX 00 ZQX 01 Q
+  index.html/ja/body.index.singapore = ZQX 01 F
+  index.html/ja/body.index.shenzhen_china = ZQX 01 G、ZQX 01 J
+  index.html/ja/body.index.bangladesh = ZQX 01 I
+  index.html/ja/body.index.south_asia_hub = ZQX 01 Nハブ
+  index.html/ja/body.index.sea_africa_men = ZQX 00 J・ZQX 01 M・ZQX 00 H・ZQX 00 I
+  index.html/ja/body.index.un383 = ZQX 00 F
+
+ZQX 残留总数: 179
+
+======== ja 字典 extra key 来源 ======
+
+ja 字典多出 en 的 key: 0
+
+======== vi/fr/pt/es 字典的 18 missing keys ======
+
+vi missing (18):
+  body.products.客厅断电_灯光电视wifi
+  body.products.冰箱小家电应急照明
+  body.products.笔记本网络显示器
+  body.products.深圳华奕智能科技有限公司_新加
+  body.technology.深圳华奕智能科技有限公司_新加
+  body.manufacturing.深圳华奕智能科技_自有产权工厂
+  body.manufacturing.深圳华奕智能科技有限公司_新加
+  body.partnership.深圳华奕智能科技有限公司_新加
+  body.insights.深圳华奕智能科技有限公司_新加
+  body.about.深圳华奕智能科技有限公司
+  body.about.新加坡华奕科技有限公司
+  body.about.深圳华奕智能科技有限公司_新加
+  body.contact.微信企业号
+  body.contact.深圳华奕智能科技有限公司_新加
+  body.privacy.深圳华奕智能科技有限公司_新加
+  body.cookies.深圳华奕智能科技有限公司_新加
+  body.terms.深圳华奕智能科技有限公司_新加
+  body.configurator.深圳华奕智能科技有限公司_新加
+fr missing (18):
+  body.products.客厅断电_灯光电视wifi
+  body.products.冰箱小家电应急照明
+  body.products.笔记本网络显示器
+  body.products.深圳华奕智能科技有限公司_新加
+  body.technology.深圳华奕智能科技有限公司_新加
+  body.manufacturing.深圳华奕智能科技_自有产权工厂
+  body.manufacturing.深圳华奕智能科技有限公司_新加
+  body.partnership.深圳华奕智能科技有限公司_新加
+  body.insights.深圳华奕智能科技有限公司_新加
+  body.about.深圳华奕智能科技有限公司
+  body.about.新加坡华奕科技有限公司
+  body.about.深圳华奕智能科技有限公司_新加
+  body.contact.微信企业号
+  body.contact.深圳华奕智能科技有限公司_新加
+  body.privacy.深圳华奕智能科技有限公司_新加
+  body.cookies.深圳华奕智能科技有限公司_新加
+  body.terms.深圳华奕智能科技有限公司_新加
+  body.configurator.深圳华奕智能科技有限公司_新加
+pt missing (18):
+  body.products.客厅断电_灯光电视wifi
+  body.products.冰箱小家电应急照明
+  body.products.笔记本网络显示器
+  body.products.深圳华奕智能科技有限公司_新加
+  body.technology.深圳华奕智能科技有限公司_新加
+  body.manufacturing.深圳华奕智能科技_自有产权工厂
+  body.manufacturing.深圳华奕智能科技有限公司_新加
+  body.partnership.深圳华奕智能科技有限公司_新加
+  body.insights.深圳华奕智能科技有限公司_新加
+  body.about.深圳华奕智能科技有限公司
+  body.about.新加坡华奕科技有限公司
+  body.about.深圳华奕智能科技有限公司_新加
+  body.contact.微信企业号
+  body.contact.深圳华奕智能科技有限公司_新加
+  body.privacy.深圳华奕智能科技有限公司_新加
+  body.cookies.深圳华奕智能科技有限公司_新加
+  body.terms.深圳华奕智能科技有限公司_新加
+  body.configurator.深圳华奕智能科技有限公司_新加
+es missing (18):
+  body.products.客厅断电_灯光电视wifi
+  body.products.冰箱小家电应急照明
+  body.products.笔记本网络显示器
+  body.products.深圳华奕智能科技有限公司_新加
+  body.technology.深圳华奕智能科技有限公司_新加
+  body.manufacturing.深圳华奕智能科技_自有产权工厂
+  body.manufacturing.深圳华奕智能科技有限公司_新加
+  body.partnership.深圳华奕智能科技有限公司_新加
+  body.insights.深圳华奕智能科技有限公司_新加
+  body.about.深圳华奕智能科技有限公司
+  body.about.新加坡华奕科技有限公司
+  body.about.深圳华奕智能科技有限公司_新加
+  body.contact.微信企业号
+  body.contact.深圳华奕智能科技有限公司_新加
+  body.privacy.深圳华奕智能科技有限公司_新加
+  body.cookies.深圳华奕智能科技有限公司_新加
+  body.terms.深圳华奕智能科技有限公司_新加
+  body.configurator.深圳华奕智能科技有限公司_新加

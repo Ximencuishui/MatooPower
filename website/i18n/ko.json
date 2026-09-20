@@ -6,87 +6,188 @@
     "note": "한국어 번역 — AI 보조, 기계 번역 검증 완료."
   },
   "nav": {
-    "products": "제품",
+    "products": "상품",
     "technology": "기술",
-    "manufacturing": "제조",
-    "partnership": "파트너십",
-    "insights": "인사이트",
-    "about": "회사 소개",
-    "contact": "문의하기"
+    "manufacturing": "제조업",
+    "partnership": "동업",
+    "insights": "트래픽 분석",
+    "about": "소개",
+    "contact": "연락하기"
   },
   "hero": {
-    "eyebrow": "중국산 · 세계가 신뢰",
-    "title": "신흥 시장에, 신뢰할 수 있는 에너지를.",
-    "sub": "오프그리드 생활, 전기 모빌리티, 상업용 백업용 리튬 인산철 철 에너지 저장 — 20년 이상의 중국 제조 역량 기반.",
-    "cta1": "공장 방문 예약 →",
-    "cta2": "사양서 다운로드 ↓"
+    "eyebrow": "China · Trusted Worldwide에서 엔지니어링",
+    "title": "신뢰성을 위해 설계된 신흥 시장 동력 공급.",
+    "sub": "중국 제조 우수성의 20+ years을 기반으로 구축된 오프 그리드 생활, e-모빌리티 및 상업적 백업을 위한 리튬 인산철 에너지 저장소.",
+    "cta1": "공장 방문 예약하기 →",
+    "cta2": "사양 다운로드 →"
   },
   "data": {
     "users": {
-      "label": "신흥 시장 사용자 수",
-      "source": "누적 출하량 기준"
+      "label": "신흥 시장의 사용자",
+      "source": "누적 배포 기준"
     },
     "outage": {
-      "label": "일일 평균 정전 시간",
-      "source": "세계은행 에너지 접근 보고서"
+      "label": "일일 평균 서비스 중단 시간",
+      "source": "ZQX01세계은행 에너지 접근 보고서"
     },
     "cycle": {
       "label": "배터리 사이클 수명 (LFP)",
-      "source": "내부 랩 테스트, LFP 화학"
+      "source": "내부 실험실 테스트, LFP 화학"
     },
     "margin": {
-      "label": "파트너 매출총이익률",
-      "source": "2024년 채널 데이터 기준"
+      "label": "파트너 매출총이익",
+      "source": "2024 채널 데이터 기반"
     }
   },
   "modules": {
-    "title": "세 가지 엔진, 하나의 사명.",
-    "sub": "단일 저장 장치부터 PACK 턴키까지 — 전체 가치 사슬을 커버합니다."
+    "title": "엔진 3개. 미션 1개.",
+    "sub": "개별 스토리지 유닛에서 턴키 PACK 라인에 이르기까지 당사는 전체 가치 사슬을 다룹니다."
   },
   "scenario": {
-    "title": "모듈식 설계, 당신의 시나리오를 위해.",
-    "desc": "실제 시나리오를 선택하고 코어 4종 키트와 현장 테스트 조합을 확인하세요. 오프그리드 섬, 가정용 UPS, 전기릭샤 개조, 야시장까지.",
-    "cta": "컨피규레이터 열기 →"
+    "title": "설계에 의한 모듈식. 시나리오를 위해 제작되었습니다.",
+    "desc": "실제 시나리오를 선택하세요. 핵심 4피스 키트와 현장 테스트를 거친 조합을 확인하세요. 오프 그리드 섬에서 가족 UPS까지, 전자 릭쇼 개조부터 야시장까지.",
+    "cta": "구성자 열기 →"
   },
   "map": {
     "title": "글로벌 아키텍처, 로컬 실행.",
-    "sub": "싱가포르가 IP와 자본을 보유. 선전이 제조. 글로벌 시장이 소비."
+    "sub": "Singapore는 IP과 자본을 보유하고 있습니다. Shenzhen가 제조합니다. 글로벌 시장이 소비합니다."
   },
   "trust": {
-    "title": "인증 완료. 특허 취득. 양산 검증."
+    "title": "인증. 특허. 생산-검증."
   },
   "cta": {
     "title": "시장을 위한 에너지 공급 준비가 되셨나요?",
     "sub": "팀과 상담하거나, 공장을 방문하거나, 간단한 문의를 보내주세요 — 24시간 이내에 답변드립니다.",
-    "primary": "문의 보내기",
-    "secondary": "💬 WhatsApp으로 채팅"
+    "primary": "Send Inquiry",
+    "secondary": "💬 WhatsApp에서 채팅하기"
   },
   "footer": {
-    "brand": "리튬 인산철 철 에너지 저장, 중국 제조, 신흥 시장을 위해.",
-    "products": "제품",
-    "company": "회사",
-    "about": "회사 소개",
-    "mfg": "제조 능력",
-    "partnership": "파트너십",
-    "insights": "인사이트",
-    "contact": "문의하기",
-    "legal": "© 2026 Matoo Power. 모든 권리 보유.",
-    "privacy": "개인정보 처리방침",
+    "brand": "전 세계 신흥 시장을 위해 China로 설계된 리튬 인산철 에너지 저장소.",
+    "products": "상품",
+    "company": "社",
+    "about": "소개",
+    "mfg": "제조업",
+    "partnership": "동업",
+    "insights": "트래픽 분석",
+    "contact": "연락하기",
+    "legal": "© 2026 Matoo Power. 판권 소유.",
+    "privacy": "개인 정보 보호 정책",
     "cookies": "쿠키 설정",
-    "terms": "이용 약관"
+    "terms": "용어"
   },
-  "mod1.title": "에너지 저장 & 녹색 에너지",
-  "mod1.desc": "1kWh 휴대용부터 모듈식 Power Box까지 — 오프그리드 신뢰성을 위해 설계.",
-  "mod1.cta": "제품 보기 →",
-  "mod2.title": "EV 제어 & Matoo Ready",
-  "mod2.desc": "드롭인 전기 제어 모듈. 자체 R&D 없이 차량 가치 20–40% 향상.",
-  "mod2.cta": "솔루션 보기 →",
-  "mod3.title": "PACK 라인 협력",
-  "mod3.desc": "배터리 팩 생산 라인 턴키. SKD/CKD 공급, 교육, 인증.",
-  "mod3.cta": "협력 보기 →",
   "insights": {
-    "section2_title": "매월 인사이트 받기",
-    "section2_sub": "한 달에 한 번 큐레이션. 스팸 없음. 언제든지 구독 해지.",
-    "subscribe": "구독"
+    "section2_title": "Get Insights Monthly",
+    "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
+    "subscribe": "Subscribe"
+  },
+  "mod2": {
+    "title": "EV 제어 및 Matoo Ready",
+    "desc": "드롭인 전기 제어 모듈. 자체 R&D 없이 차량 가치 20–40% 향상.",
+    "cta": "솔루션 보기 →"
+  },
+  "body": {
+    "index": {
+      "matoo_power_rel": "Matoo Power · 신흥 시장을 위한 신뢰할 수 있는 에너지 저장 장치",
+      "26h": "20–40%QX01Q",
+      "brand_ip_capit": "브랜드 · IP · 자본",
+      "rd_manufacturin": "R&D · 제조",
+      "south_asia_hub": "South Asia 허브",
+      "global_markets": "글로벌 시장",
+      "home_backup": "홈 백업",
+      "evening_ups_kitc": "저녁 UPS, 주방, 홈 오피스",
+      "camping_rv_islan": "캠핑, RV, 섬, 해양",
+      "commercial": "상용",
+      "telecom_shop_ups": "통신, UPS 쇼핑, 클리닉",
+      "emobility": "E-모빌리티",
+      "erickshaw_escoot": "전동 릭샤, 전동 스쿠터, 전동 툭툭",
+      "configurator": "구성자",
+      "深圳华奕智能科技有限公司_rd": "深圳华奕智能科技有限公司 (R&D · 제조) · 新加坡华奕科技技术有限公司 (브랜드 · IP)",
+      "singapore": "Singapore",
+      "shenzhen_china": "Shenzhen, China",
+      "bangladesh": "Bangladesh",
+      "sea_africa_men": "SEA · Africa · MENA · LATAM",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "outdoor": "Outdoor",
+      "salesmatoopower": "✉ sales@matoopower.com",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "products": {
+      "products": "상품",
+      "open_configurato": "구성자 열기 →",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "technology": {
+      "technology": "기술",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "manufacturing": {
+      "manufacturing": "제조업",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "partnership": {
+      "partnership": "동업",
+      "chat_on_whatsap": "💬 WhatsApp에서 채팅하기",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "insights": {
+      "insights": "트래픽 분석",
+      "manufacturing": "제조업",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "about": {
+      "about": "소개",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "contact": {
+      "contact": "연락하기",
+      "bangladesh": "Bangladesh",
+      "privacy_policy": "개인 정보 보호 정책",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "privacy": {
+      "privacy_policy_hop62": "개인 정보 보호 정책",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "cookies": {
+      "cookie_settings_tia53": "쿠키 설정",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    },
+    "terms": {
+      "contact": "연락하기",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "terms": "용어"
+    },
+    "configurator": {
+      "chat_on_whatsap": "💬 WhatsApp에서 채팅하기",
+      "chat_on_whatsap_1xop3": "💬 WhatsApp에서 채팅하기",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+    }
+  },
+  "mod1": {
+    "title": "에너지 저장 & 녹색 에너지",
+    "desc": "1kWh 휴대용부터 모듈식 Power Box까지 — 오프그리드 신뢰성을 위해 설계.",
+    "cta": "제품 보기 →"
+  },
+  "mod3": {
+    "title": "PACK 라인 협력",
+    "desc": "배터리 팩 생산 라인 턴키. SKD/CKD 공급, 교육, 인증.",
+    "cta": "협력 보기 →"
   }
 }
