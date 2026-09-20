@@ -384,6 +384,7 @@ export const en: Dict = {
     kpiOpen: 'Open',
     kpiUrgent: 'Urgent',
     kpiThisMonth: 'New This Month',
+    searchPlaceholder: 'Search subject / description / ID',
     tabAll: 'All',
     tabOpen: 'Open',
     tabUrgent: 'Urgent',

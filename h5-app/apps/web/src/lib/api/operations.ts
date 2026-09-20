@@ -87,12 +87,15 @@ export const replyTicket = (id: string, body: string) =>
   api.post<{ ok: true }>(`/tickets/${encodeURIComponent(id)}/reply`, { body });
 
 // Admin
-export const listAllTickets = (params?: { status?: string; severity?: string }) => {
+export const listAllTickets = (params?: { status?: string; severity?: string; q?: string; page?: number; pageSize?: number }) => {
   const q = new URLSearchParams();
   if (params?.status) q.set('status', params.status);
   if (params?.severity) q.set('severity', params.severity);
+  if (params?.q) q.set('q', params.q);
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
   const qs = q.toString();
-  return api.get<{ ok: true; items: TicketItem[] }>(`/admin/tickets${qs ? `?${qs}` : ''}`);
+  return api.get<{ ok: true; items: TicketItem[]; total: number; page: number; pageSize: number }>(`/admin/tickets${qs ? `?${qs}` : ''}`);
 };
 
 export const updateTicket = (id: string, body: UpdateTicketBody) =>

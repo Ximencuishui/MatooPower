@@ -41,7 +41,7 @@ export function cleanDb(dbFile: string) {
 
 export interface AppHandle {
   app: INestApplication;
-  req: typeof request.SuperTestStatic;
+  req: ReturnType<typeof request>;
   close: () => Promise<void>;
 }
 

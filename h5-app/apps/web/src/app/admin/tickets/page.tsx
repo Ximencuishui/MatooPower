@@ -15,6 +15,7 @@ type Tab = 'all' | 'open' | 'urgent' | 'resolved';
 export default function AdminTicketsPage() {
   const { t } = useT();
   const [tab, setTab] = useState<Tab>('all');
+  const [search, setSearch] = useState('');
   const [tickets, setTickets] = useState<TicketItem[] | null>(null);
   const [overview, setOverview] = useState<AdminOverviewDto['overview'] | null>(null);
   const [selected, setSelected] = useState<TicketDetail | null>(null);
@@ -33,7 +34,13 @@ export default function AdminTicketsPage() {
     }
 
     const statusFilter = tab === 'open' ? 'in_progress' : tab === 'resolved' ? 'resolved' : undefined;
-    Promise.all([listAllTickets(statusFilter ? { status: statusFilter } : undefined), getAdminOverview()])
+    Promise.all([
+      listAllTickets({
+        status: statusFilter,
+        q: search.trim() || undefined,
+      }),
+      getAdminOverview(),
+    ])
       .then(([t, ov]) => {
         setTickets(t.items);
         setOverview(ov.overview);
@@ -41,7 +48,7 @@ export default function AdminTicketsPage() {
       .catch((e: unknown) => {
         setError(e instanceof ApiError ? e.message : (e instanceof Error ? e.message : t.common.networkErr));
       });
-  }, [tab, t.common.networkErr, t.ticket.needLoginAdmin]);
+  }, [tab, search, t.common.networkErr, t.ticket.needLoginAdmin]);
 
   function openDetail(id: string) {
     setBusy(true);
@@ -103,6 +110,21 @@ export default function AdminTicketsPage() {
             </div>
           </section>
         )}
+
+        {/* 搜索 */}
+        <div className="px-4 mb-2">
+          <div className="relative">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t.ticket.searchPlaceholder}
+              className="input pr-9"
+              aria-label="search"
+            />
+            <span aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">⌕</span>
+          </div>
+        </div>
 
         {/* tab 切换 */}
         <div className="px-4">

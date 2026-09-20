@@ -1,43 +1,106 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DbService } from '../../common/db/db';
 
+export interface PageResult<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 @Injectable()
 export class AdminService {
   constructor(private readonly db: DbService) {}
 
-  async listSkus() {
-    return this.db.all('SELECT * FROM Sku ORDER BY createdAt ASC');
+  /** SKU 列表（带搜索 + 分页） */
+  async listSkus(opts: { q?: string; page?: number; pageSize?: number } = {}): Promise<PageResult<any>> {
+    return this.paginated('SELECT * FROM Sku', opts, ['sku', 'modelName', 'serial', 'batch']);
   }
 
-  async listWarranties() {
-    return this.db.all(
+  /** 保修列表 */
+  async listWarranties(opts: { q?: string; page?: number; pageSize?: number; status?: string } = {}): Promise<PageResult<any>> {
+    return this.paginated(
       `SELECT w.*, u.phone AS user_phone, u.displayName AS user_displayName,
               s.sku AS s_sku, s.modelName AS s_modelName, s.serial AS s_serial
        FROM Warranty w
        JOIN User u ON w.userId = u.id
-       JOIN Sku s ON w.skuId = s.id
-       ORDER BY w.createdAt DESC`,
+       JOIN Sku s ON w.skuId = s.id`,
+      { ...opts, extraWhere: opts.status ? 'w.status = ?' : undefined, extraParams: opts.status ? [opts.status] : [] },
+      ['s_sku', 's_serial', 'user_phone', 'user_displayName'],
+      'w.createdAt DESC',
     );
   }
 
-  async listDevices() {
-    return this.db.all(
+  /** 设备列表 */
+  async listDevices(opts: { q?: string; page?: number; pageSize?: number } = {}): Promise<PageResult<any>> {
+    return this.paginated(
       `SELECT d.*, u.phone AS user_phone,
               s.sku AS s_sku, s.modelName AS s_modelName, s.serial AS s_serial
        FROM Device d
        JOIN User u ON d.userId = u.id
-       JOIN Sku s ON d.skuId = s.id
-       ORDER BY d.boundAt DESC`,
+       JOIN Sku s ON d.skuId = s.id`,
+      opts,
+      ['s_sku', 's_serial', 'user_phone'],
+      'd.boundAt DESC',
     );
   }
 
-  async listUsers() {
-    return this.db.all(
+  /** 用户列表 */
+  async listUsers(opts: { q?: string; page?: number; pageSize?: number; role?: string } = {}): Promise<PageResult<any>> {
+    return this.paginated(
       `SELECT u.id, u.phone, u.email, u.role, u.displayName, u.createdAt,
               (SELECT COUNT(*) FROM Warranty w WHERE w.userId = u.id) AS warrantyCount,
               (SELECT COUNT(*) FROM Device d WHERE d.userId = u.id) AS deviceCount
-       FROM User u ORDER BY u.createdAt ASC`,
+       FROM User u`,
+      { ...opts, extraWhere: opts.role ? 'u.role = ?' : undefined, extraParams: opts.role ? [opts.role] : [] },
+      ['phone', 'email', 'displayName', 'id'],
+      'u.createdAt ASC',
     );
+  }
+
+  /**
+   * 通用分页 + 搜索
+   * @param baseSql    SELECT 子句 + FROM（含 JOIN）
+   * @param opts       q / page / pageSize / extraWhere / extraParams
+   * @param searchCols LIKE 搜索的列名
+   * @param orderBy    排序
+   */
+  private paginated(
+    baseSql: string,
+    opts: { q?: string; page?: number; pageSize?: number; extraWhere?: string; extraParams?: any[] },
+    searchCols: string[],
+    orderBy = 'createdAt DESC',
+  ): PageResult<any> {
+    const page = Math.max(1, opts.page ?? 1);
+    const pageSize = Math.min(100, Math.max(1, opts.pageSize ?? 20));
+    const offset = (page - 1) * pageSize;
+    const q = opts.q?.trim() ?? '';
+
+    const where: string[] = [];
+    const params: any[] = [];
+    if (q) {
+      const like = `%${q}%`;
+      where.push('(' + searchCols.map((c) => `${c} LIKE ?`).join(' OR ') + ')');
+      params.push(...searchCols.map(() => like));
+    }
+    if (opts.extraWhere) {
+      where.push(`(${opts.extraWhere})`);
+      params.push(...(opts.extraParams ?? []));
+    }
+    const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
+
+    const totalRow = this.db.get<{ c: number }>(
+      `SELECT COUNT(*) AS c FROM (${baseSql}) ${whereSql}`,
+      ...params,
+    );
+    const total = totalRow?.c ?? 0;
+
+    const items = this.db.all(
+      `${baseSql} ${whereSql} ORDER BY ${orderBy} LIMIT ? OFFSET ?`,
+      ...params, pageSize, offset,
+    );
+
+    return { items, total, page, pageSize };
   }
 
   async reviewWarranty(id: string, status: 'active' | 'pending' | 'expired' | 'rejected', notes?: string) {
@@ -47,7 +110,7 @@ export class AdminService {
     return this.db.get('SELECT * FROM Warranty WHERE id = ?', id);
   }
 
-  /** 平台概览 — 用于 admin 仪表盘 */
+  /** 平台概览 */
   async overview() {
     const skuTotal = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Sku')?.c ?? 0;
     const skuActivated = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Sku WHERE activated = 1')?.c ?? 0;

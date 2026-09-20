@@ -29,27 +29,69 @@ export class AdminController {
   ) {}
 
   @Get('sku')
-  @ApiOperation({ summary: 'List all SKUs' })
-  async listSkus(@CurrentUser() _user: AuthUser) {
-    return { ok: true, items: await this.svc.listSkus() };
+  @ApiOperation({ summary: 'List all SKUs (paginated + searchable)' })
+  async listSkus(
+    @CurrentUser() _user: AuthUser,
+    @Query('q') q?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    return {
+      ok: true,
+      ...await this.svc.listSkus({
+        q, page: page ? Number(page) : undefined, pageSize: pageSize ? Number(pageSize) : undefined,
+      }),
+    };
   }
 
   @Get('warranties')
-  @ApiOperation({ summary: 'List all warranties' })
-  async listWarranties(@CurrentUser() _user: AuthUser) {
-    return { ok: true, items: await this.svc.listWarranties() };
+  @ApiOperation({ summary: 'List all warranties (paginated + searchable)' })
+  async listWarranties(
+    @CurrentUser() _user: AuthUser,
+    @Query('q') q?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('status') status?: string,
+  ) {
+    return {
+      ok: true,
+      ...await this.svc.listWarranties({
+        q, page: page ? Number(page) : undefined, pageSize: pageSize ? Number(pageSize) : undefined, status,
+      }),
+    };
   }
 
   @Get('devices')
-  @ApiOperation({ summary: 'List all devices' })
-  async listDevices(@CurrentUser() _user: AuthUser) {
-    return { ok: true, items: await this.svc.listDevices() };
+  @ApiOperation({ summary: 'List all devices (paginated + searchable)' })
+  async listDevices(
+    @CurrentUser() _user: AuthUser,
+    @Query('q') q?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    return {
+      ok: true,
+      ...await this.svc.listDevices({
+        q, page: page ? Number(page) : undefined, pageSize: pageSize ? Number(pageSize) : undefined,
+      }),
+    };
   }
 
   @Get('users')
-  @ApiOperation({ summary: 'List all users' })
-  async listUsers(@CurrentUser() _user: AuthUser) {
-    return { ok: true, items: await this.svc.listUsers() };
+  @ApiOperation({ summary: 'List all users (paginated + searchable)' })
+  async listUsers(
+    @CurrentUser() _user: AuthUser,
+    @Query('q') q?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('role') role?: string,
+  ) {
+    return {
+      ok: true,
+      ...await this.svc.listUsers({
+        q, page: page ? Number(page) : undefined, pageSize: pageSize ? Number(pageSize) : undefined, role,
+      }),
+    };
   }
 
   @Post('warranties/:id/review')
@@ -64,13 +106,21 @@ export class AdminController {
   }
 
   @Get('tickets')
-  @ApiOperation({ summary: 'List all tickets (admin view)' })
+  @ApiOperation({ summary: 'List all tickets (admin view, paginated + searchable)' })
   async listTickets(
     @CurrentUser() _user: AuthUser,
     @Query('status') status?: string,
     @Query('severity') severity?: string,
+    @Query('q') q?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
   ) {
-    return { ok: true, items: this.ticketSvc.listAll(status, severity) };
+    return {
+      ok: true,
+      ...this.ticketSvc.listAll(status, severity, {
+        q, page: page ? Number(page) : undefined, pageSize: pageSize ? Number(pageSize) : undefined,
+      }),
+    };
   }
 
   @Get('tickets/stats')

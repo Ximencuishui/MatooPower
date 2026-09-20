@@ -86,7 +86,25 @@ export class TicketService {
     return this.db.all(sql, ...args) as TicketListItem[];
   }
 
-  listAll(status?: string, severity?: string): TicketListItem[] {
+  listAll(status?: string, severity?: string, opts: { q?: string; page?: number; pageSize?: number } = {}): { items: TicketListItem[]; total: number; page: number; pageSize: number } {
+    const page = Math.max(1, opts.page ?? 1);
+    const pageSize = Math.min(100, Math.max(1, opts.pageSize ?? 20));
+    const offset = (page - 1) * pageSize;
+    const q = opts.q?.trim() ?? '';
+
+    const where: string[] = [];
+    const args: any[] = [];
+    if (status) { where.push('t.status = ?'); args.push(status); }
+    if (severity) { where.push('t.severity = ?'); args.push(severity); }
+    if (q) {
+      where.push('(t.subject LIKE ? OR t.description LIKE ? OR t.id LIKE ?)');
+      args.push(`%${q}%`, `%${q}%`, `%${q}%`);
+    }
+    const whereSql = where.length ? 'WHERE ' + where.join(' AND ') : '';
+
+    const totalRow = this.db.get<{ c: number }>(`SELECT COUNT(*) AS c FROM Ticket t ${whereSql}`, ...args);
+    const total = totalRow?.c ?? 0;
+
     let sql = `
       SELECT t.*,
              s.sku AS sku, s.modelName AS modelName, s.serial AS serial,
@@ -98,13 +116,12 @@ export class TicketService {
       LEFT JOIN Sku s ON t.skuId = s.id
       LEFT JOIN User ua ON t.userId = ua.id
       LEFT JOIN User uas ON t.assigneeUserId = uas.id
-      WHERE 1=1
+      ${whereSql}
+      ORDER BY t.updatedAt DESC
+      LIMIT ? OFFSET ?
     `;
-    const args: any[] = [];
-    if (status) { sql += ' AND t.status = ?'; args.push(status); }
-    if (severity) { sql += ' AND t.severity = ?'; args.push(severity); }
-    sql += ' ORDER BY t.updatedAt DESC';
-    return this.db.all(sql, ...args) as TicketListItem[];
+    const items = this.db.all(sql, ...args, pageSize, offset) as TicketListItem[];
+    return { items, total, page, pageSize };
   }
 
   getById(id: string) {

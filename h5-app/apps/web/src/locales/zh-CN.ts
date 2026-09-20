@@ -383,6 +383,7 @@ export const zh = {
     kpiOpen: '待处理',
     kpiUrgent: '紧急',
     kpiThisMonth: '本月新增',
+    searchPlaceholder: '搜索主题 / 描述 / ID',
     tabAll: '全部',
     tabOpen: '待处理',
     tabUrgent: '紧急',
