@@ -1,0 +1,92 @@
+{
+  "_meta": {
+    "lang": "en",
+    "label": "English",
+    "version": "1.0",
+    "note": "基础翻译版本，部分页面文案后续补充"
+  },
+  "nav": {
+    "products": "Products",
+    "technology": "Technology",
+    "manufacturing": "Manufacturing",
+    "partnership": "Partnership",
+    "insights": "Insights",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "hero": {
+    "eyebrow": "Engineered in China · Trusted Worldwide",
+    "title": "Powering Emerging Markets, Engineered for Reliability.",
+    "sub": "Lithium iron phosphate energy storage for off-grid living, e-mobility, and commercial backup — built on 20+ years of Chinese manufacturing excellence.",
+    "cta1": "Book a Factory Visit →",
+    "cta2": "Download Specifications ↓"
+  },
+  "data": {
+    "users": {
+      "label": "Users across emerging markets",
+      "source": "Based on cumulative deployments"
+    },
+    "outage": {
+      "label": "Average daily outage hours",
+      "source": "World Bank Energy Access Report"
+    },
+    "cycle": {
+      "label": "Battery cycle life (LFP)",
+      "source": "Internal lab testing, LFP chemistry"
+    },
+    "margin": {
+      "label": "Gross margin for partners",
+      "source": "Based on 2024 channel data"
+    }
+  },
+  "modules": {
+    "title": "Three Engines. One Mission.",
+    "sub": "From individual storage units to turnkey PACK lines — we cover the full value chain."
+  },
+  "scenario": {
+    "title": "Modular by Design. Built for Your Scenario.",
+    "desc": "Pick a real-world scenario. See the core 4-piece kit and field-tested combinations. From off-grid islands to family UPS, e-rickshaw retrofits to night markets.",
+    "cta": "Open Configurator →"
+  },
+  "map": {
+    "title": "Global Architecture, Local Execution.",
+    "sub": "Singapore holds IP and capital. Shenzhen manufactures. Global markets consume."
+  },
+  "trust": {
+    "title": "Certified. Patented. Production-Proven."
+  },
+  "cta": {
+    "title": "Ready to Power Your Market?",
+    "sub": "Talk to our team. Visit our factory. Or send a quick inquiry — we respond within 24 hours.",
+    "primary": "Send Inquiry",
+    "secondary": "💬 Chat on WhatsApp"
+  },
+  "footer": {
+    "brand": "Lithium iron phosphate energy storage, engineered in China for emerging markets worldwide.",
+    "products": "Products",
+    "company": "Company",
+    "about": "About",
+    "mfg": "Manufacturing",
+    "partnership": "Partnership",
+    "insights": "Insights",
+    "contact": "Contact",
+    "legal": "© 2026 Matoo Power. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Settings",
+    "terms": "Terms"
+  },
+  "mod1.title": "Energy Storage & Green Energy",
+  "mod1.desc": "From 1kWh portable units to modular power boxes — built for off-grid reliability.",
+  "mod1.cta": "Explore products →",
+  "mod2.title": "EV Control & Matoo Ready",
+  "mod2.desc": "Drop-in electric control modules. Increase your vehicle's value 20–40% — without in-house R&D.",
+  "mod2.cta": "See solutions →",
+  "mod3.title": "PACK Line Cooperation",
+  "mod3.desc": "Turnkey battery pack production lines. SKD/CKD supply, training, and certification.",
+  "mod3.cta": "View cooperation →",
+  "insights": {
+    "section2_title": "Get Insights Monthly",
+    "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
+    "subscribe": "Subscribe"
+  }
+}

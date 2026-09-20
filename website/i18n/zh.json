@@ -1,0 +1,92 @@
+{
+  "_meta": {
+    "lang": "zh",
+    "label": "中文",
+    "version": "1.0",
+    "note": "基础翻译版本"
+  },
+  "nav": {
+    "products": "产品",
+    "technology": "技术",
+    "manufacturing": "制造",
+    "partnership": "合作",
+    "insights": "洞察",
+    "about": "关于我们",
+    "contact": "联系我们"
+  },
+  "hero": {
+    "eyebrow": "中国制造 · 全球信赖",
+    "title": "为新兴市场，提供可靠的能源存储。",
+    "sub": "磷酸铁锂储能方案，覆盖离网生活、电动出行与商用备电 — 依托 20+ 年中国制造底蕴。",
+    "cta1": "预约工厂考察 →",
+    "cta2": "下载规格书 ↓"
+  },
+  "data": {
+    "users": {
+      "label": "服务全球新兴市场用户",
+      "source": "基于累计出货量统计"
+    },
+    "outage": {
+      "label": "日均停电时长",
+      "source": "世界银行能源可及性报告"
+    },
+    "cycle": {
+      "label": "电池循环寿命（LFP）",
+      "source": "内部实验室测试数据"
+    },
+    "margin": {
+      "label": "合作伙伴毛利率",
+      "source": "基于 2024 年渠道数据"
+    }
+  },
+  "modules": {
+    "title": "三大引擎，一个使命。",
+    "sub": "从单体储能到 PACK 整线输出 — 我们覆盖全价值链。"
+  },
+  "scenario": {
+    "title": "模块化设计，为场景而生。",
+    "desc": "选一个真实场景，看我们如何组合核心 4 件套 — 从离网海岛、家庭 UPS 到三轮车改装、夜市摊位。",
+    "cta": "打开搭配器 →"
+  },
+  "map": {
+    "title": "全球架构，本地执行。",
+    "sub": "新加坡持有 IP 与资本，深圳负责研发与制造，全球市场消化产能。"
+  },
+  "trust": {
+    "title": "认证齐全。专利布局。量产验证。"
+  },
+  "cta": {
+    "title": "准备好开拓你的市场了吗？",
+    "sub": "与我们的团队沟通，参观工厂，或提交询盘 — 24 小时内响应。",
+    "primary": "提交询盘",
+    "secondary": "💬 微信洽谈"
+  },
+  "footer": {
+    "brand": "磷酸铁锂储能，中国制造，赋能全球新兴市场。",
+    "products": "产品",
+    "company": "公司",
+    "about": "关于我们",
+    "mfg": "制造能力",
+    "partnership": "合作",
+    "insights": "洞察",
+    "contact": "联系我们",
+    "legal": "© 2026 Matoo Power 版权所有",
+    "privacy": "隐私政策",
+    "cookies": "Cookie 设置",
+    "terms": "服务条款"
+  },
+  "insights": {
+    "section2_title": "每月获取文章",
+    "section2_sub": "每月一封精选邮件。无垃圾信息，随时退订。",
+    "subscribe": "订阅"
+  },
+  "mod1.title": "储能与绿能",
+  "mod1.desc": "从 1kWh 便携单元到模块化 Power Box — 为离网场景而生。",
+  "mod1.cta": "查看产品 →",
+  "mod2.title": "电控方案 Matoo Ready",
+  "mod2.desc": "即插即用的电控模组。整车产品力提升 20–40% — 无需自研电源系统。",
+  "mod2.cta": "了解方案 →",
+  "mod3.title": "PACK 产线合作",
+  "mod3.desc": "整线输出 PACK 产线。SKD/CKD 散件供应、技术培训与认证授权。",
+  "mod3.cta": "查看合作模式 →"
+}

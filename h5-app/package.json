@@ -1,0 +1,15 @@
+﻿{
+  "name": "matoo-h5-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Matoo Power H5-App monorepo: web (Next.js) + api (NestJS) + shared (zod/HMAC)",
+  "scripts": {
+    "dev:web": "pnpm --filter @matoo/web dev",
+    "dev:api": "pnpm --filter @matoo/api start:dev",
+    "build": "pnpm -r --filter './apps/*' build",
+    "typecheck": "pnpm -r --filter './apps/*' typecheck",
+    "clean": "pnpm -r exec rm -rf node_modules .next dist"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": { "node": ">=20.18.0" }
+}

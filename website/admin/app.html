@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-i18n-title="nav.translations">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin · Matoo Power</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <link rel="icon" href="/assets/favicon.svg">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- ========== Sidebar ========== -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="/assets/logo-white.svg" alt="Matoo Power">
+        <div class="ver">Admin v1.0</div>
+      </div>
+      <ul class="nav-tabs">
+        <li><button class="active" data-view="i18n" data-i18n="nav.translations">Translations</button></li>
+        <li><button data-view="images" data-i18n="nav.images">Images</button></li>
+        <li><button data-view="keys" data-i18n="nav.keys">Key Audit</button></li>
+        <li><button data-view="overview" data-i18n="nav.overview">Overview</button></li>
+        <li><button data-view="audit" data-i18n="nav.audit">Activity Log</button></li>
+      </ul>
+      <div class="sidebar-foot">
+        <div class="lang-switch" id="lang-switch" data-i18n-title="nav.language" title="Language">
+          <button type="button" data-lang="en" class="active" aria-label="English" data-i18n-aria-label="lang.english">English</button>
+          <button type="button" data-lang="zh" aria-label="中文" data-i18n-aria-label="lang.chinese">中文</button>
+        </div>
+        <button id="logout-btn" data-i18n="nav.signout">Sign out</button>
+      </div>
+    </aside>
+
+    <!-- ========== Main ========== -->
+    <div class="main">
+      <header class="topbar">
+        <h1 id="view-title">Translations</h1>
+        <div class="actions">
+          <span class="status" id="status" data-i18n="topbar.ready">ready</span>
+          <a href="/" target="_blank" class="btn btn-ghost btn-sm" data-i18n="topbar.viewSite">View site ↗</a>
+        </div>
+      </header>
+
+      <main class="view" id="view-root">
+        <!-- View content injected by admin.js -->
+      </main>
+    </div>
+  </div>
+
+  <!-- ========== Templates ========== -->
+  <template id="tpl-i18n">
+    <div class="i18n-toolbar">
+      <div class="lang-pills" id="lang-pills">
+        <button data-lang="en" class="active">English</button>
+        <button data-lang="zh">中文</button>
+        <button data-lang="bn">বাংলা</button>
+        <button data-lang="ja">日本語</button>
+        <button data-lang="ko">한국어</button>
+        <button data-lang="vi">Tiếng Việt</button>
+        <button data-lang="hi">हिन्दी</button>
+        <button data-lang="ur">اردو</button>
+        <button data-lang="ta">தமிழ்</button>
+        <button data-lang="te">తెలుగు</button>
+        <button data-lang="ar">العربية</button>
+        <button data-lang="fr">Français</button>
+        <button data-lang="pt">Português</button>
+        <button data-lang="es">Español</button>
+      </div>
+      <input class="input search" id="key-search" data-i18n-placeholder="i18n.search" placeholder="Search keys…">
+      <button class="btn btn-ghost" id="reload-btn" data-i18n="i18n.reload">Reload</button>
+    </div>
+    <div class="i18n-grid">
+      <div class="key-list" id="key-list"></div>
+      <div class="editor-pane" id="editor-pane">
+        <div class="empty" data-i18n="i18n.selectKey">Select a key to edit.</div>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-images">
+    <div class="img-toolbar">
+      <label class="btn btn-primary" data-i18n="images.upload">Upload
+        <input type="file" id="upload-input" accept=".jpg,.jpeg,.png,.webp,.svg" multiple hidden>
+      </label>
+      <input class="input search" id="img-search" data-i18n-placeholder="images.filter" placeholder="Filter by name…" style="max-width:240px;">
+      <button class="btn btn-ghost" id="reload-images-btn" data-i18n="images.reload">Reload</button>
+    </div>
+    <div class="dropzone" id="dropzone" data-i18n="images.dropHint">Drop images here to upload.</div>
+    <div class="img-grid" id="img-grid"></div>
+  </template>
+
+  <template id="tpl-keys">
+    <p style="margin-bottom:14px;color:var(--color-slate-500);font-size:var(--fs-sm);"
+       data-i18n="keys.description">
+      Translation keys that appear in HTML via <code>data-i18n</code> but
+      are missing from the JSON files.
+    </p>
+    <div class="audit-list" id="keys-list"></div>
+  </template>
+
+  <template id="tpl-audit">
+    <div class="img-toolbar">
+      <select class="select" id="audit-filter" style="max-width:200px;">
+        <option value="" data-i18n="audit.filterAll">All actions</option>
+        <option value="i18n">i18n</option>
+        <option value="images">images</option>
+        <option value="auth">auth</option>
+      </select>
+      <button class="btn btn-ghost" id="reload-audit-btn" data-i18n="audit.reload">Reload</button>
+    </div>
+    <div class="audit-list" id="audit-list"></div>
+  </template>
+
+  <template id="tpl-overview">
+    <div class="overview-toolbar">
+      <div class="range-tabs" id="ov-range" role="tablist">
+        <button data-range="24h" class="active" data-i18n="overview.range.24h">24h</button>
+        <button data-range="7d" data-i18n="overview.range.7d">7d</button>
+        <button data-range="30d" data-i18n="overview.range.30d">30d</button>
+        <button data-range="all" data-i18n="overview.range.all">All</button>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="ov-reload" data-i18n="overview.refresh">Refresh</button>
+      <span class="ov-hint" id="ov-hint" data-i18n="overview.hint">Tracked from this machine only.</span>
+    </div>
+
+    <div class="kpi-row" id="ov-kpis"></div>
+
+    <div class="analytics-grid">
+      <section class="panel">
+        <h2 data-i18n="overview.sections.browsing">Browsing</h2>
+        <div class="panel-body">
+          <h3 data-i18n="overview.trend">Daily views &amp; visitors</h3>
+          <div class="sparkline-host" id="ov-spark-views"></div>
+        </div>
+        <div class="panel-body">
+          <h3 data-i18n="overview.top.pages">Top pages</h3>
+          <ol class="top-list" id="ov-top-pages"></ol>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 data-i18n="overview.sections.logins">Logins</h2>
+        <div class="panel-body">
+          <h3 data-i18n="overview.trend">Daily logins &amp; fails</h3>
+          <div class="sparkline-host" id="ov-spark-logins"></div>
+        </div>
+        <div class="panel-body">
+          <h3 data-i18n="overview.top.failIps">Top failing IPs</h3>
+          <ol class="top-list" id="ov-top-fails"></ol>
+        </div>
+        <div class="panel-body">
+          <h3 data-i18n="overview.recentLogins">Recent logins</h3>
+          <div class="timeline" id="ov-recent-logins"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="analytics-grid">
+      <section class="panel">
+        <h2 data-i18n="overview.top.langs">Languages</h2>
+        <ol class="top-list" id="ov-top-langs"></ol>
+      </section>
+      <section class="panel">
+        <h2 data-i18n="overview.top.ua">User-agent classes</h2>
+        <ol class="top-list" id="ov-top-ua"></ol>
+      </section>
+    </div>
+  </template>
+
+  <div id="toast-host"></div>
+
+  <script src="/admin/assets/admin-i18n.js"></script>
+  <script src="/admin/assets/admin.js"></script>
+</body>
+</html>

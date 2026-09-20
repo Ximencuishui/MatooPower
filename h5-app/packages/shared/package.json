@@ -1,0 +1,50 @@
+{
+  "name": "@matoo/shared",
+  "version": "0.1.0",
+  "description": "Matoo Power shared package: zod schemas, QR HMAC signer/verifier, types and i18n key enum used by both apps/web and apps/api.",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "import": "./dist/schemas/index.js"
+    },
+    "./qr": {
+      "types": "./dist/qr/index.d.ts",
+      "import": "./dist/qr/index.js"
+    },
+    "./i18n-keys": {
+      "types": "./dist/i18n-keys/index.d.ts",
+      "import": "./dist/i18n-keys/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test --import tsx test/",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  }
+}

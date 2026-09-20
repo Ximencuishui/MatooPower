@@ -1,0 +1,189 @@
+// Matoo Power API · Prisma schema (SQLite, demo period)
+// Tables: User / OtpRequest / Session / Sku / QrSignature / Warranty / Device
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  phone         String?  @unique
+  email         String?  @unique
+  passwordHash  String?
+  role          String   @default("customer") // 'customer' | 'dealer' | 'admin'
+  displayName   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions      Session[]
+  warranties    Warranty[]
+  devices       Device[]
+  activatedSkus Sku[]    @relation("ActivatedBy")
+
+  @@index([role])
+}
+
+model OtpRequest {
+  id         String    @id @default(cuid())
+  phone      String
+  code       String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([phone])
+  @@index([phone, consumedAt])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  userAgent String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Sku {
+  id                    String   @id @default(cuid())
+  sku                   String
+  serial                String   @unique
+  batch                 String
+  mfgDate               DateTime
+  modelName             String
+  family                String   // 'battery' | 'controller' | 'panel'
+  capacity              String
+  voltage               String
+  chemistry             String
+  cycles                String
+  warrantyMonthsWhole   Int
+  warrantyMonthsCell    Int?
+  warrantyMonthsBms     Int?
+  warrantyMonthsParts   Int?
+  activated             Boolean  @default(false)
+  activatedAt           DateTime?
+  activatedByUserId     String?
+  activatedByUser       User?    @relation("ActivatedBy", fields: [activatedByUserId], references: [id])
+  createdAt             DateTime @default(now())
+
+  qrSignatures QrSignature[]
+  warranties   Warranty[]
+  devices      Device[]
+
+  @@index([sku])
+  @@index([batch])
+}
+
+model QrSignature {
+  id         String    @id @default(cuid())
+  qrId       String    @unique
+  skuId      String
+  sku        Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  signature  String
+  revoked    Boolean   @default(false)
+  scanCount  Int       @default(0)
+  lastScanAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([skuId])
+}
+
+model Warranty {
+  id               String   @id @default(cuid())
+  skuId            String
+  sku              Sku      @relation(fields: [skuId], references: [id])
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  country          String
+  city             String
+  dealerName       String?
+  invoiceNo        String?
+  invoiceDate      DateTime?
+  invoiceAmount    Float?
+  invoicePhotoUrl  String?
+  status           String   @default("active") // 'active' | 'pending' | 'expired' | 'rejected'
+  startAt          DateTime
+  endAtWhole       DateTime
+  endAtCell        DateTime?
+  endAtBms         DateTime?
+  endAtParts       DateTime?
+  reviewNotes      String?
+  createdAt        DateTime @default(now())
+
+  @@index([skuId])
+  @@index([userId])
+  @@index([status])
+}
+
+model Device {
+  id         String   @id @default(cuid())
+  skuId      String
+  sku        Sku      @relation(fields: [skuId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  boundAt    DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  soh        Int?
+  soc        Int?
+  cycles     Int?
+  temp       Float?
+  volt       Float?
+  curr       Float?
+  fw         String?
+  alarms     Int?
+  createdAt  DateTime @default(now())
+
+  @@index([skuId])
+  @@index([userId])
+}
+
+model Ticket {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation("TicketAuthor", fields: [userId], references: [id])
+  skuId           String?
+  sku             Sku?     @relation(fields: [skuId], references: [id])
+  deviceId        String?
+  device          Device?  @relation(fields: [deviceId], references: [id])
+  type            String   @default("general")  // 'general' | 'warranty' | 'inquiry' | 'remote'
+  severity        String   @default("normal")  // 'low' | 'normal' | 'high' | 'urgent'
+  subject         String
+  description     String
+  contactPhone    String?
+  status          String   @default("open")     // 'open' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed'
+  assigneeUserId  String?
+  assignee        User?    @relation("TicketAssignee", fields: [assigneeUserId], references: [id])
+  resolution      String?
+  resolvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  messages        TicketMessage[]
+
+  @@index([userId])
+  @@index([skuId])
+  @@index([status])
+  @@index([assigneeUserId])
+}
+
+model TicketMessage {
+  id           String   @id @default(cuid())
+  ticketId     String
+  ticket       Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderUserId String?
+  sender       User?    @relation(fields: [senderUserId], references: [id])
+  senderRole   String                                // 'customer' | 'support' | 'system'
+  body         String
+  createdAt    DateTime @default(now())
+
+  @@index([ticketId])
+}

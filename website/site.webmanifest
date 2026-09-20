@@ -1,0 +1,14 @@
+﻿{
+  "name": "Matoo Power",
+  "short_name": "Matoo",
+  "description": "Lithium iron phosphate energy storage, engineered in China for emerging markets worldwide.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#0052CC",
+  "background_color": "#091E42",
+  "icons": [
+    { "src": "/assets/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

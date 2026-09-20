@@ -1,0 +1,6 @@
+node_modules/
+data/sessions.json
+data/audit.log
+data/admin.json
+data/.bak/
+.env

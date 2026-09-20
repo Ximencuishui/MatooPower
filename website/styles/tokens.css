@@ -1,0 +1,248 @@
+/**
+ * Matoo Power · Design Tokens
+ * 单一来源：所有视觉常量在此处定义
+ */
+
+:root {
+  /* ============================================
+   * Brand Colors · 品牌色（科技蓝）
+   * ============================================ */
+  --color-matoo-50:  #E6F0FF;   /* 背景区块 */
+  --color-matoo-100: #B3D4FF;   /* Light Border */
+  --color-matoo-500: #2684FF;   /* Active */
+  --color-matoo-600: #0052CC;   /* 主色 */
+  --color-matoo-700: #003D99;   /* Hover */
+
+  /* ============================================
+   * Neutrals · 中性色
+   * ============================================ */
+  --color-navy-900:    #091E42; /* 信任深色 / 标题 */
+  --color-slate-700:   #42526E; /* 正文 */
+  --color-slate-600:   #5E6C84; /* 次要文字（WCAG AA ≥4.5:1） */
+  --color-slate-500:   #6B778C; /* 备用次要 */
+  --color-slate-400:   #7A869A; /* 辅助 */
+  --color-slate-200:   #DFE1E6; /* 分割线 */
+  --color-slate-100:   #EBECF0;
+  --color-slate-50:    #F4F5F7; /* 区块背景 */
+  --color-white:       #FFFFFF;
+
+  /* ============================================
+   * Semantic · 语义色
+   * ============================================ */
+  --color-success:        #36B37E;
+  --color-success-700:    #006644; /* 文本态（深绿，对比度 ≥5:1） */
+  --color-success-bg:     #E3FCEF; /* 浅绿背景 */
+  --color-warning:        #FFAB00;
+  --color-warning-700:    #7A4F00; /* 文本态（深棕，对比度 ≥5:1） */
+  --color-warning-bg:     #FFF2D6; /* 浅黄背景 */
+  --color-error:          #FF5630;
+  --color-error-700:      #BF2600; /* 文本态（深红，对比度 ≥5:1） */
+  --color-error-bg:       #FFEBE6; /* 浅红背景 */
+  --color-info:           #0052CC;
+
+  /* ============================================
+   * Typography · 字体
+   * ============================================ */
+  --font-en: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-cn: 'Source Han Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+  --font-bn: 'Noto Sans Bengali', 'Kalpurush', sans-serif;
+  --font-ja: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+  --font-ko: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-vi: 'Inter', 'Noto Sans', 'Segoe UI', sans-serif;
+  --font-hi: 'Noto Sans Devanagari', 'Mangal', sans-serif;
+  --font-ur: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', 'Jameel Noori Nastaleeq', sans-serif;
+  --font-ta: 'Noto Sans Tamil', 'Latha', sans-serif;
+  --font-te: 'Noto Sans Telugu', 'Gautami', sans-serif;
+  --font-ar: 'Noto Sans Arabic', 'Geeza Pro', 'Tahoma', sans-serif;
+  --font-fr: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-pt: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-es: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  --fs-xs:   0.75rem;   /* 12px */
+  --fs-sm:   0.875rem;  /* 14px */
+  --fs-base: 1rem;      /* 16px */
+  --fs-lg:   1.125rem;  /* 18px */
+  --fs-xl:   1.25rem;   /* 20px */
+  --fs-2xl:  1.5rem;    /* 24px */
+  --fs-3xl:  1.875rem;  /* 30px */
+  --fs-4xl:  2.25rem;   /* 36px */
+  --fs-5xl:  3rem;      /* 48px */
+  --fs-6xl:  3.75rem;   /* 60px */
+
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  --lh-tight:    1.25;
+  --lh-normal:   1.5;
+  --lh-relaxed:  1.6;
+
+  /* ============================================
+   * Spacing · 间距
+   * ============================================ */
+  --space-1:  0.25rem;  --space-2:  0.5rem;   --space-3:  0.75rem;
+  --space-4:  1rem;     --space-5:  1.25rem;  --space-6:  1.5rem;
+  --space-8:  2rem;     --space-10: 2.5rem;   --space-12: 3rem;
+  --space-16: 4rem;     --space-20: 5rem;     --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* ============================================
+   * Radius · 圆角
+   * ============================================ */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
+
+  /* ============================================
+   * Shadow · 阴影
+   * ============================================ */
+  --shadow-sm: 0 1px 2px rgba(9, 30, 66, 0.08);
+  --shadow-md: 0 4px 8px rgba(9, 30, 66, 0.12);
+  --shadow-lg: 0 8px 16px rgba(9, 30, 66, 0.16);
+  --shadow-xl: 0 16px 24px rgba(9, 30, 66, 0.20);
+
+  /* ============================================
+   * Layout · 布局
+   * ============================================ */
+  --container-sm:  640px;
+  --container-md:  768px;
+  --container-lg:  1024px;
+  --container-xl:  1200px;
+  --container-2xl: 1280px;
+
+  --bp-sm:  640px;
+  --bp-md:  768px;
+  --bp-lg:  1024px;
+  --bp-xl:  1280px;
+
+  /* ============================================
+   * Z-Index · 层级
+   * ============================================ */
+  --z-sticky: 1020;
+  --z-fixed:  1030;
+  --z-modal:  1050;
+  --z-tooltip: 1070;
+
+  /* ============================================
+   * Animation · 动画
+   * ============================================ */
+  --duration-fast:   150ms;
+  --duration-normal: 250ms;
+  --duration-slow:   400ms;
+  --ease-out:        cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:     cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ============================================
+ * Language-specific font overrides
+ * 语言切换：字体自动适配
+ * ============================================ */
+html[lang="en"] body { font-family: var(--font-en); }
+html[lang="zh"] body { font-family: var(--font-cn); }
+html[lang="bn"] body { font-family: var(--font-bn); }
+html[lang="ja"] body { font-family: var(--font-ja); }
+html[lang="ko"] body { font-family: var(--font-ko); }
+html[lang="vi"] body { font-family: var(--font-vi); }
+html[lang="hi"] body { font-family: var(--font-hi); }
+html[lang="ur"] body { font-family: var(--font-ur); }
+html[lang="ta"] body { font-family: var(--font-ta); }
+html[lang="te"] body { font-family: var(--font-te); }
+html[lang="ar"] body { font-family: var(--font-ar); }
+html[lang="fr"] body { font-family: var(--font-fr); }
+html[lang="pt"] body { font-family: var(--font-pt); }
+html[lang="es"] body { font-family: var(--font-es); }
+
+/* ============================================
+ * RTL overrides · 右到左语言镜像
+ * Urdu (ur) & Arabic (ar) flip the layout.
+ * ============================================ */
+html[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+html[dir="rtl"] .lang-toggle svg {
+  transform: scaleX(-1);
+}
+html[dir="rtl"] .global-arrow {
+  transform: scaleX(-1);
+}
+@media (min-width: 1024px) {
+  html[dir="rtl"] .site-nav,
+  html[dir="rtl"] .header-actions { flex-direction: row-reverse; }
+}
+
+/* ---------- Hero ---------- */
+html[dir="rtl"] .hero-inner { text-align: center; }
+html[dir="rtl"] .hero-eyebrow { letter-spacing: 0; }
+html[dir="rtl"] .hero h1 { letter-spacing: 0; }
+html[dir="rtl"] .hero-actions { flex-direction: row-reverse; }
+
+/* ---------- Data Wall grid ---------- */
+html[dir="rtl"] .data-grid { direction: rtl; }
+html[dir="rtl"] .data-card { text-align: center; }
+
+/* ---------- Module cards grid ---------- */
+html[dir="rtl"] .modules-grid { direction: rtl; }
+html[dir="rtl"] .modules-header { text-align: center; }
+html[dir="rtl"] .module-card { text-align: right; }
+
+/* ---------- Scenario cards / lists ---------- */
+html[dir="rtl"] .scenario-grid,
+html[dir="rtl"] .scenario-list,
+html[dir="rtl"] .scenario-card { direction: rtl; text-align: right; }
+html[dir="rtl"] .scenario-card .icon,
+html[dir="rtl"] .scenario-card svg { transform: scaleX(-1); }
+
+/* ---------- Map / Global architecture ---------- */
+html[dir="rtl"] .map-grid,
+html[dir="rtl"] .map-card { direction: rtl; text-align: right; }
+html[dir="rtl"] .map-pin,
+html[dir="rtl"] .map-arrow { transform: scaleX(-1); }
+
+/* ---------- Trust strip ---------- */
+html[dir="rtl"] .trust-row { direction: rtl; }
+html[dir="rtl"] .trust-row .badge { direction: ltr; } /* keep icons LTR */
+
+/* ---------- CTA banner ---------- */
+html[dir="rtl"] .cta-inner,
+html[dir="rtl"] .cta-banner { direction: rtl; text-align: center; }
+html[dir="rtl"] .cta-actions { flex-direction: row-reverse; }
+
+/* ---------- Footer ---------- */
+html[dir="rtl"] .site-footer { direction: rtl; }
+html[dir="rtl"] .footer-grid { direction: rtl; }
+html[dir="rtl"] .footer-col { text-align: right; }
+html[dir="rtl"] .footer-col h4,
+html[dir="rtl"] .footer-col li { text-align: right; }
+html[dir="rtl"] .footer-legal { direction: rtl; }
+
+/* ---------- Forms (contact) ---------- */
+html[dir="rtl"] input,
+html[dir="rtl"] textarea,
+html[dir="rtl"] select { text-align: right; }
+html[dir="rtl"] .form-row { direction: rtl; }
+
+/* ---------- Tables / data lists ---------- */
+html[dir="rtl"] table,
+html[dir="rtl"] .specs-table { direction: rtl; }
+html[dir="rtl"] th,
+html[dir="rtl"] td { text-align: right; }
+
+/* ---------- Lists with bullets/numbers ---------- */
+html[dir="rtl"] ul,
+html[dir="rtl"] ol { padding-right: var(--space-6); padding-left: 0; }
+
+/* ============================================
+ * Reduced motion · 减弱动效
+ * ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

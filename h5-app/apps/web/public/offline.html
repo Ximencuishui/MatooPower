@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#0E8F5A">
+  <title>Matoo Power · 离线</title>
+  <style>
+    :root { --matoo: #0E8F5A; --matoo-dark: #0A6E45; --ink: #0F172A; --muted: #64748B; --bg: #F7FAF8; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; -webkit-font-smoothing: antialiased; }
+    body { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; }
+    .logo { width: 64px; height: 64px; border-radius: 14px; background: var(--matoo); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 28px; margin-bottom: 20px; }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    p { font-size: 14px; color: var(--muted); max-width: 280px; line-height: 1.6; margin-bottom: 28px; }
+    button { appearance: none; border: 0; background: var(--matoo); color: #fff; padding: 12px 28px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s ease; }
+    button:hover { background: var(--matoo-dark); }
+    .footer { margin-top: 36px; font-size: 11px; color: #94A3B8; }
+  </style>
+</head>
+<body>
+  <div class="logo">M</div>
+  <h1>网络连接已断开</h1>
+  <p>请检查你的网络连接，然后重试。Matoo Power 会在恢复连接后自动加载。</p>
+  <button onclick="window.location.reload()">重新尝试</button>
+  <div class="footer">Matoo Power · Independent Product · app.matoopower.com</div>
+</body>
+</html>

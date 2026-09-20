@@ -1,0 +1,92 @@
+{
+  "_meta": {
+    "lang": "vi",
+    "label": "Tiếng Việt",
+    "version": "1.0",
+    "note": "Bản dịch Tiếng Việt — Hỗ trợ AI, đã xác minh dịch máy."
+  },
+  "nav": {
+    "products": "Sản phẩm",
+    "technology": "Công nghệ",
+    "manufacturing": "Sản xuất",
+    "partnership": "Hợp tác",
+    "insights": "Thông tin",
+    "about": "Giới thiệu",
+    "contact": "Liên hệ"
+  },
+  "hero": {
+    "eyebrow": "Sản xuất tại Trung Quốc · Được thế giới tin dùng",
+    "title": "Cung cấp năng lượng đáng tin cậy cho các thị trường mới nổi.",
+    "sub": "Giải pháp lưu trữ năng lượng lithium sắt phosphate cho cuộc sống ngoài lưới, xe điện và dự phòng thương mại — dựa trên hơn 20 năm kinh nghiệm sản xuất tại Trung Quốc.",
+    "cta1": "Đặt lịch thăm nhà máy →",
+    "cta2": "Tải thông số kỹ thuật ↓"
+  },
+  "data": {
+    "users": {
+      "label": "Người dùng tại các thị trường mới nổi",
+      "source": "Dựa trên lượng xuất tích lũy"
+    },
+    "outage": {
+      "label": "Số giờ mất điện trung bình mỗi ngày",
+      "source": "Báo cáo Tiếp cận Năng lượng của Ngân hàng Thế giới"
+    },
+    "cycle": {
+      "label": "Tuổi thọ chu kỳ pin (LFP)",
+      "source": "Thử nghiệm trong phòng thí nghiệm nội bộ, hóa học LFP"
+    },
+    "margin": {
+      "label": "Biên lợi nhuận gộp cho đối tác",
+      "source": "Dựa trên dữ liệu kênh năm 2024"
+    }
+  },
+  "modules": {
+    "title": "Ba động cơ. Một sứ mệnh.",
+    "sub": "Từ thiết bị lưu trữ đơn lẻ đến dây chuyền PACK trọn gói — chúng tôi bao phủ toàn bộ chuỗi giá trị."
+  },
+  "scenario": {
+    "title": "Thiết kế mô-đun, dành cho kịch bản của bạn.",
+    "desc": "Chọn một kịch bản thực tế. Xem bộ 4 món cốt lõi và các kết hợp đã thử nghiệm thực địa. Từ đảo ngoài lưới, UPS gia đình, cải tạo xe lôi điện đến chợ đêm.",
+    "cta": "Mở trình cấu hình →"
+  },
+  "map": {
+    "title": "Kiến trúc toàn cầu, thực thi địa phương.",
+    "sub": "Singapore nắm giữ IP và vốn. Thâm Quyến sản xuất. Các thị trường toàn cầu tiêu thụ."
+  },
+  "trust": {
+    "title": "Đã chứng nhận. Đã cấp bằng sáng chế. Đã sản xuất hàng loạt."
+  },
+  "cta": {
+    "title": "Sẵn sàng cung cấp năng lượng cho thị trường của bạn?",
+    "sub": "Nói chuyện với đội ngũ của chúng tôi. Thăm nhà máy. Hoặc gửi yêu cầu nhanh — chúng tôi phản hồi trong vòng 24 giờ.",
+    "primary": "Gửi yêu cầu",
+    "secondary": "💬 Trò chuyện trên WhatsApp"
+  },
+  "footer": {
+    "brand": "Lưu trữ năng lượng lithium sắt phosphate, sản xuất tại Trung Quốc cho các thị trường mới nổi.",
+    "products": "Sản phẩm",
+    "company": "Công ty",
+    "about": "Giới thiệu",
+    "mfg": "Năng lực sản xuất",
+    "partnership": "Hợp tác",
+    "insights": "Thông tin",
+    "contact": "Liên hệ",
+    "legal": "© 2026 Matoo Power. Bảo lưu mọi quyền.",
+    "privacy": "Chính sách bảo mật",
+    "cookies": "Cài đặt Cookie",
+    "terms": "Điều khoản dịch vụ"
+  },
+  "mod1.title": "Lưu trữ năng lượng & Năng lượng xanh",
+  "mod1.desc": "Từ bộ 1kWh di động đến Power Box mô-đun — được thiết kế cho độ tin cậy ngoài lưới.",
+  "mod1.cta": "Khám phá sản phẩm →",
+  "mod2.title": "Điều khiển EV & Matoo Ready",
+  "mod2.desc": "Mô-đun điều khiển điện plug-in. Tăng giá trị xe 20–40% — không cần R&D nội bộ.",
+  "mod2.cta": "Xem giải pháp →",
+  "mod3.title": "Hợp tác dây chuyền PACK",
+  "mod3.desc": "Dây chuyền sản xuất pin trọn gói. Cung cấp SKD/CKD, đào tạo và chứng nhận.",
+  "mod3.cta": "Xem hợp tác →",
+  "insights": {
+    "section2_title": "Nhận thông tin mỗi tháng",
+    "section2_sub": "Một email chọn lọc mỗi tháng. Không spam. Hủy đăng ký bất cứ lúc nào.",
+    "subscribe": "Đăng ký"
+  }
+}

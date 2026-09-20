@@ -1,0 +1,209 @@
+'use client';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { PhoneShell } from '@/components/PhoneShell';
+import { TopBar } from '@/components/TopBar';
+import { useT } from '@/lib/i18n';
+import { getSku, activateWarranty } from '@/lib/api/operations';
+import { ApiError } from '@/lib/api/client';
+import type { SkuDto } from '@/lib/api/endpoints';
+import { getSession } from '@/lib/api/auth-store';
+
+export default function ActivatePage() {
+  const params = useParams<{ id: string }>();
+  const router = useRouter();
+  const { t } = useT();
+  const id = decodeURIComponent(params.id);
+
+  const [sku, setSku] = useState<SkuDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const [step, setStep] = useState(1);
+  const [country, setCountry] = useState('Bangladesh');
+  const [city, setCity] = useState('');
+  const [dealer, setDealer] = useState('');
+  const [invNo, setInvNo] = useState('');
+  const [invDate, setInvDate] = useState('2025-01-15');
+  const [invAmt, setInvAmt] = useState('');
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [agree, setAgree] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    getSku(id)
+      .then((s) => { setSku(s); setLoading(false); })
+      .catch((err: unknown) => {
+        setLoadError(err instanceof Error ? err.message : t.common.networkErr);
+        setLoading(false);
+      });
+  }, [id, t.common.networkErr]);
+
+  function pickPhoto() {
+    setPhoto(`inv-${Math.random().toString(36).slice(2, 7)}`);
+  }
+
+  async function submit() {
+    if (!sku) return;
+    const session = getSession();
+    if (!session?.token) {
+      setSubmitError(t.activate.needLogin);
+      return;
+    }
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const countryCode =
+        country === 'Bangladesh' ? 'BD' :
+        country === 'India' ? 'IN' :
+        country === 'Pakistan' ? 'PK' :
+        country === 'Sri Lanka' ? 'LK' : 'NP';
+      await activateWarranty({
+        skuId: sku.id,
+        serial: sku.serial,
+        batch: sku.batch,
+        qrSignature: sku.qr.signature,
+        country: countryCode,
+        city,
+        dealer,
+        invoiceNo: invNo || undefined,
+        invoiceDate: invNo ? invDate : undefined,
+        invoiceAmt: invAmt ? Number(invAmt) : undefined,
+        invoiceCurrency: country === 'Bangladesh' ? 'BDT' : 'USD',
+        policyAccepted: true,
+      });
+      router.push(`/warranty/${sku.id}`);
+    } catch (err) {
+      setSubmitError(err instanceof ApiError ? err.message : (err instanceof Error ? err.message : t.activate.submitFailed));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <PhoneShell>
+        <TopBar title={t.activate.title} />
+        <main className="p-5 text-slate-400 text-sm">{t.scan.loadingHint}</main>
+      </PhoneShell>
+    );
+  }
+
+  if (loadError || !sku) {
+    return (
+      <PhoneShell>
+        <TopBar title={t.activate.title} />
+        <main className="p-5">
+          <div role="alert" className="text-red-600 text-sm">{loadError ?? 'SKU not found'}</div>
+          <button onClick={() => router.back()} className="btn-secondary mt-4">{t.common.back}</button>
+        </main>
+      </PhoneShell>
+    );
+  }
+
+  return (
+    <PhoneShell>
+      <TopBar title={t.activate.title} />
+      <main className="flex-1 overflow-auto p-4 space-y-4">
+        <div className="text-xs text-slate-500">{t.activate.step.replace('{n}', String(step)).replace('{t}', '3')}</div>
+
+        {step === 1 && (
+          <div className="space-y-3">
+            <h3 className="font-semibold">{t.activate.purchase}</h3>
+            <div>
+              <label htmlFor="act-country" className="label">{t.activate.country}</label>
+              <select id="act-country" className="input" value={country} onChange={(e) => setCountry(e.target.value)}>
+                <option>Bangladesh</option>
+                <option>India</option>
+                <option>Pakistan</option>
+                <option>Sri Lanka</option>
+                <option>Nepal</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="act-city" className="label">{t.activate.city}</label>
+              <input id="act-city" className="input" placeholder={t.activate.cityPh} value={city} onChange={(e) => setCity(e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="act-dealer" className="label">{t.activate.dealer}</label>
+              <input id="act-dealer" className="input" placeholder={t.activate.dealerPh} value={dealer} onChange={(e) => setDealer(e.target.value)} />
+            </div>
+            <div className="text-xs text-slate-500 mt-2">{t.activate.serialAuto}：<span className="font-mono">{sku.serial}</span></div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-3">
+            <h3 className="font-semibold">{t.activate.invoice}</h3>
+            <div>
+              <label htmlFor="act-invoice-no" className="label">{t.activate.invoiceNo}</label>
+              <input id="act-invoice-no" className="input" value={invNo} onChange={(e) => setInvNo(e.target.value)} placeholder="INV-2025-00123" />
+            </div>
+            <div>
+              <label htmlFor="act-invoice-date" className="label">{t.activate.invoiceDate}</label>
+              <input id="act-invoice-date" type="date" className="input" value={invDate} onChange={(e) => setInvDate(e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="act-invoice-amt" className="label">{t.activate.invoiceAmt}{t.activate.invoiceAmtUnit.replace('{c}', country === 'Bangladesh' ? 'BDT' : 'USD')}</label>
+              <input id="act-invoice-amt" inputMode="decimal" className="input" value={invAmt} onChange={(e) => setInvAmt(e.target.value)} placeholder="0.00" />
+            </div>
+            <div>
+              <label htmlFor="act-invoice-photo" className="label">{t.activate.invoicePhoto}</label>
+              <button id="act-invoice-photo" onClick={pickPhoto} className="w-full h-28 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-500 text-sm hover:bg-slate-50">
+                {photo ? (
+                  <div className="flex items-center gap-2 text-matoo">
+                    <span aria-hidden="true">📄</span><span className="font-mono">{photo}.jpg</span>
+                  </div>
+                ) : (
+                  <>
+                    <span aria-hidden="true" className="text-2xl">⬆</span>
+                    <span className="mt-1">{t.activate.upload}</span>
+                    <span className="text-xs text-slate-400">{t.activate.uploadTip}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-4">
+            <div className="card p-4">
+              <h3 className="font-semibold mb-2">{t.activate.confirm}</h3>
+              <div className="text-sm space-y-1">
+                <div className="flex justify-between"><span className="text-slate-500">SKU</span><span>{sku.sku}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t.activate.country}</span><span>{country} · {city || '—'}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t.activate.dealer}</span><span>{dealer || '—'}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t.activate.invoiceNo}</span><span className="font-mono">{invNo || '—'}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t.activate.invoiceDate}</span><span>{invDate}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t.activate.invoiceAmt}</span><span>{invAmt || '—'}</span></div>
+              </div>
+            </div>
+            <div className="text-xs text-slate-500 leading-relaxed bg-amber-50 p-3 rounded-xl text-amber-800">
+              {t.activate.rule}
+            </div>
+            <label className="flex items-start gap-2 text-sm">
+              <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-1" />
+              <span>{t.activate.policyOk}</span>
+            </label>
+            {submitError && <div role="alert" className="text-xs text-red-600 bg-red-50 p-3 rounded-xl">{submitError}</div>}
+          </div>
+        )}
+
+        <div className="pt-2">
+          {step < 3 ? (
+            <button onClick={() => setStep(step + 1)} className="btn-primary">
+              {t.activate.next}
+            </button>
+          ) : (
+            <button onClick={submit} disabled={!agree || submitting} className="btn-primary">
+              {submitting ? '…' : t.activate.submit}
+            </button>
+          )}
+        </div>
+      </main>
+    </PhoneShell>
+  );
+}

@@ -1,0 +1,92 @@
+{
+  "_meta": {
+    "lang": "es",
+    "label": "Español",
+    "version": "1.0",
+    "note": "Traducción al español — asistida por IA, traducción automática verificada."
+  },
+  "nav": {
+    "products": "Productos",
+    "technology": "Tecnología",
+    "manufacturing": "Fabricación",
+    "partnership": "Asociación",
+    "insights": "Perspectivas",
+    "about": "Acerca de",
+    "contact": "Contacto"
+  },
+  "hero": {
+    "eyebrow": "Fabricado en China · Confiable en todo el mundo",
+    "title": "Para mercados emergentes, energía confiable.",
+    "sub": "Soluciones de almacenamiento de energía de fosfato de hierro y litio para vida fuera de la red, movilidad eléctrica y respaldo comercial — construidas sobre más de 20 años de excelencia manufacturera china.",
+    "cta1": "Reservar visita a fábrica →",
+    "cta2": "Descargar especificaciones ↓"
+  },
+  "data": {
+    "users": {
+      "label": "Usuarios en mercados emergentes",
+      "source": "Basado en despliegues acumulados"
+    },
+    "outage": {
+      "label": "Horas promedio de corte por día",
+      "source": "Informe de Acceso a Energía del Banco Mundial"
+    },
+    "cycle": {
+      "label": "Vida útil del ciclo de la batería (LFP)",
+      "source": "Pruebas de laboratorio interno, química LFP"
+    },
+    "margin": {
+      "label": "Margen bruto para socios",
+      "source": "Basado en datos de canales de 2024"
+    }
+  },
+  "modules": {
+    "title": "Tres motores. Una misión.",
+    "sub": "Desde unidades de almacenamiento individuales hasta líneas PACK llave en mano — cubrimos toda la cadena de valor."
+  },
+  "scenario": {
+    "title": "Diseño modular, hecho para tu escenario.",
+    "desc": "Elige un escenario del mundo real. Ve el kit central de 4 piezas y combinaciones probadas en campo. Desde islas fuera de la red hasta UPS familiar, desde reacondicionamientos de e-rickshaw hasta mercados nocturnos.",
+    "cta": "Abrir configurador →"
+  },
+  "map": {
+    "title": "Arquitectura global, ejecución local.",
+    "sub": "Singapur tiene la IP y el capital. Shenzhen fabrica. Los mercados globales consumen."
+  },
+  "trust": {
+    "title": "Certificado. Patentado. Probado en producción."
+  },
+  "cta": {
+    "title": "¿Listo para energizar tu mercado?",
+    "sub": "Habla con nuestro equipo. Visita nuestra fábrica. O envía una consulta rápida — respondemos en 24 horas.",
+    "primary": "Enviar consulta",
+    "secondary": "💬 Chatear en WhatsApp"
+  },
+  "footer": {
+    "brand": "Almacenamiento de energía de fosfato de hierro y litio, diseñado en China para mercados emergentes.",
+    "products": "Productos",
+    "company": "Empresa",
+    "about": "Acerca de",
+    "mfg": "Capacidad de fabricación",
+    "partnership": "Asociación",
+    "insights": "Perspectivas",
+    "contact": "Contacto",
+    "legal": "© 2026 Matoo Power. Todos los derechos reservados.",
+    "privacy": "Política de privacidad",
+    "cookies": "Configuración de cookies",
+    "terms": "Términos de servicio"
+  },
+  "mod1.title": "Almacenamiento de Energía y Energía Verde",
+  "mod1.desc": "Desde unidades portátiles de 1kWh hasta Power Boxes modulares — construidas para confiabilidad fuera de la red.",
+  "mod1.cta": "Explorar productos →",
+  "mod2.title": "Control EV y Matoo Ready",
+  "mod2.desc": "Módulos de control eléctrico enchufables. Aumenta el valor de tu vehículo 20–40% — sin I+D interna.",
+  "mod2.cta": "Ver soluciones →",
+  "mod3.title": "Cooperación de Línea PACK",
+  "mod3.desc": "Líneas de producción de paquetes de baterías llave en mano. Suministro SKD/CKD, capacitación y certificación.",
+  "mod3.cta": "Ver cooperación →",
+  "insights": {
+    "section2_title": "Recibe perspectivas mensuales",
+    "section2_sub": "Un correo electrónico seleccionado por mes. Sin spam. Cancela la suscripción en cualquier momento.",
+    "subscribe": "Suscribirse"
+  }
+}

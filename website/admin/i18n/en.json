@@ -1,0 +1,120 @@
+{
+  "_meta": {
+    "lang": "en",
+    "version": "1.0"
+  },
+  "login": {
+    "title": "Admin Sign In",
+    "subtitle": "Local content editor for the Matoo Power brand site.",
+    "placeholder": "Admin password",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "errorDefault": "Login failed",
+    "firstRunHint": "First run? The password was printed to the terminal when the server started (or stored in <code>api/data/admin.json</code>)."
+  },
+  "nav": {
+    "translations": "Translations",
+    "images": "Images",
+    "keys": "Key Audit",
+    "overview": "Overview",
+    "audit": "Activity Log",
+    "signout": "Sign out",
+    "language": "Language"
+  },
+  "topbar": {
+    "viewSite": "View site ↗",
+    "ready": "ready",
+    "loading": "loading…",
+    "saving": "saving…",
+    "saved": "saved",
+    "error": "error",
+    "unsaved": "unsaved"
+  },
+  "i18n": {
+    "title": "Translations",
+    "search": "Search keys…",
+    "reload": "Reload",
+    "selectKey": "Select a key to edit.",
+    "editFor": "Edit · ",
+    "otherLanguages": "Other languages",
+    "notTranslated": "(not translated)",
+    "autoSaveHint": "Auto-saves on blur. Press Ctrl+S to save now.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "missing": "missing",
+    "noKeys": "No keys",
+    "usedIn": "Used in: ",
+    "noReferences": "no HTML references"
+  },
+  "images": {
+    "title": "Images",
+    "upload": "Upload",
+    "filter": "Filter by name…",
+    "reload": "Reload",
+    "dropHint": "Drop images here to upload.",
+    "noPreview": "no preview",
+    "noImages": "No images.",
+    "replace": "Replace",
+    "delete": "Delete",
+    "unused": "unused",
+    "deleteConfirmUnused": "Delete {path}?",
+    "deleteConfirmUsed": "This image is referenced by {count} page(s):\n\n{files}\n\nDelete anyway?",
+    "uploadSuccess": "Uploaded · {path}",
+    "replaceSuccess": "Replaced · {path}",
+    "deleteSuccess": "Deleted",
+    "uploadFailed": "Upload failed",
+    "replaceFailed": "Replace failed",
+    "deleteFailed": "Delete failed",
+    "uploading": "uploading {name}",
+    "replacing": "replacing {path}",
+    "deleting": "deleting…"
+  },
+  "keys": {
+    "title": "Key Audit",
+    "description": "Translation keys that appear in HTML via <code>data-i18n</code> but are missing from the JSON files.",
+    "allTranslated": "All keys are translated ✓",
+    "countMissing": "{count} missing"
+  },
+  "audit": {
+    "title": "Activity Log",
+    "filterAll": "All actions",
+    "reload": "Reload",
+    "noActivity": "No activity yet.",
+    "count": "{count} entries"
+  },
+  "overview": {
+    "title": "Overview",
+    "refresh": "Refresh",
+    "hint": "Tracking local traffic only (this machine).",
+    "trend": "Daily trend",
+    "recentLogins": "Recent logins",
+    "empty": "No data in this range.",
+    "range": {
+      "24h": "24h",
+      "7d": "7d",
+      "30d": "30d",
+      "all": "All"
+    },
+    "kpi": {
+      "views": "Page views",
+      "visitors": "Visitors",
+      "logins": "Logins",
+      "failRate": "Login fail rate"
+    },
+    "sections": {
+      "browsing": "Browsing",
+      "logins": "Logins"
+    },
+    "top": {
+      "pages": "Top pages",
+      "langs": "Languages",
+      "ua": "User-agent classes",
+      "failIps": "Top failing IPs"
+    }
+  },
+  "lang": {
+    "switcher": "Language",
+    "en": "English",
+    "zh": "中文"
+  }
+}

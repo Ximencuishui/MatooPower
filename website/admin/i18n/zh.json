@@ -1,0 +1,122 @@
+{
+  "_meta": {
+    "lang": "zh",
+    "version": "1.0"
+  },
+  "login": {
+    "title": "管理员登录",
+    "subtitle": "Matoo Power 品牌站的本地内容编辑工具。",
+    "placeholder": "管理员密码",
+    "submit": "登录",
+    "submitting": "登录中...",
+    "errorDefault": "登录失败",
+    "firstRunHint": "首次启动？密码会在服务启动时打印到终端（或保存在 <code>api/data/admin.json</code>）。"
+  },
+  "nav": {
+    "translations": "文案翻译",
+    "images": "图片管理",
+    "keys": "翻译键审计",
+    "overview": "运营观察",
+    "audit": "操作日志",
+    "signout": "退出",
+    "language": "界面语言"
+  },
+  "topbar": {
+    "viewSite": "查看前台 ↗",
+    "ready": "就绪",
+    "loading": "加载中…",
+    "saving": "保存中…",
+    "saved": "已保存",
+    "error": "错误",
+    "unsaved": "未保存"
+  },
+  "i18n": {
+    "title": "文案翻译",
+    "search": "搜索键名…",
+    "reload": "重新加载",
+    "selectKey": "选中左侧键开始编辑。",
+    "editFor": "编辑 · ",
+    "otherLanguages": "其他语言",
+    "notTranslated": "(尚未翻译)",
+    "autoSaveHint": "失焦自动保存，或按 Ctrl+S 立即保存。",
+    "cancel": "取消",
+    "save": "保存",
+    "missing": "缺失",
+    "noKeys": "无翻译键",
+    "usedIn": "引用页面：",
+    "noReferences": "无 HTML 引用"
+  },
+  "images": {
+    "title": "图片管理",
+    "upload": "上传",
+    "filter": "按文件名筛选…",
+    "reload": "重新加载",
+    "dropHint": "拖拽图片到此区域上传。",
+    "noPreview": "无预览",
+    "noImages": "暂无图片。",
+    "replace": "替换",
+    "delete": "删除",
+    "unused": "未被引用",
+    "deleteConfirmUnused": "确定删除 {path}？",
+    "deleteConfirmUsed": "该图片被 {count} 个页面引用：\n\n{files}\n\n仍要删除？",
+    "uploadSuccess": "已上传 · {path}",
+    "replaceSuccess": "已替换 · {path}",
+    "deleteSuccess": "已删除",
+    "uploadFailed": "上传失败",
+    "replaceFailed": "替换失败",
+    "deleteFailed": "删除失败",
+    "uploading": "正在上传 {name}",
+    "replacing": "正在替换 {path}",
+    "deleting": "正在删除…"
+  },
+  "keys": {
+    "title": "翻译键审计",
+    "description": "HTML 通过 <code>data-i18n</code> 引用但 JSON 中尚未定义的翻译键。",
+    "allTranslated": "所有键均已翻译 ✓",
+    "countMissing": "{count} 项缺失"
+  },
+  "audit": {
+    "title": "操作日志",
+    "filterAll": "全部类型",
+    "reload": "重新加载",
+    "noActivity": "暂无操作记录。",
+    "count": "{count} 条记录"
+  },
+  "overview": {
+    "title": "运营观察",
+    "refresh": "刷新",
+    "hint": "仅采集本机流量。",
+    "trend": "每日趋势",
+    "recentLogins": "最近登录",
+    "empty": "该时间范围暂无数据。",
+    "range": {
+      "24h": "24小时",
+      "7d": "7天",
+      "30d": "30天",
+      "all": "全部"
+    },
+    "kpi": {
+      "views": "页面浏览量",
+      "visitors": "独立访客",
+      "logins": "登录次数",
+      "failRate": "登录失败率"
+    },
+    "sections": {
+      "browsing": "浏览数据",
+      "logins": "登录数据"
+    },
+    "top": {
+      "pages": "热门页面",
+      "langs": "语言分布",
+      "ua": "设备类型",
+      "failIps": "失败 IP Top"
+    }
+  },
+  "lang": {
+    "switcher": "语言",
+    "english": "英语",
+    "chinese": "中文",
+    "en": "English",
+    "zh": "中文"
+  }
+}

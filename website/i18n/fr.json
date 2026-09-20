@@ -1,0 +1,92 @@
+{
+  "_meta": {
+    "lang": "fr",
+    "label": "Français",
+    "version": "1.0",
+    "note": "Traduction française — assistée par IA, traduction automatique vérifiée."
+  },
+  "nav": {
+    "products": "Produits",
+    "technology": "Technologie",
+    "manufacturing": "Fabrication",
+    "partnership": "Partenariat",
+    "insights": "Perspectives",
+    "about": "À propos",
+    "contact": "Contact"
+  },
+  "hero": {
+    "eyebrow": "Conçu en Chine · Approuvé mondialement",
+    "title": "Pour les marchés émergents, une énergie fiable.",
+    "sub": "Solutions de stockage d'énergie au lithium fer phosphate pour la vie hors réseau, la mobilité électrique et la sauvegarde commerciale — basées sur plus de 20 ans d'excellence manufacturière chinoise.",
+    "cta1": "Réserver une visite d'usine →",
+    "cta2": "Télécharger les spécifications ↓"
+  },
+  "data": {
+    "users": {
+      "label": "Utilisateurs sur les marchés émergents",
+      "source": "Basé sur les déploiements cumulés"
+    },
+    "outage": {
+      "label": "Heures de coupure moyennes par jour",
+      "source": "Rapport sur l'accès à l'énergie de la Banque mondiale"
+    },
+    "cycle": {
+      "label": "Durée de cycle batterie (LFP)",
+      "source": "Tests en laboratoire interne, chimie LFP"
+    },
+    "margin": {
+      "label": "Marge brute pour les partenaires",
+      "source": "Basé sur les données des canaux 2024"
+    }
+  },
+  "modules": {
+    "title": "Trois moteurs. Une mission.",
+    "sub": "Des unités de stockage individuelles aux lignes PACK clés en main — nous couvrons toute la chaîne de valeur."
+  },
+  "scenario": {
+    "title": "Conception modulaire, conçue pour votre scénario.",
+    "desc": "Choisissez un scénario réel. Découvrez le kit de base en 4 pièces et les combinaisons testées sur le terrain. Des îles hors réseau à l'UPS familial, des rétrofits d'e-rickshaw aux marchés de nuit.",
+    "cta": "Ouvrir le configurateur →"
+  },
+  "map": {
+    "title": "Architecture globale, exécution locale.",
+    "sub": "Singapour détient la PI et le capital. Shenzhen fabrique. Les marchés mondiaux consomment."
+  },
+  "trust": {
+    "title": "Certifié. Breveté. Éprouvé en production."
+  },
+  "cta": {
+    "title": "Prêt à alimenter votre marché ?",
+    "sub": "Parlez à notre équipe. Visitez notre usine. Ou envoyez une demande rapide — nous répondons sous 24 heures.",
+    "primary": "Envoyer une demande",
+    "secondary": "💬 Discuter sur WhatsApp"
+  },
+  "footer": {
+    "brand": "Stockage d'énergie au lithium fer phosphate, conçu en Chine pour les marchés émergents.",
+    "products": "Produits",
+    "company": "Entreprise",
+    "about": "À propos",
+    "mfg": "Capacité de fabrication",
+    "partnership": "Partenariat",
+    "insights": "Perspectives",
+    "contact": "Contact",
+    "legal": "© 2026 Matoo Power. Tous droits réservés.",
+    "privacy": "Politique de confidentialité",
+    "cookies": "Paramètres des cookies",
+    "terms": "Conditions de service"
+  },
+  "mod1.title": "Stockage d'énergie et énergie verte",
+  "mod1.desc": "Des unités portables 1kWh aux Power Boxes modulaires — conçues pour la fiabilité hors réseau.",
+  "mod1.cta": "Explorer les produits →",
+  "mod2.title": "Contrôle EV & Matoo Ready",
+  "mod2.desc": "Modules de contrôle électrique plug-in. Augmentez la valeur de votre véhicule de 20 à 40 % — sans R&D interne.",
+  "mod2.cta": "Voir les solutions →",
+  "mod3.title": "Coopération ligne PACK",
+  "mod3.desc": "Lignes de production de batteries clés en main. Fourniture SKD/CKD, formation et certification.",
+  "mod3.cta": "Voir la coopération →",
+  "insights": {
+    "section2_title": "Recevez des perspectives mensuelles",
+    "section2_sub": "Un e-mail sélectionné par mois. Pas de spam. Désabonnement à tout moment.",
+    "subscribe": "S'abonner"
+  }
+}

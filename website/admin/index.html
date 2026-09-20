@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-i18n-title="login.title">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin · Matoo Power</title>
+  <link rel="stylesheet" href="/admin/assets/admin.css">
+  <link rel="icon" href="/assets/favicon.svg">
+</head>
+<body class="login-page">
+  <div class="login-card">
+    <img src="/assets/logo.svg" alt="Matoo Power" class="logo">
+
+    <h1 data-i18n="login.title">Admin Sign In</h1>
+    <p data-i18n="login.subtitle">Local content editor for the Matoo Power brand site.</p>
+
+    <form id="login-form">
+      <div class="form-row">
+        <input
+          type="password"
+          id="password"
+          class="input"
+          data-i18n-placeholder="login.placeholder"
+          placeholder="Admin password"
+          autocomplete="current-password"
+          required
+          autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary" id="submit-btn" style="width:100%;">
+        <span data-i18n="login.submit">Sign in</span>
+      </button>
+    </form>
+
+    <div class="error" id="error" hidden></div>
+
+    <div class="hint" data-i18n="login.firstRunHint">
+      First run? The password was printed to the terminal when the server started
+      (or stored in <code>api/data/admin.json</code>).
+    </div>
+
+    <div class="lang-switch" id="lang-switch">
+      <button type="button" data-lang="en" class="active" aria-label="English">EN</button>
+      <button type="button" data-lang="zh" aria-label="中文">中</button>
+    </div>
+  </div>
+
+  <script src="/admin/assets/admin-i18n.js"></script>
+  <script src="/admin/assets/login.js"></script>
+</body>
+</html>
