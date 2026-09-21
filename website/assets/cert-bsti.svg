@@ -1,6 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-label="BSTI certification">
-  <circle cx="32" cy="32" r="30" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
-  <path d="M32 10 L52 22 L52 42 L32 54 L12 42 L12 22 Z" fill="#f97316" fill-opacity="0.15" stroke="#f97316" stroke-width="1.5"/>
-  <path d="M32 18 L44 25 L44 39 L32 46 L20 39 L20 25 Z" fill="#f97316" fill-opacity="0.3"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#334155">BSTI</text>
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" aria-label="BSTI certification">
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="#ffffff"/>
+  <circle cx="100" cy="52" r="32" fill="none" stroke="#0c4a6e" stroke-width="2"/>
+  <circle cx="100" cy="52" r="28" fill="none" stroke="#0ea5e9" stroke-width="1"/>
+  <text x="100" y="57" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800" fill="#0c4a6e" letter-spacing="1">BSTI</text>
+  <path d="M100 20 L100 24 M100 80 L100 84 M70 52 L74 52 M126 52 L130 52" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+  <text x="100" y="108" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#64748b">Bangladesh Standards</text>
 </svg>

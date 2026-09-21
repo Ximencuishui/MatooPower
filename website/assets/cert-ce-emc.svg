@@ -1,7 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-label="CE-EMC certification">
-  <circle cx="32" cy="32" r="30" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
-  <path d="M18 20 Q12 20 12 32 Q12 44 18 44 L18 40 Q15 40 15 32 Q15 24 18 24 Z" fill="#ef4444"/>
-  <path d="M34 20 Q28 20 28 32 Q28 44 34 44 L34 40 Q31 40 31 32 Q31 24 34 24 Z" fill="#ef4444"/>
-  <path d="M42 28 L52 28 L52 32 L46 32 L46 36 L52 36 L52 40 L42 40" fill="#f59e0b"/>
-  <text x="32" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#334155">CE-EMC</text>
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" aria-label="CE-EMC certification">
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="#ffffff"/>
+  <g transform="translate(48, 26)" fill="none" stroke="#1e293b" stroke-width="5" stroke-linecap="round">
+    <path d="M24 0 Q10 0 10 28 Q10 56 24 56" />
+    <path d="M40 0 L40 56" />
+    <path d="M40 0 L64 0" />
+    <path d="M40 28 L58 28" />
+    <path d="M40 56 L64 56" />
+  </g>
+  <g transform="translate(128, 30)">
+    <rect x="0" y="16" width="48" height="26" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+    <text x="24" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="800" fill="#dc2626">EMC</text>
+  </g>
+  <text x="100" y="110" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9" fill="#64748b">Electromagnetic Compatibility</text>
 </svg>

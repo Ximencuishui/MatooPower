@@ -1,6 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-label="CE certification">
-  <circle cx="32" cy="32" r="30" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
-  <path d="M18 22 Q12 22 12 32 Q12 42 18 42 L18 38 Q15 38 15 32 Q15 26 18 26 Z" fill="#ef4444"/>
-  <path d="M34 22 Q28 22 28 32 Q28 42 34 42 L34 38 Q31 38 31 32 Q31 26 34 26 Z" fill="#ef4444"/>
-  <text x="32" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#334155">CE</text>
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" aria-label="CE marking">
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="#ffffff"/>
+  <g transform="translate(50, 26)" fill="none" stroke="#1e293b" stroke-width="7" stroke-linecap="round">
+    <path d="M30 0 Q12 0 12 34 Q12 68 30 68" />
+    <path d="M52 0 L52 68" />
+    <path d="M52 0 L84 0" />
+    <path d="M52 34 L78 34" />
+    <path d="M52 68 L84 68" />
+  </g>
+  <text x="100" y="110" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#64748b">European Conformity</text>
 </svg>
