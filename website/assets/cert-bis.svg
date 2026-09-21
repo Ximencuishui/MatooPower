@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-label="BIS certification">
+  <circle cx="32" cy="32" r="30" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+  <path d="M20 16 L44 16 L44 22 L20 22 Z" fill="#dc2626"/>
+  <path d="M20 28 L44 28 L44 34 L20 34 Z" fill="#dc2626"/>
+  <path d="M20 40 L44 40 L44 46 L20 46 Z" fill="#dc2626"/>
+  <circle cx="52" cy="20" r="4" fill="#dc2626"/>
+  <text x="32" y="58" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#334155">BIS</text>
+</svg>

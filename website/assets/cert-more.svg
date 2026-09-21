@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-label="More certifications">
+  <circle cx="32" cy="32" r="30" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+  <circle cx="22" cy="32" r="6" fill="#64748b"/>
+  <circle cx="32" cy="32" r="6" fill="#64748b"/>
+  <circle cx="42" cy="32" r="6" fill="#64748b"/>
+  <text x="32" y="56" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#334155">+12 MORE</text>
+</svg>

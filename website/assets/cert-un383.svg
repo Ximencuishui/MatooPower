@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-label="UN38.3 certification">
+  <circle cx="32" cy="32" r="30" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+  <path d="M32 6 L38 10 L38 16 L32 20 L26 16 L26 10 Z" fill="#0ea5e9"/>
+  <text x="32" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#334155">UN38.3</text>
+</svg>
