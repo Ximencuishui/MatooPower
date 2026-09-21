@@ -1,0 +1,7 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" aria-label="RoHS compliant">
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="#ffffff"/>
+  <text x="100" y="62" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="800" fill="#047857" letter-spacing="2">RoHS</text>
+  <path d="M158 30 Q170 32 168 44 Q166 52 158 54 Q154 48 150 46 Q148 36 158 30 Z" fill="#10b981"/>
+  <path d="M156 36 L152 48 M164 40 L156 50" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+  <text x="100" y="90" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#64748b">Restriction of Hazardous Substances</text>
+</svg>

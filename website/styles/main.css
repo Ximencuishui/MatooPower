@@ -481,19 +481,23 @@ a.matoo-wa-disabled {
   align-items: center;
 }
 .cert-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 100px;
-  height: 56px;
-  padding: var(--space-2) var(--space-4);
-  background-color: var(--color-slate-50);
+  display: block;
+  width: 160px;
+  height: auto;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-white);
   border: 1px solid var(--color-slate-200);
-  border-radius: var(--radius-md);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-bold);
-  color: var(--color-slate-700);
-  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.cert-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+@media (max-width: 768px) {
+  .cert-badge {
+    width: 120px;
+  }
 }
 
 /* ---------- Final CTA ---------- */
@@ -586,22 +590,21 @@ a.matoo-wa-disabled {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background-color: transparent;
   border: none;
   padding: 0;
   color: #FFFFFF;
-  transition: transform var(--duration-fast) var(--ease-out),
-              box-shadow var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-out);
   cursor: pointer;
   overflow: visible;
 }
 .footer-social-icon img,
 .footer-social-icon svg {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   display: block;
   border-radius: 50%;
 }
@@ -609,19 +612,15 @@ a.matoo-wa-disabled {
 .footer-social-icon:focus-visible {
   transform: translateY(-2px);
 }
-/* Brand-coloured focus / hover ring */
-.footer-social-icon[data-platform="facebook"]:hover,
-.footer-social-icon[data-platform="facebook"]:focus-visible { box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.4); }
-.footer-social-icon[data-platform="wechat"]:hover,
-.footer-social-icon[data-platform="wechat"]:focus-visible   { box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.4); }
-.footer-social-icon[data-platform="linkedin"]:hover,
-.footer-social-icon[data-platform="linkedin"]:focus-visible { box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.4); }
-.footer-social-icon[data-platform="twitter"]:hover,
-.footer-social-icon[data-platform="twitter"]:focus-visible  { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.5); }
-.footer-social-icon[data-platform="youtube"]:hover,
-.footer-social-icon[data-platform="youtube"]:focus-visible  { box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.4); }
-.footer-social-icon[data-platform="instagram"]:hover,
-.footer-social-icon[data-platform="instagram"]:focus-visible { box-shadow: 0 0 0 3px rgba(225, 48, 122, 0.4); }
+/* Brand background fills on hover */
+.footer-social-icon[data-platform="facebook"]:hover  { background-color: #1877F2; }
+.footer-social-icon[data-platform="wechat"]:hover    { background-color: #07C160; }
+.footer-social-icon[data-platform="linkedin"]:hover  { background-color: #0A66C2; }
+.footer-social-icon[data-platform="twitter"]:hover   { background-color: #000000; }
+.footer-social-icon[data-platform="youtube"]:hover   { background-color: #FF0000; }
+.footer-social-icon[data-platform="instagram"]:hover {
+  background: radial-gradient(circle at 30% 100%, #FFCC50, #E0307A 40%, #5B39C6 100%);
+}
 
 /* ---------- WeChat QR Popover ---------- */
 .wechat-trigger { position: relative; }

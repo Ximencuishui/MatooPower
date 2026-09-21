@@ -1,0 +1,15 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" aria-label="CE-EMC certification">
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="#ffffff"/>
+  <g transform="translate(48, 26)" fill="none" stroke="#1e293b" stroke-width="5" stroke-linecap="round">
+    <path d="M24 0 Q10 0 10 28 Q10 56 24 56" />
+    <path d="M40 0 L40 56" />
+    <path d="M40 0 L64 0" />
+    <path d="M40 28 L58 28" />
+    <path d="M40 56 L64 56" />
+  </g>
+  <g transform="translate(128, 30)">
+    <rect x="0" y="16" width="48" height="26" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+    <text x="24" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="800" fill="#dc2626">EMC</text>
+  </g>
+  <text x="100" y="110" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9" fill="#64748b">Electromagnetic Compatibility</text>
+</svg>

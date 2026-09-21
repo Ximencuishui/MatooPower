@@ -1,0 +1,9 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" aria-label="KC certification">
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="#ffffff"/>
+  <g fill="#2563eb">
+    <path d="M62 24 L62 88 L54 88 L54 24 Z"/>
+    <path d="M54 52 L82 24 L76 24 L54 46 L54 52 L76 88 L82 88 Z"/>
+  </g>
+  <path d="M128 24 Q110 24 110 56 Q110 88 128 88 L128 80 Q116 80 116 56 Q116 32 128 32 Z" fill="#2563eb"/>
+  <text x="100" y="108" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9" fill="#64748b">Korea Certification</text>
+</svg>

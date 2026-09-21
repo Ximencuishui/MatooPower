@@ -1,0 +1,11 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" aria-label="CE marking">
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="#ffffff"/>
+  <g transform="translate(50, 26)" fill="none" stroke="#1e293b" stroke-width="7" stroke-linecap="round">
+    <path d="M30 0 Q12 0 12 34 Q12 68 30 68" />
+    <path d="M52 0 L52 68" />
+    <path d="M52 0 L84 0" />
+    <path d="M52 34 L78 34" />
+    <path d="M52 68 L84 68" />
+  </g>
+  <text x="100" y="110" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#64748b">European Conformity</text>
+</svg>

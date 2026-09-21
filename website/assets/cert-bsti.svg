@@ -1,0 +1,8 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" fill="none" aria-label="BSTI certification">
+  <rect x="0" y="0" width="200" height="120" rx="12" fill="#ffffff"/>
+  <circle cx="100" cy="52" r="32" fill="none" stroke="#0c4a6e" stroke-width="2"/>
+  <circle cx="100" cy="52" r="28" fill="none" stroke="#0ea5e9" stroke-width="1"/>
+  <text x="100" y="57" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800" fill="#0c4a6e" letter-spacing="1">BSTI</text>
+  <path d="M100 20 L100 24 M100 80 L100 84 M70 52 L74 52 M126 52 L130 52" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"/>
+  <text x="100" y="108" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#64748b">Bangladesh Standards</text>
+</svg>
