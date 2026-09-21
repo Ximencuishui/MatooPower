@@ -28,7 +28,7 @@
     },
     "outage": {
       "label": "일일 평균 서비스 중단 시간",
-      "source": "ZQX01세계은행 에너지 접근 보고서"
+      "source": "세계은행 에너지 접근 보고서"
     },
     "cycle": {
       "label": "배터리 사이클 수명 (LFP)",
@@ -109,73 +109,73 @@
       "iso_9001": "ISO 9001",
       "outdoor": "Outdoor",
       "salesmatoopower": "✉ sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "products": {
       "products": "상품",
       "open_configurato": "구성자 열기 →",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "technology": {
       "technology": "기술",
       "un383": "UN38.3",
       "iso_9001": "ISO 9001",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "manufacturing": {
       "manufacturing": "제조업",
       "un383": "UN38.3",
       "iso_9001": "ISO 9001",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "partnership": {
       "partnership": "동업",
       "chat_on_whatsap": "💬 WhatsApp에서 채팅하기",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "insights": {
       "insights": "트래픽 분석",
       "manufacturing": "제조업",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "about": {
       "about": "소개",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "contact": {
       "contact": "연락하기",
       "bangladesh": "Bangladesh",
       "privacy_policy": "개인 정보 보호 정책",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "privacy": {
       "privacy_policy_hop62": "개인 정보 보호 정책",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "cookies": {
       "cookie_settings_tia53": "쿠키 설정",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     },
     "terms": {
       "contact": "연락하기",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "terms": "용어"
     },
     "configurator": {
       "chat_on_whatsap": "💬 WhatsApp에서 채팅하기",
       "chat_on_whatsap_1xop3": "💬 WhatsApp에서 채팅하기",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
+      "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
     }
   },
