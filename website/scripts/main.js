@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Matoo Power · Main JavaScript
  * 极简原生 JS，弱网友好，无依赖
  *
@@ -14,12 +14,25 @@
    * 0. WhatsApp Link Rewriter · 占位符替换
    *    Replaces wa.me/WHATSAPP_PLACEHOLDER with the
    *    real number from window.MATOO_WHATSAPP.number.
+   *
+   * P0 fix: only operates on `wa.me/` hrefs and the masked footer text.
+   * Never touches i18n data or arbitrary text content, so it cannot
+   * corrupt translations like "World Bank" -> "W...orld Bank".
    * ============================================ */
   const WhatsAppLinks = {
     PLACEHOLDER: 'WHATSAPP_PLACEHOLDER',
     // Footer ships with this friendly masked number.
     // Once the real number is configured we replace it.
     FOOTER_MASK: /WhatsApp:\s*\+\d+\s*X+\s*\d?\s*X*/g,
+    // P0 fix: placeholder wa.me links are NOT yet safe to click. In production,
+    // hide them visually + disable, so a customer cannot tap a broken link.
+    HIDE_DISABLED_LINK_CSS: 'matoo-wa-disabled',
+
+    isLocalDev() {
+      return location.hostname === 'localhost'
+          || location.hostname === '127.0.0.1'
+          || location.protocol === 'file:';
+    },
 
     init() {
       const cfg = window.MATOO_WHATSAPP;
@@ -28,12 +41,22 @@
       // Skip rewrite if placeholder is still the literal "WHATSAPP_PLACEHOLDER".
       // In production, disable the link entirely (safer than a broken wa.me link).
       if (cfg.number === this.PLACEHOLDER) {
-        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
+        if (this.isLocalDev()) {
           console.warn('[Matoo] WhatsApp number is still a placeholder. Edit scripts/whatsapp-config.js before deploy.');
         }
-        document.querySelectorAll('a[href*="wa.me/' + this.PLACEHOLDER + '"]').forEach((a) => {
-          a.setAttribute('href', '#');
-          a.setAttribute('aria-disabled', 'true');
+        const placeholderLinks = document.querySelectorAll('a[href*="wa.me/' + this.PLACEHOLDER + '"]');
+        placeholderLinks.forEach((a) => {
+          // P0: visually hide in production, leave functional only in local dev.
+          const inProd = !this.isLocalDev() && cfg.disabledInProd !== false;
+          if (inProd) {
+            a.setAttribute('aria-disabled', 'true');
+            a.setAttribute('tabindex', '-1');
+            a.classList.add(this.HIDE_DISABLED_LINK_CSS);
+            a.setAttribute('title', 'WhatsApp contact is being configured.');
+          } else {
+            a.setAttribute('href', '#');
+            a.setAttribute('aria-disabled', 'true');
+          }
           a.addEventListener('click', (e) => { e.preventDefault(); });
         });
         return;
@@ -44,16 +67,36 @@
       let rewrittenLinks = 0;
       let rewrittenText = 0;
 
-      // 1) Rewrite wa.me/WHATSAPP_PLACEHOLDER links
-      document.querySelectorAll('a[href*="wa.me/' + this.PLACEHOLDER + '"]').forEach((a) => {
-        const href = a.getAttribute('href');
+      // 1) Rewrite wa.me/WHATSAPP_PLACEHOLDER links. Strict selector:
+      //    only <a> with href starting with "https://wa.me/" or "//wa.me/".
+      const WAME_PATTERN = /^(https?:)?\/\/wa\.me\/[A-Za-z0-9_]+/;
+      document.querySelectorAll('a[href]').forEach((a) => {
+        const href = a.getAttribute('href') || '';
+        if (href.indexOf('wa.me/' + this.PLACEHOLDER) === -1) return;
+        if (!WAME_PATTERN.test(href.replace('wa.me/' + this.PLACEHOLDER, 'wa.me/' + number))) return;
         a.setAttribute('href', href.replace('wa.me/' + this.PLACEHOLDER, 'wa.me/' + number));
+        a.removeAttribute('aria-disabled');
+        a.removeAttribute('tabindex');
+        a.classList.remove(this.HIDE_DISABLED_LINK_CSS);
         rewrittenLinks++;
       });
 
       // 2) Rewrite footer text "WhatsApp: +65 XXXX XXXX" -> "WhatsApp: +65 9123 4567"
       //    Use TreeWalker so we only touch text nodes, not HTML attributes.
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+      //    P0 fix: skip text nodes inside <script> blocks (i18n data, JSON-LD)
+      //    to avoid corrupting translation strings like "World Bank".
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode: (node) => {
+          let p = node.parentNode;
+          while (p) {
+            if (p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE' || p.nodeName === 'NOSCRIPT') {
+              return NodeFilter.FILTER_REJECT;
+            }
+            p = p.parentNode;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
       let node;
       while ((node = walker.nextNode())) {
         if (!this.FOOTER_MASK.test(node.nodeValue)) continue;
@@ -485,15 +528,223 @@
   };
 
   /* ============================================
+   * 5a. SiteSettings · 站点配置（由 Admin 后台控制）
+   *    Asynchronously fetches /api/settings and rewrites footer /
+   *    social / WhatsApp links + WeChat QR on every page.
+   *
+   *    Runs in parallel with i18n — i18n fallback paints first,
+   *    then SiteSettings overwrites with backend-sourced values.
+   *    Failures are silent (catch + warn) so the site stays usable
+   *    if the API is unreachable.
+   * ============================================ */
+  const SiteSettings = {
+    state: null,
+
+    /**
+     * Decide which WhatsApp number to show based on either:
+     *   1) an explicit <body data-region="sea|mena|sa|africa|latam"> hint
+     *   2) navigator.language → coarse region mapping
+     *   3) fallback to whatsapp.number
+     */
+    pickWhatsAppNumber(s) {
+      if (!s || !s.whatsapp || s.whatsapp.enabled === false) return null;
+      const byRegion = s.whatsapp.byRegion || {};
+      const explicit = (document.body.getAttribute('data-region') || '').toLowerCase();
+      const navLang = (navigator.language || '').toLowerCase();
+      let region = explicit;
+      if (!region) {
+        if (/^zh|^en-(sg|ph|my|th|vn|id|sg)/.test(navLang)) region = 'sea';
+        else if (/^ar|^fa/.test(navLang)) region = 'mena';
+        else if (/^bn|^hi|^ur|^ta|^te/.test(navLang)) region = 'sa';
+        else if (/^(sw|en-ng|en-ke|fr|pt|am)/.test(navLang)) region = 'africa';
+        else if (/^es|^pt-br/.test(navLang)) region = 'latam';
+      }
+      const candidate = (region && byRegion[region]) || s.whatsapp.number;
+      if (!candidate || candidate === 'WHATSAPP_PLACEHOLDER') return null;
+      return candidate;
+    },
+
+    /**
+     * Inject `data-i18n="..."` fallback values that match what the
+     * backend currently serves. The frontend i18n already paints
+     * defaults; SiteSettings only needs to overwrite key slots.
+     */
+    renderFooter(s) {
+      if (!s || !s.contact) return;
+
+      // Email line(s): any element with data-settings-bind="contact.email"
+      document.querySelectorAll('[data-settings-bind="contact.email"]').forEach(function (el) {
+        el.textContent = '✉ ' + s.contact.email;
+      });
+
+      // Phone / WhatsApp line: pick number, format display
+      const number = this.pickWhatsAppNumber(s);
+      if (number) {
+        const formatted = WhatsAppLinks.formatDisplayNumber(number);
+        document.querySelectorAll('[data-settings-bind="contact.whatsapp"]').forEach(function (el) {
+          el.textContent = '💬 WhatsApp: ' + formatted;
+        });
+      }
+
+      // HQ line
+      document.querySelectorAll('[data-settings-bind="contact.hqLine"]').forEach(function (el) {
+        el.textContent = '📍 ' + s.contact.hqLine;
+      });
+
+      // Social URLs
+      if (s.social) {
+        document.querySelectorAll('[data-settings-bind="social.facebook"]').forEach(function (a) {
+          if (s.social.facebook) a.setAttribute('href', s.social.facebook);
+        });
+        document.querySelectorAll('[data-settings-bind="social.linkedin"]').forEach(function (a) {
+          if (s.social.linkedin) { a.setAttribute('href', s.social.linkedin); a.style.display = ''; }
+          else { a.style.display = 'none'; }
+        });
+        document.querySelectorAll('[data-settings-bind="social.twitter"]').forEach(function (a) {
+          if (s.social.twitter) { a.setAttribute('href', s.social.twitter); a.style.display = ''; }
+          else { a.style.display = 'none'; }
+        });
+        document.querySelectorAll('[data-settings-bind="social.youtube"]').forEach(function (a) {
+          if (s.social.youtube) { a.setAttribute('href', s.social.youtube); a.style.display = ''; }
+          else { a.style.display = 'none'; }
+        });
+        document.querySelectorAll('[data-settings-bind="social.instagram"]').forEach(function (a) {
+          if (s.social.instagram) { a.setAttribute('href', s.social.instagram); a.style.display = ''; }
+          else { a.style.display = 'none'; }
+        });
+      }
+
+      // WeChat QR
+      if (s.contact.wechatQrUrl) {
+        document.querySelectorAll('[data-settings-bind="contact.wechatQrUrl"]').forEach(function (img) {
+          img.setAttribute('src', s.contact.wechatQrUrl);
+        });
+      }
+      if (s.contact.wechatId) {
+        document.querySelectorAll('[data-settings-bind="contact.wechatId"]').forEach(function (el) {
+          el.textContent = s.contact.wechatId;
+        });
+      }
+
+      // Legal entity names
+      if (s.legalEntity) {
+        document.querySelectorAll('[data-settings-bind="legalEntity.full"]').forEach(function (el) {
+          if (s.legalEntity.cn && s.legalEntity.sg) {
+            el.textContent = s.legalEntity.cn + ' (' + (s.legalEntity.cnRole || '') + ') · ' +
+                             s.legalEntity.sg + ' (' + (s.legalEntity.sgRole || '') + ')';
+          }
+        });
+      }
+    },
+
+    async load() {
+      try {
+        var res = await fetch('/api/settings', { credentials: 'omit' });
+        if (!res.ok) return;
+        var json = await res.json();
+        if (!json || !json.ok) return;
+        this.state = json.data;
+        // Expose for downstream consumers (e.g. WhatsAppLinks).
+        window.MATOO_SETTINGS = this.state;
+        this.renderFooter(this.state);
+        // Re-run WhatsApp rewriter now that backend number is known.
+        if (this.state.whatsapp) {
+          // Promote the active number to window.MATOO_WHATSAPP so the
+          // existing rewrite path picks it up on next paint.
+          window.MATOO_WHATSAPP = Object.assign({}, window.MATOO_WHATSAPP || {}, {
+            number: this.state.whatsapp.number || 'WHATSAPP_PLACEHOLDER',
+            defaultMessage: this.state.whatsapp.defaultMessage,
+            disabledInProd: this.state.whatsapp.disabledInProd !== false,
+          });
+          WhatsAppLinks.init();
+        }
+      } catch (e) {
+        // Silent: site already paints sensible defaults from i18n.
+        // Surface in dev consoles only.
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+          console.warn('[Matoo] settings fetch failed:', e.message);
+        }
+      }
+    },
+  };
+
+  /* ============================================
+   * 5b. WeChat QR Trigger · 微信二维码弹层
+   *    Hover opens on desktop; tap toggles on touch.
+   *    Click outside or Escape closes. ARIA-compatible.
+   * ============================================ */
+  const WeChatTrigger = {
+    init() {
+      const triggers = document.querySelectorAll('[data-wechat-toggle]');
+      if (triggers.length === 0) return;
+
+      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+      triggers.forEach((btn) => {
+        const popover = btn.parentElement.querySelector('.wechat-popover');
+        if (!popover) return;
+
+        const open = () => {
+          // Close other open popovers first (single-open behavior).
+          document.querySelectorAll('.wechat-popover.is-open').forEach((p) => {
+            if (p !== popover) {
+              p.classList.remove('is-open');
+              const t = p.parentElement.querySelector('[data-wechat-toggle]');
+              if (t) t.setAttribute('aria-expanded', 'false');
+            }
+          });
+          popover.classList.add('is-open');
+          btn.setAttribute('aria-expanded', 'true');
+        };
+        const close = () => {
+          popover.classList.remove('is-open');
+          btn.setAttribute('aria-expanded', 'false');
+        };
+        const toggle = () => {
+          if (popover.classList.contains('is-open')) close(); else open();
+        };
+
+        if (isTouch) {
+          // Touch devices: click toggles (hover CSS doesn't fire reliably).
+          btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggle(); });
+        } else {
+          // Desktop: hover is handled by CSS; click still toggles for keyboard users.
+          btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggle(); });
+        }
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+          if (!popover.classList.contains('is-open')) return;
+          if (popover.contains(e.target) || btn.contains(e.target)) return;
+          close();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && popover.classList.contains('is-open')) {
+            close();
+            btn.focus();
+          }
+        });
+      });
+    },
+  };
+
+  /* ============================================
    * Bootstrap · 启动
    * ============================================ */
   function init() {
+    // SiteSettings loads async; it re-runs WhatsAppLinks.init() when ready.
+    // The first WhatsAppLinks.init() call below is a no-op if no number is
+    // configured yet (placeholder mode), which is the safe default.
     WhatsAppLinks.init();
     LangSwitcher.init();
     MobileNav.init();
     FormHandler.init();
     SmoothScroll.init();
     LazyLoad.init();
+    WeChatTrigger.init();
+    SiteSettings.load();
   }
 
 

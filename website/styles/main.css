@@ -99,6 +99,31 @@ p { line-height: var(--lh-relaxed); }
 .btn-lg { min-height: 56px; padding: var(--space-4) var(--space-8); font-size: var(--fs-lg); }
 .btn-sm { min-height: 36px; padding: var(--space-2) var(--space-4); font-size: var(--fs-sm); }
 
+/* ---------- Focus Ring (WCAG 2.4.7) ----------
+ * Global :focus-visible ring. Hidden on :focus (mouse click) so it does
+ * not flash on every click, but always visible for keyboard navigation. */
+*:focus { outline: none; }
+*:focus-visible {
+  outline: 2px solid var(--color-matoo-600);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--color-matoo-700);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--color-matoo-100);
+}
+
+/* ---------- Disabled / placeholder link state ----------
+ * Used by WhatsAppLinks rewriter when the configured number is still
+ * the placeholder. The link is hidden and non-interactive in production. */
+a.matoo-wa-disabled {
+  pointer-events: none;
+  opacity: 0.4;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
 /* ---------- Header / Navigation ---------- */
 .site-header {
   position: sticky;
@@ -538,6 +563,129 @@ p { line-height: var(--lh-relaxed); }
 .footer-bottom .legal-links {
   display: flex;
   gap: var(--space-6);
+}
+
+/* ---------- Footer Social Row ---------- */
+.footer-social {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.footer-social-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+/*
+ * Brand-coloured social icons. Each SVG ships with its own coloured
+ * circle background, so we just need a transparent slot here.
+ * Hover: subtle lift + soft brand-coloured ring.
+ */
+.footer-social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: #FFFFFF;
+  transition: transform var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+  cursor: pointer;
+  overflow: visible;
+}
+.footer-social-icon img,
+.footer-social-icon svg {
+  width: 32px;
+  height: 32px;
+  display: block;
+  border-radius: 50%;
+}
+.footer-social-icon:hover,
+.footer-social-icon:focus-visible {
+  transform: translateY(-2px);
+}
+/* Brand-coloured focus / hover ring */
+.footer-social-icon[data-platform="facebook"]:hover,
+.footer-social-icon[data-platform="facebook"]:focus-visible { box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.4); }
+.footer-social-icon[data-platform="wechat"]:hover,
+.footer-social-icon[data-platform="wechat"]:focus-visible   { box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.4); }
+.footer-social-icon[data-platform="linkedin"]:hover,
+.footer-social-icon[data-platform="linkedin"]:focus-visible { box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.4); }
+.footer-social-icon[data-platform="twitter"]:hover,
+.footer-social-icon[data-platform="twitter"]:focus-visible  { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.5); }
+.footer-social-icon[data-platform="youtube"]:hover,
+.footer-social-icon[data-platform="youtube"]:focus-visible  { box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.4); }
+.footer-social-icon[data-platform="instagram"]:hover,
+.footer-social-icon[data-platform="instagram"]:focus-visible { box-shadow: 0 0 0 3px rgba(225, 48, 122, 0.4); }
+
+/* ---------- WeChat QR Popover ---------- */
+.wechat-trigger { position: relative; }
+.wechat-popover {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  padding: var(--space-4);
+  background-color: #FFFFFF;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all var(--duration-fast) var(--ease-out);
+  z-index: var(--z-tooltip);
+  white-space: nowrap;
+  text-align: center;
+}
+.wechat-popover::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #FFFFFF;
+}
+.wechat-trigger:hover .wechat-popover,
+.wechat-trigger:focus-within .wechat-popover,
+.wechat-popover.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.wechat-popover img,
+.wechat-popover svg {
+  display: block;
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius-sm);
+}
+.wechat-popover-label {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--color-slate-700);
+  font-weight: var(--fw-medium);
+}
+.wechat-popover-id {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--color-matoo-600);
+  font-weight: var(--fw-semibold);
+}
+
+/* RTL: keep popover centered; do not mirror the trigger */
+html[dir="rtl"] .wechat-popover { transform: translateX(50%) translateY(8px); }
+html[dir="rtl"] .wechat-trigger:hover .wechat-popover,
+html[dir="rtl"] .wechat-trigger:focus-within .wechat-popover,
+html[dir="rtl"] .wechat-popover.is-open {
+  transform: translateX(50%) translateY(0);
 }
 
 /* ---------- Page Header (for inner pages) ---------- */
