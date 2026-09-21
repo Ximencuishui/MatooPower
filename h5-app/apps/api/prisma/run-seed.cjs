@@ -6,7 +6,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { DatabaseSync } = require('node:sqlite');
 
-const db = new DatabaseSync(path.join(process.cwd(), 'prisma', 'dev.db'));
+const db = new DatabaseSync(process.env.DEV_DB || path.join(process.cwd(), 'prisma', 'dev.db'));
 db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
 
 const QR_HMAC_SECRET = process.env.QR_HMAC_SECRET || 'dev-only-secret-change-me';

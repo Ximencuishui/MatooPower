@@ -7,3 +7,14 @@ dist/
 *.db
 *.db-journal
 .DS_Store
+
+# T4 Playwright：HTML 报告 / 失败追踪 / run 残留（不入仓；本地调试用）
+playwright-report/
+test-results/
+# T4 调试期间惰性 getter env 误求值产生 `file:undefined` 的 sqlite 垃圾文件
+**/undefined
+**/undefined-journal
+**/undefined-shm
+**/undefined-wal
+# 历史会话调试用 PowerShell 脚本（不入仓，保留本地可执行）
+apps/web/_dark-*.ps1

@@ -10,7 +10,8 @@ import sqlite from 'node:sqlite';
 
 const { DatabaseSync } = sqlite as any;
 
-const DB_FILE = path.resolve(process.cwd(), 'prisma', 'dev.db');
+// P0-10 惯例：支持 DEV_DB 覆盖（Playwright 等测试库播种用；默认 dev.db）
+const DB_FILE = process.env.DEV_DB || path.resolve(process.cwd(), 'prisma', 'dev.db');
 const QR_HMAC_SECRET = process.env.QR_HMAC_SECRET || 'dev-only-secret-change-me';
 
 function sign(text: string): string {
