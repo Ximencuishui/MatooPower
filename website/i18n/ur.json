@@ -105,13 +105,17 @@
       "iso_9001": "ISO 9001",
       "salesmatoopower": "✉ sales@matoopower.com",
       "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
-      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "26h": "2-6h"
     },
     "products": {
       "products": "مصنوعات",
       "open_configurato": "کنفیگوریٹر کھولیں →",
       "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
-      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "evening_backup_desc": "Living-room outage → lights, TV, WiFi",
+      "home_office_ups_desc": "Laptop, network, monitor",
+      "kitchen_outage_desc": "Fridge, small appliances, emergency lighting"
     },
     "technology": {
       "technology": "ٹیکنالوجی",
@@ -149,7 +153,9 @@
       "bangladesh": "Bangladesh",
       "privacy_policy": "رازداری کی پالیسی",
       "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
-      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "wechat_scan_hint": "Scan the QR code or search the official account",
+      "wechat_official_label": "WeChat Official Account"
     },
     "privacy": {
       "privacy_policy_hop62": "رازداری کی پالیسی",

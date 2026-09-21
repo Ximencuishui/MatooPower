@@ -432,9 +432,9 @@
               <!-- WeChat channel (中文 only) -->
               <div data-channel="wechat" style="display: none; margin-top: var(--space-4);">
                 <div style="padding: var(--space-4); background: var(--color-slate-50); border-radius: var(--radius-md); text-align: center;">
-                  <strong data-i18n="body.contact.微信企业号" style="display: block; margin-bottom: var(--space-2);">微信企业号</strong>
+                  <strong data-i18n="body.contact.wechat_official_label" style="display: block; margin-bottom: var(--space-2);">WeChat Official Account</strong>
                   <p style="font-size: var(--fs-sm); color: var(--color-slate-500); margin: 0;">
-                    扫描二维码或搜索企业号<br>
+                    <span data-i18n="body.contact.wechat_scan_hint">Scan the QR code or search the official account</span><br>
                     <em data-i18n="body.contact.matoopower" style="color: var(--color-matoo-600);">MatooPower</em>
                   </p>
                 </div>
@@ -526,8 +526,7 @@
   </script>
 
   <!-- i18n data injection -->
-  <script id="i18n-data" type="application/json">
-  {
+  <script id="i18n-data" type="application/json">{
   "en": {
     "_meta": {
       "lang": "en",
@@ -676,12 +675,12 @@
         "instant_chat": "Instant Chat",
         "whatsapp_busine": "💬 WhatsApp Business",
         "for_english_in": "For English / বাংলা inquiries",
-        "微信企业号": "微信企业号",
         "matoopower": "MatooPower",
         "salesmatoopower": "📧 sales@matoopower.com",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
         "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
-        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   },
@@ -787,10 +786,58 @@
         "contact": "联系方式",
         "bangladesh": "Bangladesh",
         "privacy_policy": "隐私条款",
-        "微信企业号": "微信企业号",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
         "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
-        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "contact_matoo_po": "Contact Matoo Power · Talk to Our Team",
+        "talk_to_our_team": "Talk to Our Team",
+        "choose_your_inqu": "Choose your inquiry type and we'll route you to the right person. We respond within 24 hours.",
+        "distribution_c": "🤝 Distribution / Channel",
+        "oem_odm_cooper": "🔧 OEM / ODM Cooperation",
+        "investor_relati": "📈 Investor Relations",
+        "media_press": "📰 Media / Press",
+        "select_country": "Select country",
+        "india": "India",
+        "pakistan": "Pakistan",
+        "indonesia": "Indonesia",
+        "philippines": "Philippines",
+        "nigeria": "Nigeria",
+        "kenya": "Kenya",
+        "united_arab_emir": "United Arab Emirates",
+        "saudi_arabia": "Saudi Arabia",
+        "other": "Other",
+        "less_than_1000_u": "Less than 1,000 units",
+        "1000_5000_units": "1,000 – 5,000 units",
+        "5000_20000_unit": "5,000 – 20,000 units",
+        "more_than_20000": "More than 20,000 units",
+        "additional_notes": "Additional notes",
+        "optional_tell_us": "Optional. Tell us about your market, channel, or specific questions.",
+        "position": "Position",
+        "complete_vehicle": "Complete vehicle",
+        "modification_kit": "Modification kit",
+        "accessory_parts": "Accessory / parts",
+        "other_19k0z": "Other",
+        "institutional_em": "Institutional email preferred. We'll send the BP via secure link after review.",
+        "prea": "Pre-A",
+        "series_a": "Series A",
+        "strategic": "Strategic",
+        "deadline": "Deadline",
+        "send_inquiry": "Send Inquiry →",
+        "we_typically_res": "We typically respond within 24 hours. For urgent matters, contact us on WhatsApp.",
+        "book_a_factory_v": "Book a Factory Visit",
+        "visit_our_shenzh": "Visit our Shenzhen R&D and manufacturing center. On-site, video tour, or brochure package.",
+        "schedule_visit": "Schedule Visit →",
+        "global_offices": "Global Offices",
+        "singapore_hq": "🌏 Singapore HQ",
+        "shenzhen_rd": "🏭 Shenzhen R&D",
+        "dhaka_south_as": "🌏 Dhaka · South Asia",
+        "south_asia_regio": "South Asia Regional Hub",
+        "instant_chat": "Instant Chat",
+        "whatsapp_busine": "💬 WhatsApp Business",
+        "for_english_in": "For English / বাংলা inquiries",
+        "matoopower": "MatooPower",
+        "salesmatoopower": "📧 sales@matoopower.com",
+        "wechat_official_label": "微信企业号",
+        "wechat_scan_hint": "扫描二维码或搜索企业号"
       }
     }
   },
@@ -896,8 +943,58 @@
         "contact": "যোগাযোগ",
         "bangladesh": "Bangladesh",
         "privacy_policy": "ব্যক্তিগত গোপনীয়তার নীতি",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
-        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "contact_matoo_po": "Contact Matoo Power · Talk to Our Team",
+        "talk_to_our_team": "Talk to Our Team",
+        "choose_your_inqu": "Choose your inquiry type and we'll route you to the right person. We respond within 24 hours.",
+        "distribution_c": "🤝 Distribution / Channel",
+        "oem_odm_cooper": "🔧 OEM / ODM Cooperation",
+        "investor_relati": "📈 Investor Relations",
+        "media_press": "📰 Media / Press",
+        "select_country": "Select country",
+        "india": "India",
+        "pakistan": "Pakistan",
+        "indonesia": "Indonesia",
+        "philippines": "Philippines",
+        "nigeria": "Nigeria",
+        "kenya": "Kenya",
+        "united_arab_emir": "United Arab Emirates",
+        "saudi_arabia": "Saudi Arabia",
+        "other": "Other",
+        "less_than_1000_u": "Less than 1,000 units",
+        "1000_5000_units": "1,000 – 5,000 units",
+        "5000_20000_unit": "5,000 – 20,000 units",
+        "more_than_20000": "More than 20,000 units",
+        "additional_notes": "Additional notes",
+        "optional_tell_us": "Optional. Tell us about your market, channel, or specific questions.",
+        "position": "Position",
+        "complete_vehicle": "Complete vehicle",
+        "modification_kit": "Modification kit",
+        "accessory_parts": "Accessory / parts",
+        "other_19k0z": "Other",
+        "institutional_em": "Institutional email preferred. We'll send the BP via secure link after review.",
+        "prea": "Pre-A",
+        "series_a": "Series A",
+        "strategic": "Strategic",
+        "deadline": "Deadline",
+        "send_inquiry": "Send Inquiry →",
+        "we_typically_res": "We typically respond within 24 hours. For urgent matters, contact us on WhatsApp.",
+        "book_a_factory_v": "Book a Factory Visit",
+        "visit_our_shenzh": "Visit our Shenzhen R&D and manufacturing center. On-site, video tour, or brochure package.",
+        "schedule_visit": "Schedule Visit →",
+        "global_offices": "Global Offices",
+        "singapore_hq": "🌏 Singapore HQ",
+        "shenzhen_rd": "🏭 Shenzhen R&D",
+        "dhaka_south_as": "🌏 Dhaka · South Asia",
+        "south_asia_regio": "South Asia Regional Hub",
+        "instant_chat": "Instant Chat",
+        "whatsapp_busine": "💬 WhatsApp Business",
+        "for_english_in": "For English / বাংলা inquiries",
+        "matoopower": "MatooPower",
+        "salesmatoopower": "📧 sales@matoopower.com",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   },
@@ -912,84 +1009,150 @@
       "technology": "テクノロジー",
       "partnership": "パートナーシップ",
       "insights": "インサイト",
-      "about": "詳細",
-      "contact": "連絡先",
-      "products": "製品",
-      "manufacturing": "製造"
+      "products": "Products",
+      "manufacturing": "Manufacturing",
+      "about": "About",
+      "contact": "Contact"
+    },
+    "cta": {
+      "secondary": "💬 WhatsApp でチャット",
+      "title": "Ready to Power Your Market?",
+      "sub": "Talk to our team. Visit our factory. Or send a quick inquiry — we respond within 24 hours.",
+      "primary": "Send Inquiry"
+    },
+    "footer": {
+      "partnership": "パートナーシップ",
+      "insights": "インサイト",
+      "privacy": "プライバシーポリシー",
+      "brand": "Lithium iron phosphate energy storage, engineered in China for emerging markets worldwide.",
+      "products": "Products",
+      "company": "Company",
+      "about": "About",
+      "mfg": "Manufacturing",
+      "contact": "Contact",
+      "legal": "© 2026 Matoo Power. All rights reserved.",
+      "cookies": "Cookie Settings",
+      "terms": "Terms"
+    },
+    "body": {
+      "contact": {
+        "privacy_policy": "プライバシーポリシー",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "contact_matoo_po": "Contact Matoo Power · Talk to Our Team",
+        "contact": "Contact",
+        "talk_to_our_team": "Talk to Our Team",
+        "choose_your_inqu": "Choose your inquiry type and we'll route you to the right person. We respond within 24 hours.",
+        "distribution_c": "🤝 Distribution / Channel",
+        "oem_odm_cooper": "🔧 OEM / ODM Cooperation",
+        "investor_relati": "📈 Investor Relations",
+        "media_press": "📰 Media / Press",
+        "select_country": "Select country",
+        "bangladesh": "Bangladesh",
+        "india": "India",
+        "pakistan": "Pakistan",
+        "indonesia": "Indonesia",
+        "philippines": "Philippines",
+        "nigeria": "Nigeria",
+        "kenya": "Kenya",
+        "united_arab_emir": "United Arab Emirates",
+        "saudi_arabia": "Saudi Arabia",
+        "other": "Other",
+        "less_than_1000_u": "Less than 1,000 units",
+        "1000_5000_units": "1,000 – 5,000 units",
+        "5000_20000_unit": "5,000 – 20,000 units",
+        "more_than_20000": "More than 20,000 units",
+        "additional_notes": "Additional notes",
+        "optional_tell_us": "Optional. Tell us about your market, channel, or specific questions.",
+        "position": "Position",
+        "complete_vehicle": "Complete vehicle",
+        "modification_kit": "Modification kit",
+        "accessory_parts": "Accessory / parts",
+        "other_19k0z": "Other",
+        "institutional_em": "Institutional email preferred. We'll send the BP via secure link after review.",
+        "prea": "Pre-A",
+        "series_a": "Series A",
+        "strategic": "Strategic",
+        "deadline": "Deadline",
+        "send_inquiry": "Send Inquiry →",
+        "we_typically_res": "We typically respond within 24 hours. For urgent matters, contact us on WhatsApp.",
+        "book_a_factory_v": "Book a Factory Visit",
+        "visit_our_shenzh": "Visit our Shenzhen R&D and manufacturing center. On-site, video tour, or brochure package.",
+        "schedule_visit": "Schedule Visit →",
+        "global_offices": "Global Offices",
+        "singapore_hq": "🌏 Singapore HQ",
+        "shenzhen_rd": "🏭 Shenzhen R&D",
+        "dhaka_south_as": "🌏 Dhaka · South Asia",
+        "south_asia_regio": "South Asia Regional Hub",
+        "instant_chat": "Instant Chat",
+        "whatsapp_busine": "💬 WhatsApp Business",
+        "for_english_in": "For English / বাংলা inquiries",
+        "matoopower": "MatooPower",
+        "salesmatoopower": "📧 sales@matoopower.com",
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
+      }
     },
     "hero": {
-      "title": "新興市場へ、 信頼性の高いエネルギーを。",
-      "cta1": "工場見学を予約 →",
-      "cta2": "仕様書をダウンロード ↓"
+      "eyebrow": "Engineered in China · Trusted Worldwide",
+      "title": "Powering Emerging Markets, Engineered for Reliability.",
+      "sub": "Lithium iron phosphate energy storage for off-grid living, e-mobility, and commercial backup — built on 20+ years of Chinese manufacturing excellence.",
+      "cta1": "Book a Factory Visit →",
+      "cta2": "Download Specifications ↓"
     },
     "data": {
       "users": {
-        "label": "新興市場ユーザー数"
+        "label": "Users across emerging markets",
+        "source": "Based on cumulative deployments"
+      },
+      "outage": {
+        "label": "Average daily outage hours",
+        "source": "World Bank Energy Access Report"
       },
       "cycle": {
-        "label": "バッテリーサイクル寿命 (LFP)",
-        "source": "社内ラボテスト、LFP化学"
+        "label": "Battery cycle life (LFP)",
+        "source": "Internal lab testing, LFP chemistry"
       },
       "margin": {
-        "label": "パートナー粗利率",
-        "source": "2024年チャネルデータに基づく"
+        "label": "Gross margin for partners",
+        "source": "Based on 2024 channel data"
       }
     },
     "modules": {
-      "title": "3つのエンジン、1つの使命。"
+      "title": "Three Engines. One Mission.",
+      "sub": "From individual storage units to turnkey PACK lines — we cover the full value chain."
     },
     "scenario": {
-      "cta": "コンフィギュレーターを開く →"
+      "title": "Modular by Design. Built for Your Scenario.",
+      "desc": "Pick a real-world scenario. See the core 4-piece kit and field-tested combinations. From off-grid islands to family UPS, e-rickshaw retrofits to night markets.",
+      "cta": "Open Configurator →"
     },
     "map": {
-      "title": "グローバルアーキテクチャ、 ローカル実行。"
+      "title": "Global Architecture, Local Execution.",
+      "sub": "Singapore holds IP and capital. Shenzhen manufactures. Global markets consume."
     },
     "trust": {
-      "title": "認証取得済み。 特許取得済み。 量産検証済み。"
-    },
-    "cta": {
-      "primary": "お問い合わせを送信",
-      "secondary": "💬 WhatsApp でチャット"
-    },
-    "footer": {
-      "company": "会社名",
-      "about": "会社概要",
-      "partnership": "パートナーシップ",
-      "insights": "インサイト",
-      "contact": "連絡先",
-      "legal": "© 2026 Matoo Power. 全著作権所有。",
-      "privacy": "プライバシーポリシー",
-      "terms": "利用規約",
-      "brand": "世界の新興市場向けにZQX 01 Jで設計されたリン酸鉄リチウムエネルギー貯蔵。",
-      "cookies": "クッキー設定"
+      "title": "Certified. Patented. Production-Proven."
     },
     "insights": {
-      "section2_title": "毎月インサイトを受け取る"
+      "section2_title": "Get Insights Monthly",
+      "section2_sub": "One curated email per month. No spam. Unsubscribe anytime.",
+      "subscribe": "Subscribe"
+    },
+    "mod1": {
+      "title": "Energy Storage & Green Energy",
+      "desc": "From 1kWh portable units to modular power boxes — built for off-grid reliability.",
+      "cta": "Explore products →"
     },
     "mod2": {
-      "title": "ZQX 00 Cコントロール＆ ZQX 001",
-      "cta": "ソリューションを見る →"
-    },
-    "body": {
-      "index": {
-        "bangladesh": "ZQX 01 I",
-        "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
-        "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H"
-      },
-      "contact": {
-        "contact": "連絡先",
-        "bangladesh": "ZQX 01 I",
-        "privacy_policy": "プライバシーポリシー",
-        "微信企业号": "微信企业号",
-        "whatsapp_65_xxx": "💬 ZQX 01 E ： ZQX 01 D",
-        "singapore_shen": "📍 ZQX 01 F・ZQX 01 G・ZQX 01 H",
-        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
-      }
+      "title": "EV Control & Matoo Ready",
+      "desc": "Drop-in electric control modules. Increase your vehicle's value 20–40% — without in-house R&D.",
+      "cta": "See solutions →"
     },
     "mod3": {
-      "title": "PACK ライン協力",
-      "desc": "バッテリーパック生産ラインのターンキー供給。SKD/CKD 供給、研修、認証。",
-      "cta": "協力を見る →"
+      "title": "PACK Line Cooperation",
+      "desc": "Turnkey battery pack production lines. SKD/CKD supply, training, and certification.",
+      "cta": "View cooperation →"
     }
   },
   "ko": {
@@ -1058,7 +1221,6 @@
     "footer": {
       "brand": "전 세계 신흥 시장을 위해 China로 설계된 리튬 인산철 에너지 저장소.",
       "products": "상품",
-      "company": "社",
       "about": "회사 소개",
       "mfg": "제조 능력",
       "partnership": "파트너십",
@@ -1067,7 +1229,8 @@
       "legal": "© 2026 Matoo Power. 모든 권리 보유.",
       "privacy": "개인 정보 보호 정책",
       "cookies": "쿠키 설정",
-      "terms": "용어"
+      "terms": "용어",
+      "company": "Company"
     },
     "insights": {
       "section2_title": "매월 인사이트 받기",
@@ -1094,10 +1257,58 @@
         "contact": "연락하기",
         "bangladesh": "Bangladesh",
         "privacy_policy": "개인 정보 보호 정책",
-        "微信企业号": "微信企业号",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
         "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
-        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "contact_matoo_po": "Contact Matoo Power · Talk to Our Team",
+        "talk_to_our_team": "Talk to Our Team",
+        "choose_your_inqu": "Choose your inquiry type and we'll route you to the right person. We respond within 24 hours.",
+        "distribution_c": "🤝 Distribution / Channel",
+        "oem_odm_cooper": "🔧 OEM / ODM Cooperation",
+        "investor_relati": "📈 Investor Relations",
+        "media_press": "📰 Media / Press",
+        "select_country": "Select country",
+        "india": "India",
+        "pakistan": "Pakistan",
+        "indonesia": "Indonesia",
+        "philippines": "Philippines",
+        "nigeria": "Nigeria",
+        "kenya": "Kenya",
+        "united_arab_emir": "United Arab Emirates",
+        "saudi_arabia": "Saudi Arabia",
+        "other": "Other",
+        "less_than_1000_u": "Less than 1,000 units",
+        "1000_5000_units": "1,000 – 5,000 units",
+        "5000_20000_unit": "5,000 – 20,000 units",
+        "more_than_20000": "More than 20,000 units",
+        "additional_notes": "Additional notes",
+        "optional_tell_us": "Optional. Tell us about your market, channel, or specific questions.",
+        "position": "Position",
+        "complete_vehicle": "Complete vehicle",
+        "modification_kit": "Modification kit",
+        "accessory_parts": "Accessory / parts",
+        "other_19k0z": "Other",
+        "institutional_em": "Institutional email preferred. We'll send the BP via secure link after review.",
+        "prea": "Pre-A",
+        "series_a": "Series A",
+        "strategic": "Strategic",
+        "deadline": "Deadline",
+        "send_inquiry": "Send Inquiry →",
+        "we_typically_res": "We typically respond within 24 hours. For urgent matters, contact us on WhatsApp.",
+        "book_a_factory_v": "Book a Factory Visit",
+        "visit_our_shenzh": "Visit our Shenzhen R&D and manufacturing center. On-site, video tour, or brochure package.",
+        "schedule_visit": "Schedule Visit →",
+        "global_offices": "Global Offices",
+        "singapore_hq": "🌏 Singapore HQ",
+        "shenzhen_rd": "🏭 Shenzhen R&D",
+        "dhaka_south_as": "🌏 Dhaka · South Asia",
+        "south_asia_regio": "South Asia Regional Hub",
+        "instant_chat": "Instant Chat",
+        "whatsapp_busine": "💬 WhatsApp Business",
+        "for_english_in": "For English / বাংলা inquiries",
+        "matoopower": "MatooPower",
+        "salesmatoopower": "📧 sales@matoopower.com",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   },
@@ -1251,8 +1462,10 @@
         "for_english_in": "For English / বাংলা inquiries",
         "matoopower": "MatooPower",
         "salesmatoopower": "📧 sales@matoopower.com",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
-        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   },
@@ -1358,8 +1571,58 @@
         "contact": "संपर्क करें",
         "bangladesh": "Bangladesh",
         "privacy_policy": "गोपनियता नीति",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
-        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "contact_matoo_po": "Contact Matoo Power · Talk to Our Team",
+        "talk_to_our_team": "Talk to Our Team",
+        "choose_your_inqu": "Choose your inquiry type and we'll route you to the right person. We respond within 24 hours.",
+        "distribution_c": "🤝 Distribution / Channel",
+        "oem_odm_cooper": "🔧 OEM / ODM Cooperation",
+        "investor_relati": "📈 Investor Relations",
+        "media_press": "📰 Media / Press",
+        "select_country": "Select country",
+        "india": "India",
+        "pakistan": "Pakistan",
+        "indonesia": "Indonesia",
+        "philippines": "Philippines",
+        "nigeria": "Nigeria",
+        "kenya": "Kenya",
+        "united_arab_emir": "United Arab Emirates",
+        "saudi_arabia": "Saudi Arabia",
+        "other": "Other",
+        "less_than_1000_u": "Less than 1,000 units",
+        "1000_5000_units": "1,000 – 5,000 units",
+        "5000_20000_unit": "5,000 – 20,000 units",
+        "more_than_20000": "More than 20,000 units",
+        "additional_notes": "Additional notes",
+        "optional_tell_us": "Optional. Tell us about your market, channel, or specific questions.",
+        "position": "Position",
+        "complete_vehicle": "Complete vehicle",
+        "modification_kit": "Modification kit",
+        "accessory_parts": "Accessory / parts",
+        "other_19k0z": "Other",
+        "institutional_em": "Institutional email preferred. We'll send the BP via secure link after review.",
+        "prea": "Pre-A",
+        "series_a": "Series A",
+        "strategic": "Strategic",
+        "deadline": "Deadline",
+        "send_inquiry": "Send Inquiry →",
+        "we_typically_res": "We typically respond within 24 hours. For urgent matters, contact us on WhatsApp.",
+        "book_a_factory_v": "Book a Factory Visit",
+        "visit_our_shenzh": "Visit our Shenzhen R&D and manufacturing center. On-site, video tour, or brochure package.",
+        "schedule_visit": "Schedule Visit →",
+        "global_offices": "Global Offices",
+        "singapore_hq": "🌏 Singapore HQ",
+        "shenzhen_rd": "🏭 Shenzhen R&D",
+        "dhaka_south_as": "🌏 Dhaka · South Asia",
+        "south_asia_regio": "South Asia Regional Hub",
+        "instant_chat": "Instant Chat",
+        "whatsapp_busine": "💬 WhatsApp Business",
+        "for_english_in": "For English / বাংলা inquiries",
+        "matoopower": "MatooPower",
+        "salesmatoopower": "📧 sales@matoopower.com",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   },
@@ -1465,8 +1728,58 @@
         "contact": "رابطہ",
         "bangladesh": "Bangladesh",
         "privacy_policy": "رازداری کی پالیسی",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
-        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "contact_matoo_po": "Contact Matoo Power · Talk to Our Team",
+        "talk_to_our_team": "Talk to Our Team",
+        "choose_your_inqu": "Choose your inquiry type and we'll route you to the right person. We respond within 24 hours.",
+        "distribution_c": "🤝 Distribution / Channel",
+        "oem_odm_cooper": "🔧 OEM / ODM Cooperation",
+        "investor_relati": "📈 Investor Relations",
+        "media_press": "📰 Media / Press",
+        "select_country": "Select country",
+        "india": "India",
+        "pakistan": "Pakistan",
+        "indonesia": "Indonesia",
+        "philippines": "Philippines",
+        "nigeria": "Nigeria",
+        "kenya": "Kenya",
+        "united_arab_emir": "United Arab Emirates",
+        "saudi_arabia": "Saudi Arabia",
+        "other": "Other",
+        "less_than_1000_u": "Less than 1,000 units",
+        "1000_5000_units": "1,000 – 5,000 units",
+        "5000_20000_unit": "5,000 – 20,000 units",
+        "more_than_20000": "More than 20,000 units",
+        "additional_notes": "Additional notes",
+        "optional_tell_us": "Optional. Tell us about your market, channel, or specific questions.",
+        "position": "Position",
+        "complete_vehicle": "Complete vehicle",
+        "modification_kit": "Modification kit",
+        "accessory_parts": "Accessory / parts",
+        "other_19k0z": "Other",
+        "institutional_em": "Institutional email preferred. We'll send the BP via secure link after review.",
+        "prea": "Pre-A",
+        "series_a": "Series A",
+        "strategic": "Strategic",
+        "deadline": "Deadline",
+        "send_inquiry": "Send Inquiry →",
+        "we_typically_res": "We typically respond within 24 hours. For urgent matters, contact us on WhatsApp.",
+        "book_a_factory_v": "Book a Factory Visit",
+        "visit_our_shenzh": "Visit our Shenzhen R&D and manufacturing center. On-site, video tour, or brochure package.",
+        "schedule_visit": "Schedule Visit →",
+        "global_offices": "Global Offices",
+        "singapore_hq": "🌏 Singapore HQ",
+        "shenzhen_rd": "🏭 Shenzhen R&D",
+        "dhaka_south_as": "🌏 Dhaka · South Asia",
+        "south_asia_regio": "South Asia Regional Hub",
+        "instant_chat": "Instant Chat",
+        "whatsapp_busine": "💬 WhatsApp Business",
+        "for_english_in": "For English / বাংলা inquiries",
+        "matoopower": "MatooPower",
+        "salesmatoopower": "📧 sales@matoopower.com",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   },
@@ -1496,7 +1809,7 @@
     "data": {
       "users": {
         "label": "வளர்ந்து வரும் சந்தைகளில் பயனர்கள்",
-        "source": "累积 வெளியீட்டை அடிப்படையாகக் கொண்டது"
+        "source": "Based on cumulative deployments"
       },
       "outage": {
         "label": "சராசரி தினசரி மின்வெட்டு நேரம்",
@@ -1569,7 +1882,61 @@
     },
     "body": {
       "contact": {
-        "contact": "தொடர்பு"
+        "contact": "தொடர்பு",
+        "contact_matoo_po": "Contact Matoo Power · Talk to Our Team",
+        "talk_to_our_team": "Talk to Our Team",
+        "choose_your_inqu": "Choose your inquiry type and we'll route you to the right person. We respond within 24 hours.",
+        "distribution_c": "🤝 Distribution / Channel",
+        "oem_odm_cooper": "🔧 OEM / ODM Cooperation",
+        "investor_relati": "📈 Investor Relations",
+        "media_press": "📰 Media / Press",
+        "select_country": "Select country",
+        "bangladesh": "Bangladesh",
+        "india": "India",
+        "pakistan": "Pakistan",
+        "indonesia": "Indonesia",
+        "philippines": "Philippines",
+        "nigeria": "Nigeria",
+        "kenya": "Kenya",
+        "united_arab_emir": "United Arab Emirates",
+        "saudi_arabia": "Saudi Arabia",
+        "other": "Other",
+        "less_than_1000_u": "Less than 1,000 units",
+        "1000_5000_units": "1,000 – 5,000 units",
+        "5000_20000_unit": "5,000 – 20,000 units",
+        "more_than_20000": "More than 20,000 units",
+        "additional_notes": "Additional notes",
+        "optional_tell_us": "Optional. Tell us about your market, channel, or specific questions.",
+        "position": "Position",
+        "complete_vehicle": "Complete vehicle",
+        "modification_kit": "Modification kit",
+        "accessory_parts": "Accessory / parts",
+        "other_19k0z": "Other",
+        "institutional_em": "Institutional email preferred. We'll send the BP via secure link after review.",
+        "prea": "Pre-A",
+        "series_a": "Series A",
+        "strategic": "Strategic",
+        "deadline": "Deadline",
+        "privacy_policy": "Privacy Policy",
+        "send_inquiry": "Send Inquiry →",
+        "we_typically_res": "We typically respond within 24 hours. For urgent matters, contact us on WhatsApp.",
+        "book_a_factory_v": "Book a Factory Visit",
+        "visit_our_shenzh": "Visit our Shenzhen R&D and manufacturing center. On-site, video tour, or brochure package.",
+        "schedule_visit": "Schedule Visit →",
+        "global_offices": "Global Offices",
+        "singapore_hq": "🌏 Singapore HQ",
+        "shenzhen_rd": "🏭 Shenzhen R&D",
+        "dhaka_south_as": "🌏 Dhaka · South Asia",
+        "south_asia_regio": "South Asia Regional Hub",
+        "instant_chat": "Instant Chat",
+        "whatsapp_busine": "💬 WhatsApp Business",
+        "for_english_in": "For English / বাংলা inquiries",
+        "matoopower": "MatooPower",
+        "salesmatoopower": "📧 sales@matoopower.com",
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   },
@@ -1646,7 +2013,9 @@
       "legal": "© 2026 Matoo Power. అన్ని హక్కులు రక్షించబడ్డాయి.",
       "privacy": "Privacy Policy",
       "cookies": "Cookie Settings",
-      "terms": "Terms"
+      "terms": "Terms",
+      "products": "Products",
+      "contact": "Contact"
     },
     "insights": {
       "section2_title": "నెలవారీ అంతర్దృష్టులను పొందండి",
@@ -1660,12 +2029,72 @@
     },
     "mod2": {
       "desc": "డ్రాప్-ఇన్ ఎలక్ట్రిక్ నియంత్రణ మాడ్యూల్స్. ఇన్-హౌస్ R&D లేకుండా మీ వాహన విలువను 20–40% పెంచండి.",
-      "cta": "పరిష్కారాలను చూడండి →"
+      "cta": "పరిష్కారాలను చూడండి →",
+      "title": "EV Control & Matoo Ready"
     },
     "mod3": {
       "title": "PACK లైన్ సహకారం",
       "desc": "టర్న్‌కీ బ్యాటరీ ప్యాక్ ఉత్పాదన లైన్లు. SKD/CKD సరఫరా, శిక్కడ మరియు ధృవీకరణ.",
       "cta": "సహకారాన్ని చూడండి →"
+    },
+    "body": {
+      "contact": {
+        "contact_matoo_po": "Contact Matoo Power · Talk to Our Team",
+        "contact": "Contact",
+        "talk_to_our_team": "Talk to Our Team",
+        "choose_your_inqu": "Choose your inquiry type and we'll route you to the right person. We respond within 24 hours.",
+        "distribution_c": "🤝 Distribution / Channel",
+        "oem_odm_cooper": "🔧 OEM / ODM Cooperation",
+        "investor_relati": "📈 Investor Relations",
+        "media_press": "📰 Media / Press",
+        "select_country": "Select country",
+        "bangladesh": "Bangladesh",
+        "india": "India",
+        "pakistan": "Pakistan",
+        "indonesia": "Indonesia",
+        "philippines": "Philippines",
+        "nigeria": "Nigeria",
+        "kenya": "Kenya",
+        "united_arab_emir": "United Arab Emirates",
+        "saudi_arabia": "Saudi Arabia",
+        "other": "Other",
+        "less_than_1000_u": "Less than 1,000 units",
+        "1000_5000_units": "1,000 – 5,000 units",
+        "5000_20000_unit": "5,000 – 20,000 units",
+        "more_than_20000": "More than 20,000 units",
+        "additional_notes": "Additional notes",
+        "optional_tell_us": "Optional. Tell us about your market, channel, or specific questions.",
+        "position": "Position",
+        "complete_vehicle": "Complete vehicle",
+        "modification_kit": "Modification kit",
+        "accessory_parts": "Accessory / parts",
+        "other_19k0z": "Other",
+        "institutional_em": "Institutional email preferred. We'll send the BP via secure link after review.",
+        "prea": "Pre-A",
+        "series_a": "Series A",
+        "strategic": "Strategic",
+        "deadline": "Deadline",
+        "privacy_policy": "Privacy Policy",
+        "send_inquiry": "Send Inquiry →",
+        "we_typically_res": "We typically respond within 24 hours. For urgent matters, contact us on WhatsApp.",
+        "book_a_factory_v": "Book a Factory Visit",
+        "visit_our_shenzh": "Visit our Shenzhen R&D and manufacturing center. On-site, video tour, or brochure package.",
+        "schedule_visit": "Schedule Visit →",
+        "global_offices": "Global Offices",
+        "singapore_hq": "🌏 Singapore HQ",
+        "shenzhen_rd": "🏭 Shenzhen R&D",
+        "dhaka_south_as": "🌏 Dhaka · South Asia",
+        "south_asia_regio": "South Asia Regional Hub",
+        "instant_chat": "Instant Chat",
+        "whatsapp_busine": "💬 WhatsApp Business",
+        "for_english_in": "For English / বাংলা inquiries",
+        "matoopower": "MatooPower",
+        "salesmatoopower": "📧 sales@matoopower.com",
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
+      }
     }
   },
   "ar": {
@@ -1741,7 +2170,9 @@
       "legal": "© 2026 Matoo Power. جميع الحقوق محفوظة.",
       "privacy": "Privacy Policy",
       "cookies": "Cookie Settings",
-      "terms": "Terms"
+      "terms": "Terms",
+      "products": "Products",
+      "contact": "Contact"
     },
     "insights": {
       "section2_title": "احصل على رؤى شهرية",
@@ -1755,12 +2186,72 @@
     },
     "mod2": {
       "desc": "وحدات تحكم كهربائية قابلة للإدراج. زد قيمة سيارتك بنسبة 20–40% — دون البحث والتطوير الداخلي.",
-      "cta": "شاهد الحلول →"
+      "cta": "شاهد الحلول →",
+      "title": "EV Control & Matoo Ready"
     },
     "mod3": {
       "title": "تعاون خط PACK",
       "desc": "خطوط إنتاج حزم البطاريات الجاهزة. توريد SKD/CKD، والتدريب، والشهادات.",
       "cta": "عرض التعاون →"
+    },
+    "body": {
+      "contact": {
+        "contact_matoo_po": "Contact Matoo Power · Talk to Our Team",
+        "contact": "Contact",
+        "talk_to_our_team": "Talk to Our Team",
+        "choose_your_inqu": "Choose your inquiry type and we'll route you to the right person. We respond within 24 hours.",
+        "distribution_c": "🤝 Distribution / Channel",
+        "oem_odm_cooper": "🔧 OEM / ODM Cooperation",
+        "investor_relati": "📈 Investor Relations",
+        "media_press": "📰 Media / Press",
+        "select_country": "Select country",
+        "bangladesh": "Bangladesh",
+        "india": "India",
+        "pakistan": "Pakistan",
+        "indonesia": "Indonesia",
+        "philippines": "Philippines",
+        "nigeria": "Nigeria",
+        "kenya": "Kenya",
+        "united_arab_emir": "United Arab Emirates",
+        "saudi_arabia": "Saudi Arabia",
+        "other": "Other",
+        "less_than_1000_u": "Less than 1,000 units",
+        "1000_5000_units": "1,000 – 5,000 units",
+        "5000_20000_unit": "5,000 – 20,000 units",
+        "more_than_20000": "More than 20,000 units",
+        "additional_notes": "Additional notes",
+        "optional_tell_us": "Optional. Tell us about your market, channel, or specific questions.",
+        "position": "Position",
+        "complete_vehicle": "Complete vehicle",
+        "modification_kit": "Modification kit",
+        "accessory_parts": "Accessory / parts",
+        "other_19k0z": "Other",
+        "institutional_em": "Institutional email preferred. We'll send the BP via secure link after review.",
+        "prea": "Pre-A",
+        "series_a": "Series A",
+        "strategic": "Strategic",
+        "deadline": "Deadline",
+        "privacy_policy": "Privacy Policy",
+        "send_inquiry": "Send Inquiry →",
+        "we_typically_res": "We typically respond within 24 hours. For urgent matters, contact us on WhatsApp.",
+        "book_a_factory_v": "Book a Factory Visit",
+        "visit_our_shenzh": "Visit our Shenzhen R&D and manufacturing center. On-site, video tour, or brochure package.",
+        "schedule_visit": "Schedule Visit →",
+        "global_offices": "Global Offices",
+        "singapore_hq": "🌏 Singapore HQ",
+        "shenzhen_rd": "🏭 Shenzhen R&D",
+        "dhaka_south_as": "🌏 Dhaka · South Asia",
+        "south_asia_regio": "South Asia Regional Hub",
+        "instant_chat": "Instant Chat",
+        "whatsapp_busine": "💬 WhatsApp Business",
+        "for_english_in": "For English / বাংলা inquiries",
+        "matoopower": "MatooPower",
+        "salesmatoopower": "📧 sales@matoopower.com",
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
+      }
     }
   },
   "fr": {
@@ -1913,8 +2404,10 @@
         "for_english_in": "For English / বাংলা inquiries",
         "matoopower": "MatooPower",
         "salesmatoopower": "📧 sales@matoopower.com",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
-        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   },
@@ -2068,8 +2561,10 @@
         "for_english_in": "For English / বাংলা inquiries",
         "matoopower": "MatooPower",
         "salesmatoopower": "📧 sales@matoopower.com",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
-        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   },
@@ -2223,13 +2718,14 @@
         "for_english_in": "For English / বাংলা inquiries",
         "matoopower": "MatooPower",
         "salesmatoopower": "📧 sales@matoopower.com",
-        "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
-        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+        "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+        "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+        "wechat_scan_hint": "Scan the QR code or search the official account",
+        "wechat_official_label": "WeChat Official Account"
       }
     }
   }
-}
-  </script>
+}</script>
 </body>
 </html>
 

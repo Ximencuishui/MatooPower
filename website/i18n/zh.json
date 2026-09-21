@@ -110,13 +110,17 @@
       "iso_9001": "ISO 9001",
       "salesmatoopower": "✉ sales@matoopower.com",
       "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
-      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "26h": "2-6h"
     },
     "products": {
       "products": "商品",
       "open_configurato": "打开配置器 →",
       "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
-      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "evening_backup_desc": "客厅断电 → 灯光、电视、WiFi",
+      "home_office_ups_desc": "笔记本、网络、显示器",
+      "kitchen_outage_desc": "冰箱、小家电、应急照明"
     },
     "technology": {
       "technology": "技术",
@@ -154,7 +158,9 @@
       "bangladesh": "Bangladesh",
       "privacy_policy": "隐私条款",
       "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
-      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "wechat_scan_hint": "扫描二维码或搜索企业号",
+      "wechat_official_label": "微信企业号"
     },
     "privacy": {
       "privacy_policy_hop62": "隐私条款",

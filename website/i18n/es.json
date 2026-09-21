@@ -94,5 +94,42 @@
     "title": "Cooperación de Línea PACK",
     "desc": "Líneas de producción de paquetes de baterías llave en mano. Suministro SKD/CKD, capacitación y certificación.",
     "cta": "Ver cooperación →"
+  },
+  "body": {
+    "index": {
+      "matoo_power_rel": "Matoo Power · Reliable Energy Storage for Emerging Markets",
+      "26h": "2-6h",
+      "singapore": "Singapore",
+      "brand_ip_capit": "Brand · IP · Capital",
+      "shenzhen_china": "Shenzhen, China",
+      "rd_manufacturin": "R&D · Manufacturing",
+      "bangladesh": "Bangladesh",
+      "south_asia_hub": "South Asia Hub",
+      "global_markets": "Global Markets",
+      "sea_africa_men": "SEA · Africa · MENA · LATAM",
+      "un383": "UN38.3",
+      "iso_9001": "ISO 9001",
+      "home_backup": "Home Backup",
+      "evening_ups_kitc": "Evening UPS, kitchen, home office",
+      "outdoor": "Outdoor",
+      "camping_rv_islan": "Camping, RV, island, marine",
+      "commercial": "Commercial",
+      "telecom_shop_ups": "Telecom, shop UPS, clinic",
+      "emobility": "E-Mobility",
+      "erickshaw_escoot": "E-rickshaw, e-scooter, e-tuktuk",
+      "configurator": "Configurator",
+      "salesmatoopower": "✉ sales@matoopower.com",
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "深圳华溢智能科技有限公司_rd": "深圳华溢智能科技有限公司 (R&D · Manufacturing) · 新加坡华溢科技技术有限公司 (Brand · IP)"
+    },
+    "contact": {
+      "wechat_scan_hint": "Scan the QR code or search the official account",
+      "wechat_official_label": "WeChat Official Account"
+    },
+    "products": {
+      "evening_backup_desc": "Living-room outage → lights, TV, WiFi",
+      "home_office_ups_desc": "Laptop, network, monitor",
+      "kitchen_outage_desc": "Fridge, small appliances, emergency lighting"
+    }
   }
 }

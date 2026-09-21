@@ -44,7 +44,6 @@
       "get_in_touch": "Get in Touch",
       "partnership_opti": "Partnership Options",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
     },
@@ -184,7 +183,6 @@
       "charger_60a_btrdg": "Charger (60A)",
       "highcurrent_grid": "High-current grid + solar",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
     },
@@ -238,12 +236,12 @@
       "instant_chat": "Instant Chat",
       "whatsapp_busine": "💬 WhatsApp Business",
       "for_english_in": "For English / বাংলা inquiries",
-      "微信企业号": "微信企业号",
       "matoopower": "MatooPower",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
-      "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
+      "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+      "wechat_scan_hint": "Scan the QR code or search the official account",
+      "wechat_official_label": "WeChat Official Account"
     },
     "cookies": {
       "cookie_settings": "Cookie Settings · Matoo Power",
@@ -305,7 +303,6 @@
       "we_do_not_embed": "We do not embed third-party content (no YouTube videos, Google Fonts, Google Analytics, Facebook Pixel, etc.) on matoopower.com. The cookies listed above are set by our domain only.",
       "questions": "Questions?",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
     },
@@ -331,7 +328,6 @@
       "erickshaw_escoot": "E-rickshaw, e-scooter, e-tuktuk",
       "configurator": "Configurator",
       "salesmatoopower": "✉ sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_rd": "深圳华溢智能科技有限公司 (R&D · Manufacturing) · 新加坡华溢科技技术有限公司 (Brand · IP)"
     },
@@ -398,7 +394,6 @@
       "previous": "← Previous",
       "next": "Next →",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
     },
@@ -466,7 +461,6 @@
       "book_a_factory_v": "Book a Factory Visit",
       "view_technology": "View Technology",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
     },
@@ -566,7 +560,6 @@
       "apply_to_partner": "Apply to Partner",
       "chat_on_whatsap": "💬 Chat on WhatsApp",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
     },
@@ -657,7 +650,6 @@
       "13_contact_us": "13. Contact Us",
       "data_protection": "Data Protection Officer",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
     },
@@ -722,11 +714,8 @@
       "from_offgrid_isl": "From off-grid islands to night markets, family UPS to e-rickshaw retrofits. Below are the most common deployment scenarios.",
       "home_backup": "🏠 Home Backup",
       "evening_backup": "Evening Backup",
-      "客厅断电_灯光电视wifi": "客厅断电 → 灯光、电视、WiFi",
       "kitchen_outage": "Kitchen Outage",
-      "冰箱小家电应急照明": "冰箱、小家电、应急照明",
       "home_office_ups": "Home Office UPS",
-      "笔记本网络显示器": "笔记本、网络、显示器",
       "outdoor_travel": "⛺ Outdoor & Travel",
       "camping": "Camping",
       "rv_travel": "RV Travel",
@@ -751,9 +740,11 @@
       "send_inquiry": "Send Inquiry",
       "whatsapp": "💬 WhatsApp",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
-      "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
+      "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
+      "evening_backup_desc": "Living-room outage → lights, TV, WiFi",
+      "home_office_ups_desc": "Laptop, network, monitor",
+      "kitchen_outage_desc": "Fridge, small appliances, emergency lighting"
     },
     "technology": {
       "technology_rd": "Technology & R&D · Matoo Power",
@@ -813,7 +804,6 @@
       "book_a_factory_v": "Book a Factory Visit",
       "manufacturing_ca": "Manufacturing Capabilities",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司"
     },
@@ -906,7 +896,6 @@
       "15_contact": "15. Contact",
       "matoo_power_pte": "Matoo Power Pte. Ltd.",
       "salesmatoopower": "📧 sales@matoopower.com",
-      "whatsapp_65_xxx": "💬 WhatsApp: +65 XXXX XXXX",
       "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
       "深圳华溢智能科技有限公司_新加": "深圳华溢智能科技有限公司 · 新加坡华溢科技有限公司",
       "terms": "Terms"

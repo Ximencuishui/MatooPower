@@ -64,7 +64,6 @@
   "footer": {
     "brand": "전 세계 신흥 시장을 위해 China로 설계된 리튬 인산철 에너지 저장소.",
     "products": "상품",
-    "company": "社",
     "about": "소개",
     "mfg": "제조업",
     "partnership": "동업",
@@ -73,7 +72,8 @@
     "legal": "© 2026 Matoo Power. 판권 소유.",
     "privacy": "개인 정보 보호 정책",
     "cookies": "쿠키 설정",
-    "terms": "용어"
+    "terms": "용어",
+    "company": "Company"
   },
   "insights": {
     "section2_title": "Get Insights Monthly",
@@ -110,13 +110,17 @@
       "outdoor": "Outdoor",
       "salesmatoopower": "✉ sales@matoopower.com",
       "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
-      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "26h": "2-6h"
     },
     "products": {
       "products": "상품",
       "open_configurato": "구성자 열기 →",
       "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
-      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "evening_backup_desc": "Living-room outage → lights, TV, WiFi",
+      "home_office_ups_desc": "Laptop, network, monitor",
+      "kitchen_outage_desc": "Fridge, small appliances, emergency lighting"
     },
     "technology": {
       "technology": "기술",
@@ -154,7 +158,9 @@
       "bangladesh": "Bangladesh",
       "privacy_policy": "개인 정보 보호 정책",
       "whatsapp_65_xxx": "💬 WhatsApp: +65 (number pending)",
-      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka"
+      "singapore_shen": "📍 Singapore · Shenzhen · Dhaka",
+      "wechat_scan_hint": "Scan the QR code or search the official account",
+      "wechat_official_label": "WeChat Official Account"
     },
     "privacy": {
       "privacy_policy_hop62": "개인 정보 보호 정책",
