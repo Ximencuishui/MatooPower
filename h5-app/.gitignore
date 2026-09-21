@@ -11,6 +11,8 @@ dist/
 # T4 Playwright：HTML 报告 / 失败追踪 / run 残留（不入仓；本地调试用）
 playwright-report/
 test-results/
+# T5 Lighthouse CI：本地收集产物（不入仓；CI 走 temporary-public-storage）
+.lighthouseci/
 # T4 调试期间惰性 getter env 误求值产生 `file:undefined` 的 sqlite 垃圾文件
 **/undefined
 **/undefined-journal
