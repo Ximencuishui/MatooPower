@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "ja",
     "label": "日本語",
@@ -36,7 +36,16 @@
     "contact": "Contact",
     "legal": "© 2026 Matoo Power. All rights reserved.",
     "cookies": "Cookie Settings",
-    "terms": "Terms"
+    "terms": "Terms",
+    "follow_us": "フォローする",
+    "follow_facebook": "Facebookで Matoo Power をフォロー",
+    "follow_wechat": "WeChat 公式アカウント",
+    "wechat_scan": "スキャンして WeChat で追加",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "LinkedIn で Matoo Power をフォロー",
+    "follow_twitter": "Twitter / X で Matoo Power をフォロー",
+    "follow_youtube": "YouTube で Matoo Power を購読",
+    "follow_instagram": "Instagram で Matoo Power をフォロー"
   },
   "insights": {
     "section2_title": "Get Insights Monthly",

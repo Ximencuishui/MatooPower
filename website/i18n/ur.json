@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "ur",
     "label": "اردو",
@@ -73,7 +73,16 @@
     "legal": "© 2026 Matoo Power. جملہ حقوق محفوظ ہیں ۔",
     "privacy": "رازداری کی پالیسی",
     "cookies": "کوکی کی ترتیبات دیکھیں",
-    "terms": "شرائط"
+    "terms": "شرائط",
+    "follow_us": "ہمیں فالو کریں",
+    "follow_facebook": "Facebook پر Matoo Power کو فالو کریں",
+    "follow_wechat": "WeChat سرکاری اکاؤنٹ",
+    "wechat_scan": "WeChat پر شامل کرنے کے لیے اسکین کریں",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "LinkedIn پر Matoo Power کو فالو کریں",
+    "follow_twitter": "Twitter / X پر Matoo Power کو فالو کریں",
+    "follow_youtube": "YouTube پر Matoo Power سبسکرائب کریں",
+    "follow_instagram": "Instagram پر Matoo Power کو فالو کریں"
   },
   "insights": {
     "section2_title": "Get Insights Monthly",

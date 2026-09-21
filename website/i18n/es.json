@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "es",
     "label": "Español",
@@ -73,7 +73,16 @@
     "legal": "© 2026 Matoo Power. Todos los derechos reservados.",
     "privacy": "Política de privacidad",
     "cookies": "Configuración de cookies",
-    "terms": "Términos de servicio"
+    "terms": "Términos de servicio",
+    "follow_us": "Síguenos",
+    "follow_facebook": "Sigue a Matoo Power en Facebook",
+    "follow_wechat": "Cuenta oficial de WeChat",
+    "wechat_scan": "Escanea para agregar en WeChat",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "Sigue a Matoo Power en LinkedIn",
+    "follow_twitter": "Sigue a Matoo Power en Twitter / X",
+    "follow_youtube": "Suscríbete a Matoo Power en YouTube",
+    "follow_instagram": "Sigue a Matoo Power en Instagram"
   },
   "insights": {
     "section2_title": "Recibe perspectivas mensuales",

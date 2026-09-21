@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "ar",
     "label": "العربية",
@@ -73,7 +73,16 @@
     "mfg": "Manufacturing",
     "partnership": "Partnership",
     "insights": "Insights",
-    "contact": "Contact"
+    "contact": "Contact",
+    "follow_us": "تابعنا",
+    "follow_facebook": "تابع Matoo Power على Facebook",
+    "follow_wechat": "حساب WeChat الرسمي",
+    "wechat_scan": "امسح للإضافة على WeChat",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "تابع Matoo Power على LinkedIn",
+    "follow_twitter": "تابع Matoo Power على Twitter / X",
+    "follow_youtube": "اشترك في Matoo Power على YouTube",
+    "follow_instagram": "تابع Matoo Power على Instagram"
   },
   "insights": {
     "section2_title": "Get Insights Monthly",

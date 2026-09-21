@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "ko",
     "label": "한국어",
@@ -73,7 +73,16 @@
     "privacy": "개인 정보 보호 정책",
     "cookies": "쿠키 설정",
     "terms": "용어",
-    "company": "Company"
+    "company": "Company",
+    "follow_us": "팔로우하기",
+    "follow_facebook": "Facebook에서 Matoo Power 팔로우",
+    "follow_wechat": "WeChat 공식 계정",
+    "wechat_scan": "WeChat 추가를 위해 스캔",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "LinkedIn에서 Matoo Power 팔로우",
+    "follow_twitter": "Twitter / X에서 Matoo Power 팔로우",
+    "follow_youtube": "YouTube에서 Matoo Power 구독",
+    "follow_instagram": "Instagram에서 Matoo Power 팔로우"
   },
   "insights": {
     "section2_title": "Get Insights Monthly",

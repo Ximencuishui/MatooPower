@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "vi",
     "label": "Tiếng Việt",
@@ -73,7 +73,16 @@
     "legal": "© 2026 Matoo Power. Bảo lưu mọi quyền.",
     "privacy": "Chính sách bảo mật",
     "cookies": "Cài đặt Cookie",
-    "terms": "Điều khoản dịch vụ"
+    "terms": "Điều khoản dịch vụ",
+    "follow_us": "Theo dõi",
+    "follow_facebook": "Theo dõi Matoo Power trên Facebook",
+    "follow_wechat": "Tài khoản chính thức WeChat",
+    "wechat_scan": "Quét để thêm trên WeChat",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "Theo dõi Matoo Power trên LinkedIn",
+    "follow_twitter": "Theo dõi Matoo Power trên Twitter / X",
+    "follow_youtube": "Đăng ký Matoo Power trên YouTube",
+    "follow_instagram": "Theo dõi Matoo Power trên Instagram"
   },
   "insights": {
     "section2_title": "Nhận thông tin mỗi tháng",
