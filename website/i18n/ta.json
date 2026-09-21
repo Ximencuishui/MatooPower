@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "ta",
     "label": "தமிழ்",
@@ -73,7 +73,16 @@
     "legal": "© 2026 Matoo Power. All rights reserved.",
     "privacy": "Privacy Policy",
     "cookies": "Cookie Settings",
-    "terms": "Terms"
+    "terms": "Terms",
+    "follow_us": "எங்களைப் பின்தொடருங்கள்",
+    "follow_facebook": "Facebook இல் Matoo Power-ஐப் பின்தொடருங்கள்",
+    "follow_wechat": "WeChat அதிகாரப்பூர்வ கணக்கு",
+    "wechat_scan": "WeChat இல் சேர்க்க ஸ்கேன் செய்க",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "LinkedIn இல் Matoo Power-ஐப் பின்தொடருங்கள்",
+    "follow_twitter": "Twitter / X இல் Matoo Power-ஐப் பின்தொடருங்கள்",
+    "follow_youtube": "YouTube இல் Matoo Power-ஐ சந்தா செய்க",
+    "follow_instagram": "Instagram இல் Matoo Power-ஐப் பின்தொடருங்கள்"
   },
   "insights": {
     "section2_title": "Get Insights Monthly",

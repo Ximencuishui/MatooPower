@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "te",
     "label": "తెలుగు",
@@ -73,7 +73,16 @@
     "mfg": "Manufacturing",
     "partnership": "Partnership",
     "insights": "Insights",
-    "contact": "Contact"
+    "contact": "Contact",
+    "follow_us": "మమ్మల్ని అనుసరించండి",
+    "follow_facebook": "Facebookలో Matoo Powerని అనుసరించండి",
+    "follow_wechat": "WeChat అధికారిక ఖాతా",
+    "wechat_scan": "WeChatలో జోడించడానికి స్కాన్ చేయండి",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "LinkedInలో Matoo Powerని అనుసరించండి",
+    "follow_twitter": "Twitter / Xలో Matoo Powerని అనుసరించండి",
+    "follow_youtube": "YouTubeలో Matoo Powerని సబ్‌స్క్రయిబ్ చేయండి",
+    "follow_instagram": "Instagramలో Matoo Powerని అనుసరించండి"
   },
   "insights": {
     "section2_title": "Get Insights Monthly",

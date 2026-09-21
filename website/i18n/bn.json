@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "bn",
     "label": "বাংলা",
@@ -28,7 +28,7 @@
     },
     "outage": {
       "label": "গড় দৈনিক আউটেজ সময়",
-      "source": "sales@matoopower.comorld Bank Energy Access Report"
+      "source": "World Bank Energy Access Report"
     },
     "cycle": {
       "label": "ব্যাটারি চক্রের জীবন (LFP)",
@@ -73,7 +73,16 @@
     "legal": "© 2026 Matoo Power. সর্বস্বত্ব সংরক্ষিত ।",
     "privacy": "ব্যক্তিগত গোপনীয়তার নীতি",
     "cookies": "কুকি সেটিংস",
-    "terms": "শর্তাবলী"
+    "terms": "শর্তাবলী",
+    "follow_us": "আমাদের অনুসরণ করুন",
+    "follow_facebook": "Facebook-এ Matoo Power অনুসরণ করুন",
+    "follow_wechat": "WeChat অফিসিয়াল অ্যাকাউন্ট",
+    "wechat_scan": "WeChat-এ যোগ করতে স্ক্যান করুন",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "LinkedIn-এ Matoo Power অনুসরণ করুন",
+    "follow_twitter": "Twitter / X-এ Matoo Power অনুসরণ করুন",
+    "follow_youtube": "YouTube-এ Matoo Power সাবস্ক্রাইব করুন",
+    "follow_instagram": "Instagram-এ Matoo Power অনুসরণ করুন"
   },
   "insights": {
     "section2_title": "Get Insights Monthly",

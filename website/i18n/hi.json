@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "hi",
     "label": "हिन्दी",
@@ -28,7 +28,7 @@
     },
     "outage": {
       "label": "औसत दैनिक आउटेज घंटे",
-      "source": "sales@matoopower.comorld Bank Energy Access Report"
+      "source": "World Bank Energy Access Report"
     },
     "cycle": {
       "label": "बैटरी चक्र जीवन (LFP)",
@@ -73,7 +73,16 @@
     "legal": "© 2026 Matoo Power. सर्वाधिकार सुरक्षित।",
     "privacy": "गोपनियता नीति",
     "cookies": "कुकी सेटिंग",
-    "terms": "शर्तें"
+    "terms": "शर्तें",
+    "follow_us": "हमें फॉलो करें",
+    "follow_facebook": "Facebook पर Matoo Power को फॉलो करें",
+    "follow_wechat": "WeChat आधिकारिक खाता",
+    "wechat_scan": "WeChat पर जोड़ने के लिए स्कैन करें",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "LinkedIn पर Matoo Power को फॉलो करें",
+    "follow_twitter": "Twitter / X पर Matoo Power को फॉलो करें",
+    "follow_youtube": "YouTube पर Matoo Power सब्सक्राइब करें",
+    "follow_instagram": "Instagram पर Matoo Power को फॉलो करें"
   },
   "insights": {
     "section2_title": "Get Insights Monthly",

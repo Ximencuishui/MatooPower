@@ -1,4 +1,4 @@
-{
+﻿{
   "_meta": {
     "lang": "en",
     "label": "English",
@@ -922,7 +922,16 @@
     "mfg": "Manufacturing",
     "partnership": "Partnership",
     "insights": "Insights",
-    "legal": "© 2026 Matoo Power. All rights reserved."
+    "legal": "© 2026 Matoo Power. All rights reserved.",
+    "follow_us": "Follow Us",
+    "follow_facebook": "Follow Matoo Power on Facebook",
+    "follow_wechat": "WeChat official account",
+    "wechat_scan": "Scan to add on WeChat",
+    "wechat_id": "MatooPower",
+    "follow_linkedin": "Follow Matoo Power on LinkedIn",
+    "follow_twitter": "Follow Matoo Power on Twitter / X",
+    "follow_youtube": "Subscribe Matoo Power on YouTube",
+    "follow_instagram": "Follow Matoo Power on Instagram"
   },
   "hero": {
     "eyebrow": "Engineered in China · Trusted Worldwide",

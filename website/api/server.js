@@ -26,6 +26,7 @@ const imageRoutes = require('./routes/images');
 const auditRoutes = require('./routes/audit');
 const analyticsRoutes = require('./routes/analytics');
 const inquiriesRoutes = require('./routes/inquiries');
+const settingsRoutes = require('./routes/settings');
 const tracker = require('./lib/tracker');
 
 const app = express();
@@ -155,6 +156,7 @@ app.use('/api/images', writeLimiter, imageRoutes);
 app.use('/api/inquiries', writeLimiter, inquiriesRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/settings', writeLimiter, settingsRoutes);
 
 // Frontend: serve website root (HTML, CSS, JS, assets, i18n)
 const frontendStatic = express.static(config.paths.websiteRoot, {
