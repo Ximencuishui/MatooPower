@@ -1,0 +1,31 @@
+# 营销站部署时，Vercel 会以 website/ 为根目录打包上传。
+# 下面这些目录/文件是后台 + 工具脚本，部署时忽略即可，
+# 既能避免污染线上文件，也能让上传体积更小、部署更快。
+
+# 后台 Node 服务（不在 Vercel 跑）
+api/
+
+# 后台前端 UI（按设计稿不部署到生产）
+admin/
+
+# 文档、审计脚本、PowerShell 脚本
+scripts/
+*.ps1
+_audit_*
+_audit_*.*
+_audit_*/*
+
+# 构建期临时文件 / 缓存
+_translation_cache*.json
+_fallback_keys.json
+_missing_keys.txt
+_html-references.txt
+*.tmp
+*.log
+
+# 后台数据 & 用户上传（不应出现在线上）
+data/
+node_modules/
+.env
+.env.*
+!.env.example
