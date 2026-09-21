@@ -78,12 +78,8 @@
   }
   </script>
 
-  <!-- LCP Preload · preload 最高分辨率候选，桌面端首屏直接命中 -->
-  <link rel="preload" as="image"
-        href="/assets/hero-home@1920.jpg"
-        imagesrcset="/assets/hero-home@1200.jpg 1200w, /assets/hero-home@1920.jpg 1920w"
-        imagesizes="100vw"
-        fetchpriority="high">
+  <!-- Hero 图用 CSS background-image 渲染（见 .hero），预加载对 background-image
+       无效且会产生 'preloaded but not used' 警告，故此处不 preload。 -->
 </head>
 <body>
 

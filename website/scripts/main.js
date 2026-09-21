@@ -25,9 +25,17 @@
       const cfg = window.MATOO_WHATSAPP;
       if (!cfg || !cfg.number) return;
 
-      // Skip rewrite if placeholder is still the literal "WHATSAPP_PLACEHOLDER"
+      // Skip rewrite if placeholder is still the literal "WHATSAPP_PLACEHOLDER".
+      // In production, disable the link entirely (safer than a broken wa.me link).
       if (cfg.number === this.PLACEHOLDER) {
-        console.warn('[Matoo] WhatsApp number is still a placeholder. Edit scripts/whatsapp-config.js before deploy.');
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:') {
+          console.warn('[Matoo] WhatsApp number is still a placeholder. Edit scripts/whatsapp-config.js before deploy.');
+        }
+        document.querySelectorAll('a[href*="wa.me/' + this.PLACEHOLDER + '"]').forEach((a) => {
+          a.setAttribute('href', '#');
+          a.setAttribute('aria-disabled', 'true');
+          a.addEventListener('click', (e) => { e.preventDefault(); });
+        });
         return;
       }
 
