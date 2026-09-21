@@ -8,9 +8,10 @@ api/
 # 后台前端 UI（按设计稿不部署到生产）
 admin/
 
-# 文档、审计脚本、PowerShell 脚本
-scripts/
+# PowerShell 脚本
 *.ps1
+
+# 审计 & 一次性工具产物
 _audit_*
 _audit_*.*
 _audit_*/*
@@ -22,6 +23,9 @@ _missing_keys.txt
 _html-references.txt
 *.tmp
 *.log
+
+# 后台烟雾测试脚本（依赖 Node 后端 + admin API，不部署到静态站）
+scripts/smoke-admin.js
 
 # 后台数据 & 用户上传（不应出现在线上）
 data/

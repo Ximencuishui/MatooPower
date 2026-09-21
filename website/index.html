@@ -78,10 +78,12 @@
   }
   </script>
 
-  <!-- LCP Preload -->
-  <link rel="preload" as="image" href="/assets/hero-home.jpg"
+  <!-- LCP Preload · preload 最高分辨率候选，桌面端首屏直接命中 -->
+  <link rel="preload" as="image"
+        href="/assets/hero-home@1920.jpg"
         imagesrcset="/assets/hero-home@1200.jpg 1200w, /assets/hero-home@1920.jpg 1920w"
-        imagesizes="100vw">
+        imagesizes="100vw"
+        fetchpriority="high">
 </head>
 <body>
 
