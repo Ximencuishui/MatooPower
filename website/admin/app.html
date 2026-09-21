@@ -19,6 +19,7 @@
         <li><button class="active" data-view="i18n" data-i18n="nav.translations">Translations</button></li>
         <li><button data-view="images" data-i18n="nav.images">Images</button></li>
         <li><button data-view="keys" data-i18n="nav.keys">Key Audit</button></li>
+        <li><button data-view="settings" data-i18n="nav.settings">Settings</button></li>
         <li><button data-view="overview" data-i18n="nav.overview">Overview</button></li>
         <li><button data-view="audit" data-i18n="nav.audit">Activity Log</button></li>
       </ul>
@@ -105,10 +106,212 @@
         <option value="i18n">i18n</option>
         <option value="images">images</option>
         <option value="auth">auth</option>
+        <option value="settings">settings</option>
       </select>
       <button class="btn btn-ghost" id="reload-audit-btn" data-i18n="audit.reload">Reload</button>
     </div>
     <div class="audit-list" id="audit-list"></div>
+  </template>
+
+  <!-- ========== Settings template ========== -->
+  <template id="tpl-settings">
+    <div class="settings-toolbar">
+      <button class="btn btn-ghost" id="settings-reload" data-i18n="settings.reload">Reload</button>
+      <button class="btn btn-ghost" id="settings-reset" data-i18n="settings.reset">Reset to defaults</button>
+      <span class="settings-meta" id="settings-meta"></span>
+    </div>
+    <form id="settings-form" class="settings-form" autocomplete="off">
+      <fieldset class="settings-section">
+        <legend data-i18n="settings.section.whatsapp">WhatsApp</legend>
+        <p class="hint" data-i18n="settings.section.whatsappHint">
+          Single primary number plus per-region overrides. Numbers are digits only (E.164, no '+').
+        </p>
+
+        <label class="field">
+          <span data-i18n="settings.field.enabled">Enabled</span>
+          <label class="switch">
+            <input type="checkbox" name="whatsapp.enabled">
+            <span class="slider"></span>
+          </label>
+        </label>
+
+        <label class="field">
+          <span data-i18n="settings.field.whatsappNumber">Primary number</span>
+          <input class="input" type="text" name="whatsapp.number" placeholder="6591234567" pattern="\d{7,15}">
+        </label>
+
+        <label class="field">
+          <span data-i18n="settings.field.defaultMessage">Default message</span>
+          <textarea class="input" name="whatsapp.defaultMessage" rows="2"></textarea>
+        </label>
+
+        <div class="region-grid">
+          <label class="field">
+            <span data-i18n="settings.field.regionSea">SEA</span>
+            <input class="input" type="text" name="whatsapp.byRegion.sea" placeholder="6591234567">
+          </label>
+          <label class="field">
+            <span data-i18n="settings.field.regionMena">MENA</span>
+            <input class="input" type="text" name="whatsapp.byRegion.mena" placeholder="971501234567">
+          </label>
+          <label class="field">
+            <span data-i18n="settings.field.regionSa">South Asia</span>
+            <input class="input" type="text" name="whatsapp.byRegion.sa" placeholder="8801712345678">
+          </label>
+          <label class="field">
+            <span data-i18n="settings.field.regionAfrica">Africa</span>
+            <input class="input" type="text" name="whatsapp.byRegion.africa" placeholder="2348012345678">
+          </label>
+          <label class="field">
+            <span data-i18n="settings.field.regionLatam">LATAM</span>
+            <input class="input" type="text" name="whatsapp.byRegion.latam" placeholder="5511999998888">
+          </label>
+        </div>
+
+        <label class="field">
+          <span data-i18n="settings.field.disabledInProd">Disable placeholder wa.me links in production</span>
+          <label class="switch">
+            <input type="checkbox" name="whatsapp.disabledInProd">
+            <span class="slider"></span>
+          </label>
+        </label>
+      </fieldset>
+
+      <fieldset class="settings-section">
+        <legend data-i18n="settings.section.contact">Contact</legend>
+
+        <label class="field">
+          <span data-i18n="settings.field.contactEmail">Sales email</span>
+          <input class="input" type="email" name="contact.email" placeholder="sales@matoopower.com">
+        </label>
+
+        <label class="field">
+          <span data-i18n="settings.field.wechatId">WeChat ID</span>
+          <input class="input" type="text" name="contact.wechatId">
+        </label>
+
+        <label class="field">
+          <span data-i18n="settings.field.wechatQrUrl">WeChat QR image URL</span>
+          <input class="input" type="text" name="contact.wechatQrUrl" placeholder="/assets/qr-wechat.svg">
+        </label>
+
+        <label class="field">
+          <span data-i18n="settings.field.hqLine">HQ line (footer)</span>
+          <input class="input" type="text" name="contact.hqLine">
+        </label>
+
+        <label class="field">
+          <span data-i18n="settings.field.addressSg">Address · Singapore</span>
+          <input class="input" type="text" name="contact.address.sg">
+        </label>
+
+        <label class="field">
+          <span data-i18n="settings.field.addressCn">Address · China</span>
+          <input class="input" type="text" name="contact.address.cn">
+        </label>
+
+        <label class="field">
+          <span data-i18n="settings.field.addressBd">Address · Bangladesh</span>
+          <input class="input" type="text" name="contact.address.bd">
+        </label>
+      </fieldset>
+
+      <fieldset class="settings-section">
+        <legend data-i18n="settings.section.social">Social</legend>
+        <p class="hint" data-i18n="settings.section.socialHint">
+          Leave a field empty to hide the icon. URLs must be on the official platform domain.
+        </p>
+        <label class="field">
+          <span>Facebook</span>
+          <div class="field-input-wrap">
+            <input class="input" type="url" name="social.facebook"
+                   data-social-domain="facebook"
+                   placeholder="https://www.facebook.com/MatooPower">
+            <span class="field-hint" data-i18n="settings.field.socialFacebookHint">Allowed: facebook.com · fb.com · fb.me</span>
+          </div>
+        </label>
+        <label class="field">
+          <span>LinkedIn</span>
+          <div class="field-input-wrap">
+            <input class="input" type="url" name="social.linkedin"
+                   data-social-domain="linkedin"
+                   placeholder="https://www.linkedin.com/company/matoo-power">
+            <span class="field-hint" data-i18n="settings.field.socialLinkedinHint">Allowed: linkedin.com · lnkd.in</span>
+          </div>
+        </label>
+        <label class="field">
+          <span>Twitter / X</span>
+          <div class="field-input-wrap">
+            <input class="input" type="url" name="social.twitter"
+                   data-social-domain="twitter"
+                   placeholder="https://twitter.com/MatooPower">
+            <span class="field-hint" data-i18n="settings.field.socialTwitterHint">Allowed: twitter.com · x.com · t.co</span>
+          </div>
+        </label>
+        <label class="field">
+          <span>YouTube</span>
+          <div class="field-input-wrap">
+            <input class="input" type="url" name="social.youtube"
+                   data-social-domain="youtube"
+                   placeholder="https://www.youtube.com/@MatooPower">
+            <span class="field-hint" data-i18n="settings.field.socialYoutubeHint">Allowed: youtube.com · youtu.be · yt.be</span>
+          </div>
+        </label>
+        <label class="field">
+          <span>Instagram</span>
+          <div class="field-input-wrap">
+            <input class="input" type="url" name="social.instagram"
+                   data-social-domain="instagram"
+                   placeholder="https://www.instagram.com/matoopower">
+            <span class="field-hint" data-i18n="settings.field.socialInstagramHint">Allowed: instagram.com · instagr.am</span>
+          </div>
+        </label>
+      </fieldset>
+
+      <fieldset class="settings-section">
+        <legend data-i18n="settings.section.legal">Legal entities</legend>
+        <label class="field">
+          <span data-i18n="settings.field.legalCn">CN entity</span>
+          <input class="input" type="text" name="legalEntity.cn">
+        </label>
+        <label class="field">
+          <span data-i18n="settings.field.legalCnRole">CN role</span>
+          <input class="input" type="text" name="legalEntity.cnRole">
+        </label>
+        <label class="field">
+          <span data-i18n="settings.field.legalSg">SG entity</span>
+          <input class="input" type="text" name="legalEntity.sg">
+        </label>
+        <label class="field">
+          <span data-i18n="settings.field.legalSgRole">SG role</span>
+          <input class="input" type="text" name="legalEntity.sgRole">
+        </label>
+      </fieldset>
+
+      <fieldset class="settings-section">
+        <legend data-i18n="settings.section.meta">Site meta</legend>
+        <label class="field">
+          <span data-i18n="settings.field.siteName">Site name</span>
+          <input class="input" type="text" name="meta.siteName">
+        </label>
+        <label class="field">
+          <span data-i18n="settings.field.tagline">Tagline</span>
+          <input class="input" type="text" name="meta.tagline">
+        </label>
+        <label class="field">
+          <span data-i18n="settings.field.responseSlaHours">Response SLA (hours)</span>
+          <input class="input" type="number" min="0" max="720" name="meta.responseSlaHours">
+        </label>
+      </fieldset>
+
+      <div class="settings-foot">
+        <span class="info" data-i18n="settings.saveHint">Changes apply immediately to the public site on next page load.</span>
+        <div>
+          <button type="button" class="btn btn-ghost" id="settings-cancel" data-i18n="settings.cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="settings-save" data-i18n="settings.save">Save</button>
+        </div>
+      </div>
+    </form>
   </template>
 
   <template id="tpl-overview">

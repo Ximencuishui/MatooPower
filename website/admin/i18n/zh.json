@@ -13,13 +13,14 @@
     "firstRunHint": "首次启动？密码会在服务启动时打印到终端（或保存在 <code>api/data/admin.json</code>）。"
   },
   "nav": {
-    "translations": "文案翻译",
-    "images": "图片管理",
+    "translations": "翻译",
+    "images": "图片",
     "keys": "翻译键审计",
-    "overview": "运营观察",
-    "audit": "操作日志",
-    "signout": "退出",
-    "language": "界面语言"
+    "settings": "站点配置",
+    "overview": "数据总览",
+    "audit": "活动日志",
+    "signout": "退出登录",
+    "language": "语言"
   },
   "topbar": {
     "viewSite": "查看前台 ↗",
@@ -118,5 +119,52 @@
     "chinese": "中文",
     "en": "English",
     "zh": "中文"
+  },
+  "settings": {
+    "title": "站点配置",
+    "reload": "重新加载",
+    "reset": "恢复默认值",
+    "cancel": "取消",
+    "save": "保存",
+    "saveHint": "保存后下次加载页面即生效。",
+    "section": {
+      "whatsapp": "WhatsApp",
+      "whatsappHint": "主号码 + 各地区覆盖。号码仅支持数字（E.164 格式，无 + 号）。",
+      "contact": "联系方式",
+      "social": "社交账号",
+      "socialHint": "留空则隐藏图标。URL 必须为该平台官方域名。",
+      "legal": "法律实体",
+      "meta": "站点元信息"
+    },
+    "field": {
+      "enabled": "启用",
+      "whatsappNumber": "主号码",
+      "defaultMessage": "默认消息",
+      "regionSea": "东南亚",
+      "regionMena": "中东与北非",
+      "regionSa": "南亚",
+      "regionAfrica": "非洲",
+      "regionLatam": "拉美",
+      "disabledInProd": "生产环境禁用占位 wa.me 链接",
+      "contactEmail": "销售邮箱",
+      "wechatId": "微信号",
+      "wechatQrUrl": "微信二维码图片 URL",
+      "hqLine": "总部一行（页脚）",
+      "addressSg": "地址 · 新加坡",
+      "addressCn": "地址 · 中国",
+      "addressBd": "地址 · 孟加拉",
+      "legalCn": "中国实体",
+      "legalCnRole": "中国角色",
+      "legalSg": "新加坡实体",
+      "legalSgRole": "新加坡角色",
+      "siteName": "站点名称",
+      "tagline": "副标题",
+      "responseSlaHours": "响应 SLA（小时）",
+      "socialFacebookHint": "允许：facebook.com · fb.com · fb.me",
+      "socialLinkedinHint": "允许：linkedin.com · lnkd.in",
+      "socialTwitterHint": "允许：twitter.com · x.com · t.co",
+      "socialYoutubeHint": "允许：youtube.com · youtu.be · yt.be",
+      "socialInstagramHint": "允许：instagram.com · instagr.am"
+    }
   }
 }

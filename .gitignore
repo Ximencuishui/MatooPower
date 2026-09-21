@@ -94,3 +94,18 @@ verify-results.txt
 .cache/
 .tmp/
 tmp/
+
+# 一次性调试脚本/审计副产物(2026-09 P0/P1 验收期产物)
+_diag_*.js
+_diag_*.out
+_check_*.js
+_clean_*.js
+_list_langs.*
+_prune_*.txt
+_backfill_out.txt
+_gate_*.txt
+_verify_ps1.txt
+_diff_index.txt
+_git_status.txt
+_audit_*.txt
+.audit_full.out

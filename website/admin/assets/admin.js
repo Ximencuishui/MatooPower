@@ -137,6 +137,7 @@
       i18n: 'i18n.title',
       images: 'images.title',
       keys: 'keys.title',
+      settings: 'settings.title',
       overview: 'overview.title',
       audit: 'audit.title',
     };
@@ -708,6 +709,188 @@
         '</div>';
     }
   };
+
+  // ---------- Settings View ----------
+  views.settings = function () {
+    var form = document.getElementById('settings-form');
+    document.getElementById('settings-reload').addEventListener('click', loadSettings);
+    document.getElementById('settings-reset').addEventListener('click', function () {
+      if (!window.confirm('Reset all settings to defaults? This cannot be undone.')) return;
+      api('/api/settings/reset', { method: 'POST' }).then(function () {
+        toast('Settings reset', 'success');
+        loadSettings();
+      }).catch(function (err) {
+        toast('Reset failed: ' + err.message, 'error');
+      });
+    });
+    document.getElementById('settings-cancel').addEventListener('click', function () {
+      clearSocialValidation();
+      loadSettings();
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      saveSettings();
+    });
+    // Live social-URL validation: validate as user types or blurs.
+    bindSocialUrlValidation(form);
+    loadSettings();
+  };
+
+  /**
+   * Allowed hostnames per social platform — must match api/lib/settings.js.
+   * Duplicated client-side so operators get instant feedback before submit.
+   */
+  var SOCIAL_HOST_WHITELIST = {
+    facebook:  ['facebook.com', 'fb.com', 'fb.me'],
+    linkedin:  ['linkedin.com', 'lnkd.in'],
+    twitter:   ['twitter.com', 'x.com', 't.co'],
+    youtube:   ['youtube.com', 'youtu.be', 'yt.be'],
+    instagram: ['instagram.com', 'instagr.am'],
+  };
+
+  function validateSocialClient(platform, url) {
+    if (url === '') return { ok: true };
+    var parsed;
+    try { parsed = new URL(url); }
+    catch (_) { return { ok: false, reason: 'malformed' }; }
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return { ok: false, reason: 'protocol must be http(s)' };
+    }
+    var host = parsed.hostname.toLowerCase();
+    var allowed = SOCIAL_HOST_WHITELIST[platform];
+    if (!allowed) return { ok: true };
+    for (var i = 0; i < allowed.length; i++) {
+      if (host === allowed[i] || host.endsWith('.' + allowed[i])) return { ok: true };
+    }
+    return { ok: false, reason: 'host not allowed', host: host, allowed: allowed };
+  }
+
+  function bindSocialUrlValidation(form) {
+    var inputs = form.querySelectorAll('input[data-social-domain]');
+    inputs.forEach(function (input) {
+      var platform = input.getAttribute('data-social-domain');
+      var hint = input.parentNode.querySelector('.field-hint');
+      function check() {
+        var r = validateSocialClient(platform, input.value.trim());
+        if (r.ok) {
+          input.classList.remove('is-invalid');
+          if (hint) hint.classList.remove('is-invalid');
+        } else {
+          input.classList.add('is-invalid');
+          if (hint) {
+            hint.classList.add('is-invalid');
+            var allowed = (r.allowed || SOCIAL_HOST_WHITELIST[platform]).join(' · ');
+            hint.textContent = (r.host ? ('"' + r.host + '" not allowed. ') : r.reason + '. ')
+              + 'Use: ' + allowed;
+          }
+        }
+      }
+      input.addEventListener('input', check);
+      input.addEventListener('blur', check);
+    });
+  }
+
+  function clearSocialValidation() {
+    var form = document.getElementById('settings-form');
+    if (!form) return;
+    form.querySelectorAll('.is-invalid').forEach(function (el) { el.classList.remove('is-invalid'); });
+  }
+
+  function collectInvalidSocialInputs(form) {
+    var bad = [];
+    var inputs = form.querySelectorAll('input[data-social-domain]');
+    inputs.forEach(function (input) {
+      if (input.value.trim() === '') return;
+      var platform = input.getAttribute('data-social-domain');
+      var r = validateSocialClient(platform, input.value.trim());
+      if (!r.ok) bad.push(platform);
+    });
+    return bad;
+  }
+
+  function loadSettings() {
+    setStatus('loading…', 'saving');
+    api('/api/settings/admin').then(function (r) {
+      state.settings = r.data || {};
+      renderSettings(r.data);
+      var meta = document.getElementById('settings-meta');
+      if (meta) meta.textContent = r.file || '';
+      setStatus('ready');
+    }).catch(function (err) {
+      toast('Load failed: ' + err.message, 'error');
+      setStatus('error', 'error');
+    });
+  }
+
+  function renderSettings(s) {
+    if (!s) return;
+    var form = document.getElementById('settings-form');
+    if (!form) return;
+    // Walk the form and set values by field name
+    var inputs = form.querySelectorAll('input[name], textarea[name], select[name]');
+    inputs.forEach(function (el) {
+      var v = getByPath(s, el.name);
+      if (el.type === 'checkbox') {
+        el.checked = !!v;
+      } else {
+        el.value = v == null ? '' : String(v);
+      }
+    });
+  }
+
+  function collectFormSettings(form) {
+    var inputs = form.querySelectorAll('input[name], textarea[name], select[name]');
+    var out = {};
+    inputs.forEach(function (el) {
+      var v;
+      if (el.type === 'checkbox') v = el.checked;
+      else v = el.value;
+      // Build nested object from "a.b.c"
+      var parts = el.name.split('.');
+      var cur = out;
+      for (var i = 0; i < parts.length - 1; i++) {
+        if (cur[parts[i]] == null || typeof cur[parts[i]] !== 'object') cur[parts[i]] = {};
+        cur = cur[parts[i]];
+      }
+      cur[parts[parts.length - 1]] = v;
+    });
+    return out;
+  }
+
+  async function saveSettings() {
+    var form = document.getElementById('settings-form');
+    var payload = collectFormSettings(form);
+
+    // Client-side social URL guard — block submit so the operator sees the
+    // exact field that needs fixing rather than waiting for a server 400.
+    var bad = collectInvalidSocialInputs(form);
+    if (bad.length > 0) {
+      toast('Invalid URL on: ' + bad.join(', ') + '. Fix before saving.', 'error');
+      setStatus('error', 'error');
+      // Scroll the first invalid input into view
+      var firstBad = form.querySelector('input[data-social-domain="' + bad[0] + '"]');
+      if (firstBad) {
+        firstBad.focus();
+        firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
+    setStatus('saving…', 'saving');
+    try {
+      var r = await api('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings: payload }),
+      });
+      state.settings = r.data || {};
+      toast('Saved · ' + ((r.diffs || []).length) + ' field(s) changed', 'success');
+      setStatus('saved', 'saved');
+    } catch (e) {
+      setStatus('error', 'error');
+      toast('Save failed: ' + e.message, 'error');
+    }
+  }
 
   // ---------- Audit View ----------
   views.audit = function () {
