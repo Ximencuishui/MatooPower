@@ -2,20 +2,24 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   HttpCode,
   HttpStatus,
   Param,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import type { Response } from 'express';
 import { CurrentUser, AuthUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { AdminService } from './admin.service';
 import { TicketService } from '../ticket/ticket.service';
+import { toCsv, CSV_BOM } from '../../common/util/csv';
 
 @Controller('admin')
 @ApiTags('admin')
@@ -98,14 +102,16 @@ export class AdminController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Review / override warranty status' })
   async review(
+    @CurrentUser() user: AuthUser,
     @Param('id') id: string,
     @Body() body: { status: 'active' | 'pending' | 'expired' | 'rejected'; notes?: string },
   ) {
-    const w = await this.svc.reviewWarranty(id, body.status, body.notes);
+    const w = await this.svc.reviewWarranty(id, body.status, body.notes, user.sub);
     return { ok: true, warranty: w };
   }
 
   @Get('tickets')
+  @Roles('admin', 'support')
   @ApiOperation({ summary: 'List all tickets (admin view, paginated + searchable)' })
   async listTickets(
     @CurrentUser() _user: AuthUser,
@@ -124,6 +130,7 @@ export class AdminController {
   }
 
   @Get('tickets/stats')
+  @Roles('admin', 'support')
   @ApiOperation({ summary: 'Ticket KPIs (open / resolved / urgent / today)' })
   async ticketStats(@CurrentUser() _user: AuthUser) {
     return { ok: true, stats: this.ticketSvc.stats() };
@@ -153,5 +160,78 @@ export class AdminController {
     const t = (validTypes as readonly string[]).includes(type ?? '') ? type! : 'warranty';
     const g = (validGroups as readonly string[]).includes(groupBy ?? '') ? groupBy! : 'sku';
     return { ok: true, items: await this.svc.breakdown(t as any, g as any) };
+  }
+
+  // ============================================================
+  // v1.1 CSV exports — ?format=csv 直接在原端点判定,返回 text/csv
+  // ============================================================
+  @Get('sku.csv')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  @ApiOperation({ summary: 'Export SKU list as CSV (admin only)' })
+  async exportSkuCsv(
+    @CurrentUser() _user: AuthUser,
+    @Query('q') q: string | undefined,
+    @Res({ passthrough: false }) res: Response,
+  ) {
+    const data = await this.svc.listSkus({ q, page: 1, pageSize: 100 });
+    res.setHeader('Content-Disposition', `attachment; filename="admin-sku-${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.send(CSV_BOM + toCsv(data.items as unknown as Record<string, unknown>[]));
+  }
+
+  @Get('warranties.csv')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  @ApiOperation({ summary: 'Export warranties list as CSV (admin only)' })
+  async exportWarrantiesCsv(
+    @CurrentUser() _user: AuthUser,
+    @Query('q') q: string | undefined,
+    @Query('status') status: string | undefined,
+    @Res({ passthrough: false }) res: Response,
+  ) {
+    const data = await this.svc.listWarranties({ q, status, page: 1, pageSize: 100 });
+    res.setHeader('Content-Disposition', `attachment; filename="admin-warranties-${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.send(CSV_BOM + toCsv(data.items));
+  }
+
+  @Get('devices.csv')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  @ApiOperation({ summary: 'Export devices list as CSV (admin only)' })
+  async exportDevicesCsv(
+    @CurrentUser() _user: AuthUser,
+    @Query('q') q: string | undefined,
+    @Res({ passthrough: false }) res: Response,
+  ) {
+    const data = await this.svc.listDevices({ q, page: 1, pageSize: 100 });
+    res.setHeader('Content-Disposition', `attachment; filename="admin-devices-${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.send(CSV_BOM + toCsv(data.items));
+  }
+
+  @Get('users.csv')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  @ApiOperation({ summary: 'Export users list as CSV (admin only)' })
+  async exportUsersCsv(
+    @CurrentUser() _user: AuthUser,
+    @Query('q') q: string | undefined,
+    @Query('role') role: string | undefined,
+    @Res({ passthrough: false }) res: Response,
+  ) {
+    const data = await this.svc.listUsers({ q, role, page: 1, pageSize: 100 });
+    res.setHeader('Content-Disposition', `attachment; filename="admin-users-${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.send(CSV_BOM + toCsv(data.items));
+  }
+
+  @Get('tickets.csv')
+  @Roles('admin', 'support')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  @ApiOperation({ summary: 'Export tickets list as CSV (admin/support)' })
+  async exportTicketsCsv(
+    @CurrentUser() _user: AuthUser,
+    @Query('status') status: string | undefined,
+    @Query('severity') severity: string | undefined,
+    @Query('q') q: string | undefined,
+    @Res({ passthrough: false }) res: Response,
+  ) {
+    const data = this.ticketSvc.listAll(status, severity, { q, page: 1, pageSize: 100 });
+    res.setHeader('Content-Disposition', `attachment; filename="admin-tickets-${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.send(CSV_BOM + toCsv(data.items as unknown as Record<string, unknown>[]));
   }
 }

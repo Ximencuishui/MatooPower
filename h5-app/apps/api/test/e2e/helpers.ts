@@ -5,6 +5,9 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import { SECURITY_HEADERS } from '../../src/common/security';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -25,6 +28,8 @@ export function initDb(dbFile: string) {
   process.env.QR_HMAC_SECRET = 'test-hmac-secret';
   process.env.OTP_TTL_SECONDS = '300';
   process.env.PORT = '0';
+  // P0-5 测试环境标志：pino silent（防刷屏）+ AppThrottlerGuard 放行（防 OTP 5/min 误伤）
+  process.env.NODE_ENV = 'test';
 
   const cwd = path.resolve(__dirname, '../..');
   execSync(`node "${path.join(cwd, 'prisma/init-sqlite.cjs')}" "${dbFile}"`, {
@@ -51,6 +56,10 @@ export async function startApp(): Promise<AppHandle> {
   }).compile();
 
   const app = moduleRef.createNestApplication({ cors: false });
+  // P0-5 与生产 main.ts 对齐：挂同一 helmet 配置（安全头一致性）
+  app.use(helmet(SECURITY_HEADERS));
+  // P0-8 与生产对齐：cookie 解析（jwt.strategy cookie 通道测试需要）
+  app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: false,

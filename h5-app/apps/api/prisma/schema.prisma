@@ -180,10 +180,54 @@ model TicketMessage {
   ticketId     String
   ticket       Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   senderUserId String?
-  sender       User?    @relation(fields: [senderUserId], references: [id])
+  sender       User?    @relation("TicketSender", fields: [senderUserId], references: [id])
   senderRole   String                                // 'customer' | 'support' | 'system'
   body         String
   createdAt    DateTime @default(now())
 
   @@index([ticketId])
+}
+
+model TicketStatusLog {
+  id          String   @id @default(cuid())
+  ticketId    String
+  actorUserId String
+  fromStatus  String
+  toStatus    String
+  resolution  String?
+  createdAt   DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([actorUserId])
+  @@index([createdAt])
+}
+
+model WarrantyReviewLog {
+  id          String   @id @default(cuid())
+  warrantyId  String
+  actorUserId String
+  fromStatus  String
+  toStatus    String
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@index([warrantyId])
+  @@index([actorUserId])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  actorRole   String?
+  action      String
+  resource    String?
+  payload     String?
+  ip          String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId])
+  @@index([action])
+  @@index([createdAt])
 }

@@ -4,6 +4,7 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ThrottlerException } from '@nestjs/throttler';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
@@ -28,6 +29,24 @@ export class AuthService {
     private readonly cfg: ConfigService,
     private readonly db: DbService,
   ) {}
+
+  /** P0-9：统计窗口内（默认 15 分钟）失败次数 */
+  private countRecentFails(phone: string, lockMinutes: number): number {
+    return this.db.get<{ c: number }>(
+      `SELECT COUNT(*) AS c FROM OtpAttempt
+       WHERE phone = ? AND ok = 0
+       AND createdAt >= datetime('now', ?)`,
+      phone, `-${lockMinutes} minutes`,
+    )?.c ?? 0;
+  }
+
+  /** P0-9：落一条验证尝试审计行（ok=1 成功 / ok=0 失败） */
+  private recordOtpAttempt(phone: string, ok: boolean) {
+    this.db.run(
+      'INSERT INTO OtpAttempt (id, phone, ok) VALUES (?, ?, ?)',
+      'otpa_' + randomBytes(8).toString('hex'), phone, ok ? 1 : 0,
+    );
+  }
 
   /** 演示策略：生成 6 位数字验证码 → console.log + 落库 */
   async requestOtp(phone: string): Promise<{ sent: true; ttl: number }> {
@@ -54,6 +73,15 @@ export class AuthService {
     code: string,
     meta?: { userAgent?: string; ip?: string },
   ): Promise<{ token: string; user: { id: string; phone: string; role: string; displayName: string | null } }> {
+    // P0-9 账户级锁定：15 分钟窗口内失败 ≥ OTP_MAX_FAILS(5) → 429（锁定优先于 code 校验）
+    // 与 P0-5 的 IP 级限流（5/min 全端点）互补：此为本 phone 维度爆破防护
+    const maxFails = Number(this.cfg.get('OTP_MAX_FAILS') ?? 5);
+    const lockMinutes = Number(this.cfg.get('OTP_LOCK_MINUTES') ?? 15);
+    const fails = this.countRecentFails(phone, lockMinutes);
+    if (fails >= maxFails) {
+      throw new ThrottlerException('OTP 验证失败次数过多，账户已锁定，请稍后再试');
+    }
+
     const otp = this.db.get<{ id: string; code: string; expiresAt: string }>(
       `SELECT id, code, expiresAt FROM OtpRequest
        WHERE phone = ? AND consumedAt IS NULL
@@ -62,19 +90,28 @@ export class AuthService {
     );
 
     if (!otp) {
+      this.recordOtpAttempt(phone, false);
       throw new BadRequestException('OTP 不存在或已过期');
     }
     if (new Date(otp.expiresAt).getTime() < Date.now()) {
+      this.recordOtpAttempt(phone, false);
       throw new BadRequestException('OTP 已过期');
     }
     if (otp.code !== code) {
-      throw new BadRequestException('OTP 错误');
+      this.recordOtpAttempt(phone, false);
+      const rest = maxFails - fails - 1;
+      throw new BadRequestException(
+        rest > 0 ? `OTP 错误（剩余 ${rest} 次机会）` : 'OTP 错误',
+      );
     }
 
     this.db.run(
       'UPDATE OtpRequest SET consumedAt = CURRENT_TIMESTAMP WHERE id = ?',
       otp.id,
     );
+    // 成功：清零失败计数（删除窗口内失败记录）+ 落一条成功审计行
+    this.db.run('DELETE FROM OtpAttempt WHERE phone = ? AND ok = 0', phone);
+    this.recordOtpAttempt(phone, true);
 
     // 找/建用户
     let user = this.db.get<UserRow>('SELECT * FROM User WHERE phone = ?', phone);

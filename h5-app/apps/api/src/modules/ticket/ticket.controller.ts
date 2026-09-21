@@ -51,8 +51,8 @@ export class TicketController {
   /** 客服/Admin：修改工单 */
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @Roles('admin')
-  @ApiOperation({ summary: 'Update ticket status (admin only)' })
+  @Roles('admin', 'support')
+  @ApiOperation({ summary: 'Update ticket status (admin or support)' })
   async update(@CurrentUser() user: AuthUser, @Param('id') id: string, @Body() body: UpdateTicketDto): Promise<{ ok: true; ticket: TicketRow }> {
     const t = this.svc.update(id, body, user.sub);
     return { ok: true, ticket: t };

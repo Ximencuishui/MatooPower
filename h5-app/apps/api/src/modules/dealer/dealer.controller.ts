@@ -1,11 +1,13 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, HttpStatus, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import type { Response } from 'express';
 import { CurrentUser, AuthUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { DealerService, Overview } from './dealer.service';
 import { BulkActivateDto } from './dto/bulk-activate.dto';
+import { toCsv, CSV_BOM } from '../../common/util/csv';
 
 @Controller('dealer')
 @ApiTags('dealer')
@@ -48,5 +50,33 @@ export class DealerController {
   ) {
     const r = this.svc.bulkActivate(user.sub, body);
     return r;
+  }
+
+  // ============================================================
+  // v1.1 CSV exports
+  // ============================================================
+  @Get('warranties.csv')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  @ApiOperation({ summary: 'Export warranties I triggered as CSV (dealer/admin)' })
+  async exportWarrantiesCsv(
+    @CurrentUser() user: AuthUser,
+    @Query('status') status: string | undefined,
+    @Res({ passthrough: false }) res: Response,
+  ) {
+    const items = this.svc.listWarranties(user.sub, status);
+    res.setHeader('Content-Disposition', `attachment; filename="dealer-warranties-${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.send(CSV_BOM + toCsv(items as unknown as Record<string, unknown>[]));
+  }
+
+  @Get('devices.csv')
+  @Header('Content-Type', 'text/csv; charset=utf-8')
+  @ApiOperation({ summary: 'Export devices I triggered as CSV (dealer/admin)' })
+  async exportDevicesCsv(
+    @CurrentUser() user: AuthUser,
+    @Res({ passthrough: false }) res: Response,
+  ) {
+    const items = this.svc.listDevices(user.sub);
+    res.setHeader('Content-Disposition', `attachment; filename="dealer-devices-${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.send(CSV_BOM + toCsv(items as unknown as Record<string, unknown>[]));
   }
 }

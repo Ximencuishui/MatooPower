@@ -122,6 +122,13 @@ export class DealerService {
       skuIds.push(skuId);
     }
 
+    // dealerName：演示期取 dealer User.displayName（软关联），生产期换独立 Dealer 表
+    // fallback null 与 warranty.service 普通激活路径 input.dealerName ?? null 对齐
+    const dealerName = this.db.get<{ displayName: string }>(
+      'SELECT displayName FROM User WHERE id = ?',
+      dealerUserId,
+    )?.displayName ?? null;
+
     // 2. 事务处理
     const results: Array<{ qrId: string; skuId: string; warrantyId: string; deviceId: string; customerId: string; policy: 'INVOICE' | 'MFG_FALLBACK' }> = [];
 
@@ -151,7 +158,7 @@ export class DealerService {
         customerId,
         'BD',  // 演示：默认 BD
         'Dhaka',
-        'Dhaka Power Hub',  // demo 经销商名
+        dealerName,
         item.invoiceNo ?? dto.shipmentInvoiceNo ?? null,
         invDate ? invDate.toISOString() : null,
         null,

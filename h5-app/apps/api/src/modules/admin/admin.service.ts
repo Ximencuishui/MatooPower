@@ -103,10 +103,23 @@ export class AdminService {
     return { items, total, page, pageSize };
   }
 
-  async reviewWarranty(id: string, status: 'active' | 'pending' | 'expired' | 'rejected', notes?: string) {
-    const w = this.db.get<{ id: string; reviewNotes: string | null }>('SELECT id, reviewNotes FROM Warranty WHERE id = ?', id);
+  async reviewWarranty(id: string, status: 'active' | 'pending' | 'expired' | 'rejected', notes?: string, actorUserId?: string) {
+    const w = this.db.get<{ id: string; status: string; reviewNotes: string | null }>(
+      'SELECT id, status, reviewNotes FROM Warranty WHERE id = ?', id);
     if (!w) throw new NotFoundException(`warranty ${id} 不存在`);
+    const fromStatus = w.status;
     this.db.run('UPDATE Warranty SET status = ?, reviewNotes = ? WHERE id = ?', status, notes ?? w.reviewNotes, id);
+
+    // v1.1 audit: 写 WarrantyReviewLog
+    if (actorUserId && fromStatus !== status) {
+      const logId = `wrl-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      this.db.run(
+        `INSERT INTO WarrantyReviewLog (id, warrantyId, actorUserId, fromStatus, toStatus, notes, createdAt)
+         VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+        logId, id, actorUserId, fromStatus, status, notes ?? null,
+      );
+    }
+
     return this.db.get('SELECT * FROM Warranty WHERE id = ?', id);
   }
 

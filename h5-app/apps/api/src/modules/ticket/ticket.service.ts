@@ -133,7 +133,7 @@ export class TicketService {
   /** 用户看自己的工单 / 客服看所有人；返回带 sku 关联 */
   getDetail(id: string, userId: string, role: string) {
     const t = this.getById(id);
-    if (role !== 'admin' && t.userId !== userId) {
+    if (role !== 'admin' && role !== 'support' && t.userId !== userId) {
       throw new ForbiddenException('无权访问此工单');
     }
     const messages = this.db.all(
@@ -151,14 +151,14 @@ export class TicketService {
   /** 用户回复工单 */
   reply(id: string, userId: string, role: string, body: string) {
     const t = this.getById(id);
-    if (role !== 'admin' && t.userId !== userId) {
+    if (role !== 'admin' && role !== 'support' && t.userId !== userId) {
       throw new ForbiddenException('无权回复此工单');
     }
     const now = new Date().toISOString();
     const msgId = `tm-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     this.db.run(
       `INSERT INTO TicketMessage (id, ticketId, senderUserId, senderRole, body, createdAt) VALUES (?, ?, ?, ?, ?, ?)`,
-      msgId, id, userId, role === 'admin' ? 'support' : 'customer', body, now,
+      msgId, id, userId, (role === 'admin' || role === 'support') ? 'support' : 'customer', body, now,
     );
     this.db.run(
       `UPDATE Ticket SET updatedAt = ?, status = CASE WHEN status = 'waiting_customer' THEN 'in_progress' ELSE status END WHERE id = ?`,
@@ -170,12 +170,23 @@ export class TicketService {
   /** 客服 / admin 更新工单状态 */
   update(id: string, dto: UpdateTicketDto, actorUserId: string) {
     const t = this.getById(id);
+    const fromStatus = t.status;
     const now = new Date().toISOString();
     const resolvedAt = dto.status === 'resolved' ? (t.resolvedAt ?? now) : t.resolvedAt;
     this.db.run(
       `UPDATE Ticket SET status = ?, resolution = COALESCE(?, resolution), assigneeUserId = COALESCE(?, assigneeUserId), resolvedAt = ?, updatedAt = ? WHERE id = ?`,
       dto.status, dto.resolution ?? null, dto.assigneeUserId ?? null, resolvedAt, now, id,
     );
+
+    // v1.1 audit: 写 TicketStatusLog（状态变化才记录）
+    if (fromStatus !== dto.status) {
+      const logId = `tsl-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      this.db.run(
+        `INSERT INTO TicketStatusLog (id, ticketId, actorUserId, fromStatus, toStatus, resolution, createdAt)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        logId, id, actorUserId, fromStatus, dto.status, dto.resolution ?? null, now,
+      );
+    }
 
     // 系统消息
     const sysMsgId = `tm-sys-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
