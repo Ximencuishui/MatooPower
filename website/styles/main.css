@@ -507,7 +507,6 @@ p { line-height: var(--lh-relaxed); }
   gap: var(--space-8);
   margin-bottom: var(--space-12);
 }
-.footer-brand img { filter: brightness(0) invert(1); }
 .footer-brand p {
   margin-top: var(--space-4);
   font-size: var(--fs-sm);
