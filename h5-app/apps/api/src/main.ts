@@ -1,12 +1,26 @@
+// T6 Sentry：先 import（hoisted）→ Sentry.init 在 module 加载期完成
+// 空 DSN 时 instrument.ts 内部跳过 Sentry.init，无任何副作用
+import './instrument';
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
+import { SECURITY_HEADERS } from './common/security';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: false });
+  const logger = app.get(Logger);
   const port = Number(process.env.PORT ?? 3001);
   const webOrigin = process.env.WEB_ORIGIN ?? 'http://localhost:3000';
+
+  // P0-5 安全响应头（helmet；CSP 为 Swagger UI 放行 CDN，见 common/security.ts）
+  app.use(helmet(SECURITY_HEADERS));
+
+  // P0-8 httpOnly cookie 认证通道（jwt.strategy 从 cookie 提取 token）
+  app.use(cookieParser());
 
   // CORS
   app.enableCors({
@@ -15,6 +29,9 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
+
+  // P0-5 全局限流在 app.module 以 APP_GUARD（AppThrottlerGuard）注册：
+  // test 环境放行、生产 100 req/min/IP、敏感端点由 @Throttle 单独收紧
 
   // 全局校验
   app.useGlobalPipes(
@@ -25,6 +42,9 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
+
+  // P0-5 pino 接管 Nest 内部日志（OTP 等 logger.warn 输出随 pino 落盘）
+  app.useLogger(logger);
 
   // OpenAPI / Swagger UI
   const swaggerConfig = new DocumentBuilder()
@@ -50,10 +70,11 @@ async function bootstrap() {
   });
 
   await app.listen(port, '0.0.0.0');
-  Logger.log(
+  logger.log(
     `🚀 Matoo Power API listening on http://localhost:${port}\n` +
       `   CORS: ${webOrigin}\n` +
-      `   OpenAPI: http://localhost:${port}/api`,
+      `   OpenAPI: http://localhost:${port}/api\n` +
+      `   Security: helmet + throttler(100/min) + pino`,
     'Bootstrap',
   );
 }
