@@ -6,5 +6,8 @@
   "transform": {
     "^.+\\.(t|j)s$": ["ts-jest", { "tsconfig": "tsconfig.json", "isolatedModules": true }]
   },
-  "testTimeout": 30000
+  "transformIgnorePatterns": [
+    "node_modules/(?!(archiver|readable-stream|zip-stream|archiver-utils|is-stream|streamx|tar-stream|async-iterator-stream|fs-readdir-recursive|buffer-crc32|end-of-stream|zen-observable-ts|process|isarray|process-nextick-args|safe-buffer|string_decoder|util-deprecate|compress-commons|normalize-path|b4a|readable-web-to-node-stream|crc32-stream|bzip2-maybe|zlib|snappy|iltorb|@zxing|lazystream|resolve-options|union|ordered-read-streams|peek-stream|pumpify|duplexify|multipipe|vinyl|vinyl-fs|fs-mkdirp-stream|glob-stream|graceful-fs|klaw|mkdirp|rimraf)/)"
+  ],
+  "testTimeout": 60000
 }

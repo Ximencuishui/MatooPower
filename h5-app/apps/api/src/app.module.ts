@@ -9,6 +9,10 @@ import { AuditModule } from './modules/audit/audit.module';
 import { DealerModule } from './modules/dealer/dealer.module';
 import { DeviceModule } from './modules/device/device.module';
 import { SkuModule } from './modules/sku/sku.module';
+import { SkuBatchModule } from './modules/sku-batch/sku-batch.module';
+import { SkuDocumentModule } from './modules/sku-document/sku-document.module';
+import { QrBatchModule } from './modules/qr-batch/qr-batch.module';
+import { StorageModule } from './modules/storage/storage.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { WarrantyModule } from './modules/warranty/warranty.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -45,9 +49,13 @@ import { DbModule } from './common/db/db.module';
       },
     }),
     DbModule,
+    StorageModule,
     AuthModule,
     AuditModule,
     SkuModule,
+    SkuBatchModule,
+    SkuDocumentModule,
+    QrBatchModule,
     TicketModule,
     WarrantyModule,
     DeviceModule,

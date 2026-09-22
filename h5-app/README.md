@@ -86,7 +86,7 @@ curl /admin/sku     with admin token    → 200
 | `/` | redirect | — |
 | `/home` | demo | — |
 | `/scan` | demo | — |
-| `/scan/[id]` | **API** `/sku/:id` | 公开 |
+| `/scan/[id]` | **API** `/sku/:id` + `/public/sku-document/:skuId/:type/:lang` | 公开 |
 | `/scan/failed` | client | — |
 | `/activate/[id]` | **API** `/warranty/activate` | JWT (customer) |
 | `/warranty/[id]` | demo | — |
@@ -101,6 +101,11 @@ curl /admin/sku     with admin token    → 200
 | `/tickets/[id]` | **API** `/tickets/:id` + `/reply` + `PUT` | JWT (customer看自己) / admin 全权 |
 | `/admin/overview` | **API** `/admin/overview` | admin |
 | `/admin/tickets` | **API** `/admin/tickets` | admin |
+| **`/admin/sku`** | **API** `/admin/sku-batch` + `/sku-document` + `/qr-batch` (4 Tab) | admin |
+| `/admin/sku` Tab1 | SKU 列表 | admin |
+| `/admin/sku` Tab2 | 批次管理 | admin |
+| `/admin/sku` Tab3 | 文档管理 | admin |
+| `/admin/sku` Tab4 | QR 批量 | admin |
 | `/shop` | demo + `?sku=` 兼容筛选 + 收藏 | — |
 | `/profile` | client + session.role | — |
 | `/legal/terms`, `/legal/privacy` | static | — |
@@ -115,13 +120,36 @@ curl /admin/sku     with admin token    → 200
 | **配件商城基础版** | —（演示数据） | `/shop` 分类筛选 + SKU 兼容 + 收藏（localStorage） |
 | **多语言占位** | — | `zh / en` 完整；`bn / hi / ur` 占位（fallback 到 en + β 标识） |
 
+## v1.3 P0「二维码 + 资料管理」（本地完成）
+
+v1.3 P0 闭环：admin 后台批次管理 + 5 语言多版本文档上传 + HMAC 签名批量 QR 生成 + 用户扫码页看到真 PDF/视频链接 + 扫码撤销联动。
+
+| 能力 | 后端 | 前端 | 测试 |
+|------|------|------|------|
+| **批次管理** | `/admin/sku-batch` CRUD | `/admin/sku` Tab2 卡片 + Drawer 表单 | e2e 6 / 单测 3 |
+| **多语言文档** | `/admin/sku-document` 上传 + `/public/sku-document/:skuId/:type/:lang` | 上传 Drawer + 扫码页真链接 | e2e 7 / 单测 3 |
+| **QR 批量生成** | `/admin/qr-batch` 异步任务 + ZIP + `/admin/qr/:qrId/revoke` | `/admin/sku` Tab4 任务列表 + Drawer | e2e 6 / 单测 2 |
+| **扫码页真链接化** | `/public/sku-document` 公开端点 | `/scan/[id]` 移除硬编码 → 加载 real PDF / video | e2e 1 (E2E F12) |
+
+### 演示 PDF 准备（首次部署）
+
+```bash
+# seed 会在 demo SKU 上挂一份 dummy PDF（手动验证上传流程）
+cd E:\MatooPower\h5-app\apps\api
+node prisma/seed-documents.cjs  # 写 5 语言 dummy PDF 到 demo SKU
+```
+
+### 存储路径
+
+默认 `apps/api/storage/` 子目录（`manuals/` / `videos/` / `thumbnails/`）。生产期切 `S3Driver`（接口已预留，本期未实现）。
+
 ## P2 子集（生产就绪度，已本地完成）
 
 | 能力 | 状态 |
 |------|------|
 | **后端 OpenAPI / Swagger UI** | ✅ `/api` + `/api-json`，28 路径全文档化 |
 | **后端 e2e 测试** | ✅ 20 用例（auth / sku / warranty / device / ticket / dealer / admin / swagger / RBAC） |
-| **前端单元测试** | ✅ 34 用例（i18n 对称 / auth-store / API client / Shop filter / Compare logic / Ticket 状态机） |
+| **前端单元测试** | ✅ 47 用例（i18n 对称 / auth-store / API client / Shop filter / Compare logic / Ticket 状态机 / useRequireRole 守卫） |
 | **admin 列表搜索 + 分页** | ✅ SKU / 保修 / 设备 / 用户 / 工单 全部支持 `?q= ?page= ?pageSize=` |
 | **数据分析报表** | ✅ `/admin/analytics/trends` + `/breakdown` + SVG 趋势图 + 分布柱状图 |
 | **GitHub Actions CI** | ✅ 3 job pipeline（api-test / web-test / shared-test + all-pass 汇总） |

@@ -57,6 +57,9 @@ export const zh = {
     redirecting: '跳转中',
     redirectingHint: '正在打开扫码结果…',
     loadingHint: '正在验证二维码…',
+    // v1.3 P0:文档不可用提示
+    manualUnavailable: '该语言暂无说明书',
+    videoUnavailable: '该语言暂无视频',
   },
   auth: {
     login: '登录 / 注册',
@@ -201,6 +204,7 @@ export const zh = {
     themeLight: '亮色',
     themeDark: '暗色',
     themeSystem: '跟随系统',
+    themeToggle: '切换主题',
     exportCsv: '导出 CSV',
     exportCsvDone: '已导出 {n} 条',
     exportCsvFailed: '导出失败',

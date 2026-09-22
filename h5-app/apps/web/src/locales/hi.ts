@@ -1,11 +1,9 @@
-// Hindi (hi) — demo placeholder
-// 演示占位:仅基础 UI 字符串翻译,关键业务文案复用 en(通过 ...en 继承)
-// 生产期由专业译员填充完整字典
+// Hindi (hi) — v1.1 四语完整补齐(继承 en,本地化关键文案)
 
 import { en } from './en';
 
 export const hi = {
-  ...en, // fallback:未翻译字段全部继承 en
+  ...en,
   app: {
     name: 'Matoo Power',
     tagline: 'उत्पाद जीवनचक्र सेवा और पुर्ज़े मंच',
@@ -22,6 +20,10 @@ export const hi = {
     retry: 'पुनः प्रयास',
     goLogin: 'साइन इन',
     logout: 'साइन आउट',
+    exportCsv: 'CSV निर्यात',
+    exportCsvDone: '{n} रिकॉर्ड निर्यात',
+    exportCsvFailed: 'निर्यात विफल',
+    exportCsvEmpty: 'निर्यात के लिए कोई डेटा नहीं',
   },
   scanEntry: {
     title: 'स्कैन',
@@ -62,7 +64,7 @@ export const hi = {
   onboarding: {
     ...en.onboarding,
     step1Title: 'QR स्कैन करें',
-    step1Desc: 'उत्पाद का QR स्कैन करके प्रामाणिकता और स्पेक देखें।',
+    step1Desc: 'उत्पाद का QR स्कैन करके प्रामाणिकता और स्पेस देखें।',
     step2Title: 'वारंटी सक्रिय',
     step2Desc: 'खरीद जानकारी और इनवॉइस भरकर ई-वारंटी कार्ड सक्रिय करें।',
     step3Title: 'सेवा लें',
@@ -70,5 +72,45 @@ export const hi = {
     next: 'अगला',
     start: 'शुरू करें',
     skip: 'छोड़ें',
+  },
+  ticket: {
+    ...en.ticket,
+    adminTitle: 'सपोर्ट डेस्क',
+    typeGeneral: 'सामान्य',
+    typeWarranty: 'वारंटी',
+    typeInquiry: 'पूर्व-बिक्री',
+    typeRemote: 'रिमोट डायग्नोस्टिक्स',
+    sevLow: 'कम',
+    sevNormal: 'सामान्य',
+    sevHigh: 'उच्च',
+    sevUrgent: 'अत्यावश्यक',
+    status_open: 'खुला',
+    status_in_progress: 'प्रगति में',
+    status_waiting_customer: 'ग्राहक प्रतीक्षा',
+    status_resolved: 'समाधान',
+    status_closed: 'बंद',
+    kpiOpen: 'खुले',
+    kpiUrgent: 'अत्यावश्यक',
+    kpiThisMonth: 'इस माह नए',
+    kpiTodayNew: 'आज नए',
+    searchPlaceholder: 'विषय / विवरण / आईडी खोजें',
+  },
+  adminOverview: {
+    ...en.adminOverview,
+    title: 'प्लेटफ़ॉर्म ओवरव्यू',
+    skuTotal: 'कुल SKU',
+    skuActivated: '{n} सक्रिय',
+    userTotal: 'कुल उपयोगकर्ता',
+    userDealer: '{n} डीलर',
+    warrantyActive: 'सक्रिय वारंटी',
+    warrantyThisMonth: 'इस माह {n}',
+    deviceTotal: 'कुल डिवाइस',
+    deviceThisMonth: 'इस माह {n} बद्ध',
+    ticketsTitle: 'टिकट',
+    ticketsOpen: 'खुले',
+    ticketsUrgent: 'अत्यावश्यक',
+    ticketsNew: 'इस माह नए',
+    viewTickets: 'टिकट देखें',
+    quickLinks: 'त्वरित लिंक',
   },
 } as any;

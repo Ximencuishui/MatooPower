@@ -58,6 +58,9 @@ export const en: Dict = {
     redirecting: 'Redirecting',
     redirectingHint: 'Opening scan result…',
     loadingHint: 'Verifying QR code…',
+    // v1.3 P0:document unavailable hint
+    manualUnavailable: 'No manual for this language',
+    videoUnavailable: 'No video for this language',
   },
   auth: {
     login: 'Sign in / Sign up',
@@ -202,6 +205,7 @@ export const en: Dict = {
     themeLight: 'Light',
     themeDark: 'Dark',
     themeSystem: 'System',
+    themeToggle: 'Toggle theme',
     exportCsv: 'Export CSV',
     exportCsvDone: '{n} records exported',
     exportCsvFailed: 'Export failed',

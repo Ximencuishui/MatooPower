@@ -13,6 +13,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import { execSync } from 'child_process';
 import request from 'supertest';
+import { JwtService } from '@nestjs/jwt';
 import { AppModule } from '../../src/app.module';
 
 // 每个 describe 拿一个临时 db 文件
@@ -105,6 +106,33 @@ export async function loginAndGetToken(phone: string): Promise<string> {
   const verify = await tmp.req.post('/auth/otp/verify').send({ phone, code });
   const token = (verify.body?.token ?? '') as string;
   await tmp.close();
+  return token;
+}
+
+/**
+ * 直接在 DB 创建 admin 用户 + 用 JwtService 直接 mint token
+ * 绕过 OTP 流程(v1.3 P0 测试用,避免跨 app OTP 500 干扰)
+ */
+export async function mintAdminToken(handle: AppHandle, phone = '+8801000000000'): Promise<string> {
+  const dbFile = process.env.DATABASE_URL!.replace(/^file:/, '');
+  const userId = 'usr_admin_' + Math.random().toString(36).slice(2, 10);
+  const script = path.join(process.env.TEMP || '/tmp', `admin-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.cjs`);
+  fs.writeFileSync(script, `
+const { DatabaseSync } = require('node:sqlite');
+const db = new DatabaseSync(${JSON.stringify(dbFile)});
+db.prepare("INSERT OR REPLACE INTO User (id, phone, role) VALUES (?, ?, 'admin')").run(${JSON.stringify(userId)}, ${JSON.stringify(phone)});
+`);
+  try {
+    execSync(`node "${script}"`, { encoding: 'utf8', stdio: 'pipe' });
+  } finally {
+    try { fs.unlinkSync(script); } catch {}
+  }
+
+  const jwt = handle.app.get(JwtService);
+  const token = await jwt.signAsync(
+    { sub: userId, role: 'admin', phone },
+    { expiresIn: '7d' },
+  );
   return token;
 }
 

@@ -59,6 +59,8 @@ model Sku {
   sku                   String
   serial                String   @unique
   batch                 String
+  batchId               String?
+  batchRel              SkuBatch? @relation(fields: [batchId], references: [id])
   mfgDate               DateTime
   modelName             String
   family                String   // 'battery' | 'controller' | 'panel'
@@ -79,9 +81,11 @@ model Sku {
   qrSignatures QrSignature[]
   warranties   Warranty[]
   devices      Device[]
+  documents    SkuDocument[]
 
   @@index([sku])
   @@index([batch])
+  @@index([batchId])
 }
 
 model QrSignature {
@@ -229,5 +233,71 @@ model AuditLog {
 
   @@index([actorUserId])
   @@index([action])
+  @@index([createdAt])
+}
+
+// v1.3 P0:SKU 批次表（生产批次维度）
+model SkuBatch {
+  id                  String   @id @default(cuid())
+  batchCode           String   @unique                       // 例 'BATCH-2026Q3-001'
+  mfgDate             DateTime
+  factory             String?                                // 例 'Matoo Plant A'
+  destinationCountry  String?                                // ISO 3166-1 alpha-2
+  totalQuantity       Int      @default(0)                   // 计划生产数
+  note                String?
+  createdByUserId     String?
+  createdAt           DateTime @default(now())
+
+  skus       Sku[]
+  documents  SkuDocument[]
+  qrBatches  QrBatch[]
+
+  @@index([mfgDate])
+}
+
+// v1.3 P0:SKU 文档表（多语言 + 多版本）
+model SkuDocument {
+  id                String    @id @default(cuid())
+  skuId             String
+  sku               Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  batchId           String?
+  batch             SkuBatch? @relation(fields: [batchId], references: [id])
+  type              String                                 // 'manual' | 'video' | 'specsheet' | 'faq'
+  lang              String                                 // 'zh' | 'en' | 'bn' | 'hi' | 'ur'
+  version           String                                 // 手动版本号 'v1.0' / 'v1.1'
+  title             String
+  fileName          String
+  mimeType          String
+  sizeBytes         Int
+  storageKey        String                                 // 本地相对路径或对象存储 key
+  sha256            String                                 // 内容哈希，防篡改 + 重复上传检测
+  uploadedByUserId  String?
+  uploadedAt        DateTime  @default(now())
+  deprecatedAt      DateTime?                              // 软删除：保留历史，7 天后清理磁盘
+
+  @@unique([skuId, type, lang, version])
+  @@index([skuId, type, lang])
+  @@index([batchId])
+  @@index([sha256])
+  @@index([deprecatedAt])
+}
+
+// v1.3 P0:QR 批量生成任务
+model QrBatch {
+  id                 String                @id @default(cuid())
+  batchId            String
+  batch              SkuBatch             @relation(fields: [batchId], references: [id])
+  totalQuantity      Int
+  generatedCount     Int                   @default(0)
+  status             String                @default('pending')  // 'pending' | 'running' | 'done' | 'failed'
+  zipStorageKey      String?
+  errorMessage       String?
+  generatedByUserId  String
+  startedAt          DateTime?
+  finishedAt         DateTime?
+  createdAt          DateTime              @default(now())
+
+  @@index([batchId])
+  @@index([status])
   @@index([createdAt])
 }

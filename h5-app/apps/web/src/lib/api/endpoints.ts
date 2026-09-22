@@ -285,3 +285,59 @@ export type AdminOverviewDto = {
     ticket: { open: number; urgent: number; newThisMonth: number };
   };
 };
+
+// /admin/tickets/stats — used by both admin and support
+export type TicketStatsDto = {
+  ok: true;
+  stats: {
+    open: number;
+    resolved: number;
+    urgent: number;
+    todayNew: number;
+  };
+};
+
+// Admin warranties review list
+export type AdminWarrantyItem = {
+  id: string;
+  userId: string;
+  skuId: string;
+  country: string;
+  city: string;
+  dealerName: string | null;
+  invoiceNo: string | null;
+  invoiceDate: string | null;
+  invoiceAmount: number | null;
+  status: 'active' | 'pending' | 'expired' | 'rejected';
+  startAt: string;
+  endAtWhole: string;
+  endAtCell: string | null;
+  endAtBms: string | null;
+  endAtParts: string | null;
+  reviewNotes: string | null;
+  createdAt: string;
+  user_phone?: string;
+  user_displayName?: string;
+  s_sku?: string;
+  s_modelName?: string;
+  s_serial?: string;
+};
+
+// Admin user list
+export type AdminUserItem = {
+  id: string;
+  phone: string | null;
+  email: string | null;
+  role: 'customer' | 'dealer' | 'admin';
+  displayName: string | null;
+  createdAt: string;
+  warrantyCount: number;
+};
+
+export type PageResp<T> = {
+  ok: true;
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
