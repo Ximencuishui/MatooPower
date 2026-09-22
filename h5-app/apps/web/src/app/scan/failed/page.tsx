@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
@@ -81,12 +81,12 @@ function FailInner() {
       <main className="flex-1 overflow-auto p-5 flex flex-col items-center text-center">
         <div className={`w-20 h-20 mt-6 rounded-full ${meta.bg} flex items-center justify-center text-3xl`}>{meta.icon}</div>
         <h2 className={`text-lg font-bold mt-4 ${meta.color}`}>{meta.title}</h2>
-        <p className="text-sm text-slate-500 mt-2 max-w-xs">{meta.desc}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-xs">{meta.desc}</p>
 
         <div className="card p-3 mt-6 w-full flex items-center justify-between text-left">
           <div className="text-xs">
-            <div className="text-slate-500">ERROR CODE</div>
-            <div className="font-mono text-slate-800">{code}</div>
+            <div className="text-slate-500 dark:text-slate-400">ERROR CODE</div>
+            <div className="font-mono text-slate-800 dark:text-slate-100">{code}</div>
           </div>
           <button onClick={copy} className="text-xs px-3 py-1 rounded-md border border-matoo text-matoo">
             {copied ? t.fail.copied : t.fail.copy}
@@ -95,11 +95,22 @@ function FailInner() {
 
         <div className="w-full space-y-3 mt-6">
           <button onClick={() => router.push('/scan')} className="btn-primary">{t.fail.retry}</button>
-          {/* P2-10:客服按钮 — 真实占位 wa.me(演示期号码占位,生产期替换) */}
-          <a href="https://wa.me/WHATSAPP_PLACEHOLDER" target="_blank" rel="noopener" className="btn-secondary block text-center">
-            {t.fail.contact}
-          </a>
-          <Link href="/home" className="btn-ghost text-slate-500 block text-center">{t.fail.backHome}</Link>
+          {/* P2-3:未配置客服号码时引导用 in-app 工单;配置时跳 wa.me */}
+          {process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || process.env.NEXT_PUBLIC_WA_NUMBER ? (
+            <a
+              href={`https://wa.me/${(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || process.env.NEXT_PUBLIC_WA_NUMBER || '').replace(/[^\d]/g, '')}`}
+              target="_blank"
+              rel="noopener"
+              className="btn-secondary block text-center"
+            >
+              {t.fail.contact}
+            </a>
+          ) : (
+            <Link href="/tickets/new" className="btn-secondary block text-center">
+              {t.fail.contact}
+            </Link>
+          )}
+          <Link href="/home" className="btn-ghost text-slate-500 dark:text-slate-400 block text-center">{t.fail.backHome}</Link>
         </div>
       </main>
     </PhoneShell>
@@ -108,7 +119,7 @@ function FailInner() {
 
 export default function FailPage() {
   return (
-    <Suspense fallback={<PhoneShell><main className="p-5 text-slate-400">Loading…</main></PhoneShell>}>
+    <Suspense fallback={<PhoneShell><main className="p-5 text-slate-400 dark:text-slate-500">Loading…</main></PhoneShell>}>
       <FailInner />
     </Suspense>
   );

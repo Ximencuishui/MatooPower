@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import Link from 'next/link';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar } from '@/components/TopBar';
@@ -25,16 +25,16 @@ export default function ScanEntry() {
           </div>
         </div>
 
-        <h3 className="font-semibold text-sm text-slate-600 mt-6 mb-2">{t.scanEntry.sectionNormal}</h3>
+        <h3 className="font-semibold text-sm text-slate-600 dark:text-slate-300 mt-6 mb-2">{t.scanEntry.sectionNormal}</h3>
         <Link href="/scan/MATO-MAT12200-DEMO0001" className="btn-primary">{t.scanEntry.demoUnactivated}</Link>
         <Link href="/scan/MATO-MAT12200-DEMO0002" className="btn-secondary mt-3">{t.scanEntry.demoActivated}</Link>
 
-        <h3 className="font-semibold text-sm text-slate-600 mt-6 mb-2">{t.scanEntry.sectionFail}</h3>
+        <h3 className="font-semibold text-sm text-slate-600 dark:text-slate-300 mt-6 mb-2">{t.scanEntry.sectionFail}</h3>
         <Link href="/scan/FAKE-CODE-0000" className="btn-ghost text-red-500">{t.scanEntry.demoFake}</Link>
         <Link href="/scan/REVOKED-CODE-0000" className="btn-ghost text-amber-700">{t.scanEntry.demoRevoked}</Link>
-        <Link href="/scan/NETERR-CODE-0000" className="btn-ghost text-slate-600">{t.scanEntry.demoNetwork}</Link>
+        <Link href="/scan/NETERR-CODE-0000" className="btn-ghost text-slate-600 dark:text-slate-300">{t.scanEntry.demoNetwork}</Link>
 
-        <h3 className="font-semibold text-sm text-slate-600 mt-6 mb-2">{t.scanEntry.sectionExtra}</h3>
+        <h3 className="font-semibold text-sm text-slate-600 dark:text-slate-300 mt-6 mb-2">{t.scanEntry.sectionExtra}</h3>
         <Link href="/devices/compare" className="btn-ghost">📊 {t.scanEntry.demoCompare}</Link>
         <Link href="/dealer/batch" className="btn-ghost">🛒 {t.scanEntry.demoDealer}</Link>
       </main>

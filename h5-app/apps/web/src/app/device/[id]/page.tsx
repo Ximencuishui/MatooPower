@@ -1,16 +1,20 @@
 'use client';
-import { useEffect, useState } from 'react';
+// P2-23:SoC 趋势 sparkline — 加 X 轴刻度、Y 轴数值、触摸/hover tooltip、
+// 入场画线动画、最大/最小/当前点高亮(适配 mobile,修复"无 X 轴"+"移动端 hover 无效")
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar } from '@/components/TopBar';
 import { ProductArt } from '@/components/ProductArt';
+import { SparkLine } from '@/components/SparkLine';
 import { PageLoading, Spinner } from '@/components/Spinner';
 import { ErrorBlock } from '@/components/ErrorBlock';
 import { useT } from '@/lib/i18n';
 import { getDeviceHealth, triggerDiagnostics } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
 import { toast, toastSuccess } from '@/components/Toast';
+import { useAbortedFetch } from '@/hooks/useAbortedFetch';
 import type { DeviceHealthDto, DiagnosticsResult } from '@/lib/api/endpoints';
 
 export default function DevicePage() {
@@ -24,35 +28,53 @@ export default function DevicePage() {
   const [diagBusy, setDiagBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
+  // P0 UX-10:onRetry 时递增 reloadKey 触发重新 fetch
+  const [reloadKey, setReloadKey] = useState(0);
 
   function load() {
+    setError(null);
+    setLoading(true);
+    setReloadKey((k) => k + 1);
+  }
+
+  // P0 UX-10:用 useAbortedFetch 取代裸 useEffect+load,组件卸载或 id/reload 变化时取消
+  useAbortedFetch((signal) => {
     setLoading(true);
     setError(null);
-    getDeviceHealth(id)
-      .then((h) => { setHealth(h); setLoading(false); })
+    getDeviceHealth(id, { signal })
+      .then((h) => {
+        setHealth(h);
+        setLoading(false);
+      })
       .catch((e: unknown) => {
+        if ((e as { name?: string })?.name === 'AbortError') return;
         setError(e);
         setLoading(false);
       });
-  }
+  }, [id, reloadKey]);
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  // P0 UX-10:diagnostics 也加 AbortController,组件卸载时取消未完成的请求
+  const diagCtrlRef = useRef<AbortController | null>(null);
+  useEffect(() => () => { diagCtrlRef.current?.abort(); }, []);
 
   function runDiagnostics() {
+    diagCtrlRef.current?.abort();
+    const ctrl = new AbortController();
+    diagCtrlRef.current = ctrl;
     setDiagBusy(true);
-    triggerDiagnostics(id)
+    triggerDiagnostics(id, { signal: ctrl.signal })
       .then((r) => {
+        if (ctrl.signal.aborted) return;
         setDiagnostics(r);
         toastSuccess(t.device.diagRun + ' ✓');
       })
       .catch((e: unknown) => {
+        if ((e as { name?: string })?.name === 'AbortError') return;
+        if (ctrl.signal.aborted) return;
         setError(e);
         toast(e instanceof ApiError ? e.message : t.device.diagFailed, 'error');
       })
-      .finally(() => setDiagBusy(false));
+      .finally(() => { if (!ctrl.signal.aborted) setDiagBusy(false); });
   }
 
   if (loading) {
@@ -194,31 +216,4 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** P1-5:sparkline 带 SVG title hover tooltip + 高亮点 */
-function SparkLine({ values }: { values: number[] }) {
-  if (values.length === 0) return <div className="text-xs text-slate-400">—</div>;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-  const w = 280, h = 60, pad = 4;
-  const step = (w - pad * 2) / Math.max(values.length - 1, 1);
-  const points = values.map((v, i) => {
-    const x = pad + i * step;
-    const y = pad + (h - pad * 2) * (1 - (v - min) / range);
-    return { x, y, v };
-  });
-  const polyline = points.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-  const last = values[values.length - 1] ?? 0;
 
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-16">
-      <title>SoC 趋势:最近 6 小时,当前 {last}</title>
-      <polyline points={polyline} fill="none" stroke="#0E8F5A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      {points.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r="1.8" fill="#0E8F5A" opacity="0.6">
-          <title>{p.v}</title>
-        </circle>
-      ))}
-    </svg>
-  );
-}
