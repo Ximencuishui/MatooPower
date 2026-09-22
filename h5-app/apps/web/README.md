@@ -49,7 +49,8 @@ npm run dev     # 浏览器打开 http://localhost:3000
 
 - Next.js 16 (App Router) + React 19 + TypeScript
 - See package.json for exact versions (
-ext 16.3.5, eact 19.2.0).
+ext 16.3.5, 
+eact 19.2.0).
 - Tailwind CSS（自定义 Matoo 绿能品牌色）
 - Context i18n（zh-CN / en，预留 bn/hi/ur）
 - PWA：manifest.webmanifest + icon.svg + 元信息（可"添加到主屏幕"）
@@ -74,7 +75,6 @@ prototype/
 │   │   ├── shop/page.tsx
 │   │   └── profile/page.tsx
 │   ├── components/          # PhoneShell / TopBar / TabBar / LangSwitch / ProductArt
-│   ├── data/mock.ts         # 演示 SKU + 演示设备 + 演示配件
 │   ├── lib/i18n.tsx         # 语言上下文
 │   └── locales/{zh-CN,en}.ts # 词典
 └── README.md

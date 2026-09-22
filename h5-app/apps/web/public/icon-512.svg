@@ -1,5 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-  <rect width="512" height="512" rx="96" fill="#0E8F5A"/>
-  <path d="M128 352 V160 l85 96 V160 l85 96 V160 l85 96" stroke="#fff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="384" cy="352" r="26" fill="#FF7A1A"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- PWA icon:对齐 website/assets/logo.svg 的六边形 + 蓝绿渐变 M 标识 -->
+  <rect width="512" height="512" rx="96" fill="#F7FAF8"/>
+  <defs>
+    <linearGradient id="iconGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0052CC"/>
+      <stop offset="100%" stop-color="#36B37E"/>
+    </linearGradient>
+  </defs>
+  <!-- Hexagon:scale 16x from 32x36 base, padding 32 horizontal + 0 vertical -->
+  <path d="M256 16 L480 144 L480 384 L256 512 L32 384 L32 144 Z" fill="#091E42"/>
+  <!-- M letter -->
+  <path d="M176 360 L176 192 L224 192 L288 288 L384 192 L384 360 L344 360 L344 232 L304 296 L256 296 L208 232 L208 360 Z" fill="url(#iconGrad512)"/>
+  <!-- Green accent -->
+  <rect x="360" y="336" width="40" height="40" rx="6" fill="#36B37E"/>
 </svg>
