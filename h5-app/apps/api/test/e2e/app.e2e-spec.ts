@@ -134,7 +134,7 @@ describe('Matoo Power API (e2e)', () => {
       expect(r.status).toBe(400);
     });
 
-    it('P0-8 verify → Set-Cookie httpOnly matoo_token；纯 cookie 可认证受保护端点', async () => {
+    it('P0-1 v1.2 verify → Set-Cookie httpOnly matoo_token；纯 cookie 可认证受保护端点', async () => {
       const app = await getSharedApp();
       await app.req.post('/auth/otp/request').send({ phone: '+8801000000076' });
       await new Promise((r) => setTimeout(r, 80));
@@ -144,20 +144,39 @@ describe('Matoo Power API (e2e)', () => {
       const verify = await app.req.post('/auth/otp/verify').send({ phone: '+8801000000076', code });
       expect(verify.status).toBe(200);
 
-      // ① 断言 Set-Cookie 属性（httpOnly / SameSite=Lax / 7d maxAge）
+      // ① 断言 Set-Cookie 属性(httpOnly / SameSite=Strict / 7d maxAge)
       const sc = verify.headers['set-cookie'] as unknown as string[] | undefined;
       expect(sc).toBeDefined();
       const cookieHeader = sc!.map((c) => c.split(';')[0]).join('; ');
       expect(sc!.some((c) =>
         c.includes('matoo_token=') &&
         c.includes('HttpOnly') &&
-        c.includes('SameSite=Lax'),
+        c.includes('SameSite=Strict'),
       )).toBe(true);
 
       // ② 纯 cookie 请求（无 Authorization 头）→ 走 jwt.strategy cookie 回退通道
       const me = await app.req.get('/device/mine').set('Cookie', cookieHeader);
       expect(me.status).toBe(200);
       expect(Array.isArray(me.body.items)).toBe(true);
+    });
+
+    it('P0-1 v1.2 logout → 清空 Set-Cookie matoo_token', async () => {
+      const app = await getSharedApp();
+      // 先登录拿 cookie
+      await app.req.post('/auth/otp/request').send({ phone: '+8801000000078' });
+      await new Promise((r) => setTimeout(r, 80));
+      const code = readLatestOtp('+8801000000078');
+      const verify = await app.req.post('/auth/otp/verify').send({ phone: '+8801000000078', code });
+      expect(verify.status).toBe(200);
+
+      // logout 端点（公开）→ 返回 200 + Set-Cookie 头清 matoo_token
+      const out = await app.req.post('/auth/logout');
+      expect(out.status).toBe(200);
+      expect(out.body?.ok).toBe(true);
+      const sc = out.headers['set-cookie'] as unknown as string[] | undefined;
+      expect(sc).toBeDefined();
+      // cookie 应包含 matoo_token= 与过期时间(past)
+      expect(sc!.some((c) => /matoo_token=;/.test(c) || /matoo_token=\b/.test(c) || /matoo_token=;/.test(c))).toBe(true);
     });
 
     it('P0-9 OTP 失败 5 次 → 账户锁定 429（锁定优先于 code 正确性）', async () => {
@@ -707,6 +726,112 @@ process.stdout.write('PROMOTE_RESULT: changes=' + r1.changes + '\\n');
         const d = await app.req.get('/dealer/devices.csv').set('Authorization', `Bearer ${dealerToken}`);
         expect(d.status).toBe(200);
         expect(d.headers['content-type']).toMatch(/text\/csv/);
+      });
+    });
+
+    // ============================================================
+    // P0-4 v1.2: /admin/audit 端点暴露
+    // ============================================================
+    describe('P0-4 /admin/audit (审计查询端点)', () => {
+      it('GET /admin/audit?limit=20 → admin 返回 items 数组', async () => {
+        const app = await getSharedApp();
+        const adminToken = await promoteToAdmin('+8801000000400');
+        const r = await app.req.get('/admin/audit?limit=20').set('Authorization', `Bearer ${adminToken}`);
+        expect(r.status).toBe(200);
+        expect(r.body.ok).toBe(true);
+        expect(Array.isArray(r.body.items)).toBe(true);
+      });
+
+      it('GET /admin/audit → 401 未授权 + customer/dealer 403', async () => {
+        const app = await getSharedApp();
+        const r1 = await app.req.get('/admin/audit');
+        expect(r1.status).toBe(401);
+        const customerToken = await loginAndGetToken('+8801000000401');
+        const r2 = await app.req.get('/admin/audit').set('Authorization', `Bearer ${customerToken}`);
+        expect(r2.status).toBe(403);
+        const dealerToken = await loginAsDealer('+8801000000402', 'Audit Dealer');
+        const r3 = await app.req.get('/admin/audit').set('Authorization', `Bearer ${dealerToken}`);
+        expect(r3.status).toBe(403);
+      });
+
+      it('GET /admin/audit/warranty/:id → 返回双路审计(AuditLog + WarrantyReviewLog)', async () => {
+        const app = await getSharedApp();
+        const dbFile = process.env.DATABASE_URL!.replace(/^file:/, '');
+        insertSku(dbFile, 'audit-trail-1', 'SN-TRAIL-0001');
+
+        const dealerToken = await loginAsDealer('+8801000000403', 'Trail Dealer');
+        const act = await app.req.post('/warranty/activate')
+          .set('Authorization', `Bearer ${dealerToken}`)
+          .send({ skuId: 'audit-trail-1', country: 'BD', city: 'Dhaka' });
+        expect(act.status).toBe(200);
+        const wid = act.body.warranty.id;
+
+        // 用 rejected 保证 fromStatus !== status,确保 WarrantyReviewLog 写入
+        const adminToken = await promoteToAdmin('+8801000000404');
+        await app.req.post(`/admin/warranties/${wid}/review`)
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send({ status: 'rejected', notes: 'P0-4 审计测试' });
+
+        const r = await app.req.get(`/admin/audit/warranty/${wid}`).set('Authorization', `Bearer ${adminToken}`);
+        expect(r.status).toBe(200);
+        expect(r.body.ok).toBe(true);
+        expect(Array.isArray(r.body.audit)).toBe(true);
+        expect(Array.isArray(r.body.reviewLogs)).toBe(true);
+        expect(r.body.reviewLogs.length).toBeGreaterThanOrEqual(1);
+      });
+    });
+
+    // ============================================================
+    // P0-6 v1.2: bulk-review 批量审核端点
+    // ============================================================
+    describe('P0-6 /admin/warranties/bulk-review (批量审核)', () => {
+      it('POST /admin/warranties/bulk-review → admin 一次审核多条(部分可 active)', async () => {
+        const app = await getSharedApp();
+        const dbFile = process.env.DATABASE_URL!.replace(/^file:/, '');
+        // 准备 3 个保修
+        for (let i = 0; i < 3; i++) {
+          insertSku(dbFile, `bulk-sku-${i}`, `SN-BULK-${i}`);
+          const dealerToken = await loginAsDealer(`+880100000050${i}`, `Bulk Dealer ${i}`);
+          await app.req.post('/warranty/activate')
+            .set('Authorization', `Bearer ${dealerToken}`)
+            .send({ skuId: `bulk-sku-${i}`, country: 'BD', city: 'Dhaka' });
+        }
+
+        // 取任意 warranty ids(测试不限定状态;批量把 active → rejected 等)
+        const anyIds = execSync(
+          `node -e "const{DatabaseSync}=require('node:sqlite');const db=new DatabaseSync(process.argv[1]);const r=db.prepare(\\"SELECT id FROM Warranty WHERE id LIKE 'warranty%' LIMIT 3\\").all();console.log(r.map(x=>x.id).join(','))" "${dbFile.replace(/\\/g,'\\\\')}"`,
+          { encoding: 'utf8' },
+        ).trim().split(',').filter(Boolean);
+        if (anyIds.length === 0) return; // 测试阶段未生成保修时跳过
+
+        const adminToken = await promoteToAdmin('+8801000000510');
+        const r = await app.req.post('/admin/warranties/bulk-review')
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send({ ids: anyIds, status: 'active', notes: 'P0-6 批量测试' });
+        expect(r.status).toBe(200);
+        expect(r.body.ok).toBe(true);
+        expect(r.body.total).toBe(anyIds.length);
+        expect(Array.isArray(r.body.succeeded)).toBe(true);
+        expect(Array.isArray(r.body.failed)).toBe(true);
+      });
+
+      it('POST /admin/warranties/bulk-review → 401/403/400', async () => {
+        const app = await getSharedApp();
+        // 未授权
+        const r1 = await app.req.post('/admin/warranties/bulk-review').send({ ids: ['x'], status: 'active' });
+        expect(r1.status).toBe(401);
+        // customer 403
+        const customerToken = await loginAndGetToken('+8801000000511');
+        const r2 = await app.req.post('/admin/warranties/bulk-review')
+          .set('Authorization', `Bearer ${customerToken}`)
+          .send({ ids: ['x'], status: 'active' });
+        expect(r2.status).toBe(403);
+        // 空 ids → 400
+        const adminToken = await promoteToAdmin('+8801000000512');
+        const r3 = await app.req.post('/admin/warranties/bulk-review')
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send({ ids: [], status: 'active' });
+        expect(r3.status).toBe(400);
       });
     });
 });

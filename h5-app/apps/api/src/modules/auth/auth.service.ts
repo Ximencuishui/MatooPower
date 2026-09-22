@@ -51,7 +51,11 @@ export class AuthService {
   /** 演示策略：生成 6 位数字验证码 → console.log + 落库 */
   async requestOtp(phone: string): Promise<{ sent: true; ttl: number }> {
     const ttl = Number(this.cfg.get('OTP_TTL_SECONDS') ?? 300);
-    const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
+    // 演示期可设 DEV_FIXED_OTP=123456 跳过随机码，调试更顺手；生产必须留空
+    const fixed = this.cfg.get<string>('DEV_FIXED_OTP');
+    const code = fixed && fixed.trim().length > 0
+      ? fixed.trim().padStart(6, '0').slice(-6)
+      : String(randomInt(0, 1_000_000)).padStart(6, '0');
     const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
     const id = 'otp_' + randomBytes(8).toString('hex');
 
@@ -60,9 +64,13 @@ export class AuthService {
       id, phone, code, expiresAt,
     );
 
-    this.logger.warn(
-      `📨 [OTP] phone=${phone} code=${code} ttl=${ttl}s (从后端终端读取验证码)`,
-    );
+    if (fixed && fixed.trim().length > 0) {
+      this.logger.warn(`📨 [OTP-DEV] phone=${phone} code=${code} (固定调试码,来自 DEV_FIXED_OTP)`);
+    } else {
+      this.logger.warn(
+        `📨 [OTP] phone=${phone} code=${code} ttl=${ttl}s (从后端终端读取验证码)`,
+      );
+    }
 
     return { sent: true, ttl };
   }

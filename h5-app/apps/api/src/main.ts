@@ -6,6 +6,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import * as path from 'node:path';
+import express from 'express';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { SECURITY_HEADERS } from './common/security';
@@ -24,7 +26,14 @@ async function bootstrap() {
 
   // CORS
   app.enableCors({
-    origin: [webOrigin, 'http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: [
+      webOrigin,
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      // Admin Console (apps/admin, 独立桌面后台)
+      'http://localhost:3002',
+      'http://127.0.0.1:3002',
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -32,6 +41,11 @@ async function bootstrap() {
 
   // P0-5 全局限流在 app.module 以 APP_GUARD（AppThrottlerGuard）注册：
   // test 环境放行、生产 100 req/min/IP、敏感端点由 @Throttle 单独收紧
+
+  // v1.3 P0:本地文件存储静态托管（与 LocalStorageDriver.getPublicUrl 一致）
+  // 仅 public 文档可走此路径(扫码页 fetch PDF/视频)，admin 下载走 jwt 鉴权端点
+  const storageRoot = process.env.STORAGE_LOCAL_ROOT ?? path.join(process.cwd(), 'storage');
+  app.use('/storage', express.static(storageRoot, { index: false, fallthrough: true, maxAge: '7d' }));
 
   // 全局校验
   app.useGlobalPipes(
@@ -74,7 +88,8 @@ async function bootstrap() {
     `🚀 Matoo Power API listening on http://localhost:${port}\n` +
       `   CORS: ${webOrigin}\n` +
       `   OpenAPI: http://localhost:${port}/api\n` +
-      `   Security: helmet + throttler(100/min) + pino`,
+      `   Security: helmet + throttler(100/min) + pino\n` +
+      `   Storage: ${storageRoot} -> /storage/*`,
     'Bootstrap',
   );
 }

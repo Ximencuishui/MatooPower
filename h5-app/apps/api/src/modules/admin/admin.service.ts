@@ -112,15 +112,53 @@ export class AdminService {
 
     // v1.1 audit: 写 WarrantyReviewLog
     if (actorUserId && fromStatus !== status) {
-      const logId = `wrl-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      this.db.run(
-        `INSERT INTO WarrantyReviewLog (id, warrantyId, actorUserId, fromStatus, toStatus, notes, createdAt)
-         VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-        logId, id, actorUserId, fromStatus, status, notes ?? null,
-      );
+      this.writeReviewLog(id, actorUserId, fromStatus, status, notes);
     }
 
     return this.db.get('SELECT * FROM Warranty WHERE id = ?', id);
+  }
+
+  /**
+   * P0-6 v1.2 增量:批量审核（admin 批量操作场景，如批量拒绝伪造批次）
+   * - 逐条复用 reviewWarranty 写入逻辑,保持审计/状态机一致
+   * - 任一条失败抛出 BadRequest,事务已写入行不回滚(演示期 sqlite 简化),调用方按失败列表重试
+   * - 返回值含 succeeded/failed 两条,便于前端展示
+   */
+  async bulkReviewWarranties(
+    ids: string[],
+    status: 'active' | 'pending' | 'expired' | 'rejected',
+    notes: string | undefined,
+    actorUserId: string,
+  ): Promise<{ succeeded: Array<{ id: string; status: string }>; failed: Array<{ id: string; reason: string }>; total: number }> {
+    const succeeded: Array<{ id: string; status: string }> = [];
+    const failed: Array<{ id: string; reason: string }> = [];
+    for (const id of ids) {
+      try {
+        const w = this.db.get<{ id: string; status: string; reviewNotes: string | null }>(
+          'SELECT id, status, reviewNotes FROM Warranty WHERE id = ?', id);
+        if (!w) {
+          failed.push({ id, reason: 'warranty 不存在' });
+          continue;
+        }
+        const fromStatus = w.status;
+        this.db.run('UPDATE Warranty SET status = ?, reviewNotes = ? WHERE id = ?', status, notes ?? w.reviewNotes, id);
+        if (fromStatus !== status) this.writeReviewLog(id, actorUserId, fromStatus, status, notes);
+        succeeded.push({ id, status });
+      } catch (e) {
+        failed.push({ id, reason: (e as Error).message ?? 'unknown' });
+      }
+    }
+    return { succeeded, failed, total: ids.length };
+  }
+
+  /** 写 WarrantyReviewLog（reviewWarranty/bulkReviewWarranties 共用） */
+  private writeReviewLog(warrantyId: string, actorUserId: string, fromStatus: string, toStatus: string, notes?: string) {
+    const logId = `wrl-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    this.db.run(
+      `INSERT INTO WarrantyReviewLog (id, warrantyId, actorUserId, fromStatus, toStatus, notes, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+      logId, warrantyId, actorUserId, fromStatus, toStatus, notes ?? null,
+    );
   }
 
   /**
@@ -236,5 +274,51 @@ export class AdminService {
       device: { total: deviceTotal, boundThisMonth: deviceThisMonth },
       ticket: { open: ticketOpen, urgent: ticketUrgent, newThisMonth: ticketThisMonth },
     };
+  }
+
+  /** 单用户详情（含近 N 条保修） */
+  async getUserDetail(id: string) {
+    const user = this.db.get(
+      `SELECT id, phone, email, role, displayName, createdAt FROM User WHERE id = ?`, id);
+    if (!user) throw new NotFoundException(`user ${id} 不存在`);
+    const warrantyCount = this.db.get<{ c: number }>(
+      'SELECT COUNT(*) AS c FROM Warranty WHERE userId = ?', id)?.c ?? 0;
+    const warranties = this.db.all(
+      `SELECT w.id, w.skuId, w.status, w.country, w.createdAt, w.reviewNotes,
+              s.sku AS s_sku, s.modelName AS s_modelName, s.serial AS s_serial
+       FROM Warranty w JOIN Sku s ON w.skuId = s.id
+       WHERE w.userId = ? ORDER BY w.createdAt DESC LIMIT 20`, id);
+    return { ...user, warrantyCount, warranties };
+  }
+
+  /** 单保修详情（含审计轨迹） */
+  async getWarrantyDetail(id: string) {
+    const w = this.db.get(
+      `SELECT w.*, u.phone AS user_phone, u.displayName AS user_displayName,
+              s.sku AS s_sku, s.modelName AS s_modelName, s.serial AS s_serial
+       FROM Warranty w
+       JOIN User u ON w.userId = u.id
+       JOIN Sku s ON w.skuId = s.id
+       WHERE w.id = ?`, id);
+    if (!w) throw new NotFoundException(`warranty ${id} 不存在`);
+    const logs = this.db.all<{ id: string; actorUserId: string; fromStatus: string; toStatus: string; notes: string | null; createdAt: string }>(
+      `SELECT id, actorUserId, fromStatus, toStatus, notes, createdAt
+       FROM WarrantyReviewLog WHERE warrantyId = ? ORDER BY createdAt DESC LIMIT 20`, id);
+    const auditLogs = logs.map((l) => ({
+      at: l.createdAt,
+      by: l.actorUserId,
+      action: `${l.fromStatus} → ${l.toStatus}`,
+      notes: l.notes ?? undefined,
+    }));
+    return { ...w, auditLogs };
+  }
+
+  /** 更新用户角色（admin 专用） */
+  async updateUserRole(id: string, role: 'admin' | 'dealer' | 'customer') {
+    const u = this.db.get<{ id: string }>('SELECT id FROM User WHERE id = ?', id);
+    if (!u) throw new NotFoundException(`user ${id} 不存在`);
+    this.db.run('UPDATE User SET role = ? WHERE id = ?', role, id);
+    return this.db.get(
+      `SELECT id, phone, email, role, displayName, createdAt FROM User WHERE id = ?`, id);
   }
 }

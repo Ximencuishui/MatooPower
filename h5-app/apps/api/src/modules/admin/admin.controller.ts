@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,6 +7,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Res,
@@ -108,6 +110,26 @@ export class AdminController {
   ) {
     const w = await this.svc.reviewWarranty(id, body.status, body.notes, user.sub);
     return { ok: true, warranty: w };
+  }
+
+  // P0-6 v1.2 增量:批量审核 — admin 批量场景(如批量拒绝伪造批次)
+  // 接受 ids[] 与统一 status/notes,逐条复用 reviewWarranty 写入逻辑
+  // 返回 succeeded/failed 两条,前端按需提示重试
+  @Post('warranties/bulk-review')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Bulk review multiple warranties (admin only)' })
+  async bulkReview(
+    @CurrentUser() user: AuthUser,
+    @Body() body: { ids: string[]; status: 'active' | 'pending' | 'expired' | 'rejected'; notes?: string },
+  ) {
+    if (!Array.isArray(body.ids) || body.ids.length === 0) {
+      throw new BadRequestException('ids 必须为非空数组');
+    }
+    if (body.ids.length > 100) {
+      throw new BadRequestException('单次批量上限 100 条');
+    }
+    const result = await this.svc.bulkReviewWarranties(body.ids, body.status, body.notes, user.sub);
+    return { ok: true, ...result };
   }
 
   @Get('tickets')
@@ -233,5 +255,36 @@ export class AdminController {
     const data = this.ticketSvc.listAll(status, severity, { q, page: 1, pageSize: 100 });
     res.setHeader('Content-Disposition', `attachment; filename="admin-tickets-${new Date().toISOString().slice(0, 10)}.csv"`);
     res.send(CSV_BOM + toCsv(data.items as unknown as Record<string, unknown>[]));
+  }
+
+  // ============================================================
+  // A1/B1: 单条详情 + 用户角色更新
+  // ============================================================
+  @Get('users/:id')
+  @ApiOperation({ summary: 'Get user detail (with recent warranties)' })
+  async getUser(@CurrentUser() _user: AuthUser, @Param('id') id: string) {
+    return { ok: true, user: await this.svc.getUserDetail(id) };
+  }
+
+  @Get('warranties/:id')
+  @ApiOperation({ summary: 'Get warranty detail (with audit logs)' })
+  async getWarranty(@CurrentUser() _user: AuthUser, @Param('id') id: string) {
+    return { ok: true, warranty: await this.svc.getWarrantyDetail(id) };
+  }
+
+  @Patch('users/:id/role')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update user role (admin only)' })
+  async updateUserRole(
+    @CurrentUser() _user: AuthUser,
+    @Param('id') id: string,
+    @Body() body: { role: 'admin' | 'dealer' | 'customer' },
+  ) {
+    const validRoles = ['admin', 'dealer', 'customer'] as const;
+    if (!validRoles.includes(body.role)) {
+      throw new BadRequestException('role 必须是 admin / dealer / customer');
+    }
+    const user = await this.svc.updateUserRole(id, body.role);
+    return { ok: true, user };
   }
 }
