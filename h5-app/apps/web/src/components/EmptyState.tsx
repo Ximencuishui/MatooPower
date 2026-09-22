@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 export function EmptyState({
-  icon = '📦',
+  icon = '??',
   title,
   hint,
   ctaLabel,
@@ -22,7 +22,7 @@ export function EmptyState({
   return (
     <div className={`card ${pad} text-center text-slate-500 dark:text-slate-400 flex flex-col items-center gap-2`}>
       <div aria-hidden="true" className={iconSize}>{icon}</div>
-      <div className="text-sm font-medium text-slate-700 dark:text-slate-200">{title}</div>
+      <div className="text-sm font-medium text-slate-700 dark:text-slate-300">{title}</div>
       {hint && <div className="text-xs opacity-80 max-w-xs">{hint}</div>}
       {ctaLabel && ctaHref && (
         <Link

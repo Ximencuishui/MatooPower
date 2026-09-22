@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 // 轻量零依赖 Spinner + SkeletonBlock,统一 loading 视觉规范
 import { useT } from '@/lib/i18n';
 
@@ -23,7 +23,7 @@ export function Spinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
 export function PageLoading({ hint }: { hint?: string }) {
   const { t } = useT();
   return (
-    <div className="flex flex-col items-center justify-center gap-2 p-8 text-slate-400 text-sm">
+    <div className="flex flex-col items-center justify-center gap-2 p-8 text-slate-400 dark:text-slate-500 text-sm">
       <Spinner size="lg" />
       {hint ?? t.common.loading}
     </div>
