@@ -1,0 +1,10 @@
+const { DatabaseSync } = require('node:sqlite');
+const db = new DatabaseSync('prisma/dev.db');
+const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all();
+console.log('Tables:', tables.map(r => r.name).join(', '));
+const skuCols = db.prepare('PRAGMA table_info(Sku)').all();
+console.log('Sku.batchId exists:', skuCols.some(c => c.name === 'batchId'));
+console.log('SkuBatch cols:', db.prepare('PRAGMA table_info(SkuBatch)').all().length);
+console.log('SkuDocument cols:', db.prepare('PRAGMA table_info(SkuDocument)').all().length);
+console.log('QrBatch cols:', db.prepare('PRAGMA table_info(QrBatch)').all().length);
+console.log('Migrations:', db.prepare('SELECT version, name FROM schema_migrations ORDER BY version').all());
