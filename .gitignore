@@ -58,12 +58,15 @@ website/api/data/**/*.json
 
 # 临时验证截图(开发验收产物,不入库)
 verify-*.png
+audit-*.png
+link-*.png
 
 # PowerShell 临时审计脚本(本地一次性工具)
 _*audit*.ps1
 _*audit*.js
 _*fix*.ps1
 _*fix*.js
+_patch-*.js
 _*reverify*.ps1
 _*reverify*.js
 # 本地 i18n 修复/翻译脚本(一次性工具,不入库)

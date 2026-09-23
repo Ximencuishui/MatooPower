@@ -8,6 +8,9 @@ dist/
 *.db-journal
 .DS_Store
 
+# pnpm store（本地包缓存；按 content-addressable 哈希散列）
+.pnpm-store/
+
 # T4 Playwright：HTML 报告 / 失败追踪 / run 残留（不入仓；本地调试用）
 playwright-report/
 test-results/
@@ -20,3 +23,28 @@ test-results/
 **/undefined-wal
 # 历史会话调试用 PowerShell 脚本（不入仓，保留本地可执行）
 apps/web/_dark-*.ps1
+
+# Audit / link / verify 阶段调试产物（不入仓；本地保留）
+.audit-*.txt
+.audit-*.pdf
+.audit-*.json
+.audit-*.ps1
+.batch_*.json
+.doc_*.txt
+.qr_*.json
+.warranty_*.json
+.otp_*.json
+.bad.json
+.ok.json
+.audit-doc.txt
+# _ 前缀调试脚本 / 日志
+_*.txt
+_patch-*.js
+
+# 上传文档存储（运行时写入；不入仓）
+apps/api/storage/
+
+# 验收 / 截图（不入仓；本地保留；需存档可手动 commit）
+audit-*.png
+link-*.png
+verify-*.png
