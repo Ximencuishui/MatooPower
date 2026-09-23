@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { randomInt, randomBytes } from 'crypto';
 import { DbService } from '../../common/db/db';
+import { OtpDelivery, createOtpDelivery } from '../../common/otp-delivery';
 
 interface UserRow {
   id: string;
@@ -23,12 +24,16 @@ interface UserRow {
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
+  // v1.4 T-2d X4:OTP 投递抽象（演示 console / 生产 http-webhook）
+  private readonly otpDelivery: OtpDelivery = createOtpDelivery(this.logger);
 
   constructor(
     private readonly jwt: JwtService,
     private readonly cfg: ConfigService,
     private readonly db: DbService,
-  ) {}
+  ) {
+    this.logger.log(`[OtpDelivery] channel=${this.otpDelivery.channel} (OTP_DELIVERY=${process.env.OTP_DELIVERY ?? 'console'})`);
+  }
 
   /** P0-9：统计窗口内（默认 15 分钟）失败次数 */
   private countRecentFails(phone: string, lockMinutes: number): number {
@@ -64,12 +69,19 @@ export class AuthService {
       id, phone, code, expiresAt,
     );
 
-    if (fixed && fixed.trim().length > 0) {
-      this.logger.warn(`📨 [OTP-DEV] phone=${phone} code=${code} (固定调试码,来自 DEV_FIXED_OTP)`);
-    } else {
-      this.logger.warn(
-        `📨 [OTP] phone=${phone} code=${code} ttl=${ttl}s (从后端终端读取验证码)`,
-      );
+    // v1.4 T-2d X4:统一走 OtpDelivery 抽象层（演示 console / 生产 http-webhook）
+    // 仍然落 OtpRequest 库保留锁定 / 审计能力；渠道只负责转发验证码
+    try {
+      const result = await this.otpDelivery.deliver({ phone, code, ttlSeconds: ttl });
+      if (!result.ok) {
+        // 投递失败：记录但不抛错（验证码仍然有效，用户可以重试；这与邮件发送失败时仍返回成功的 UX 一致）
+        this.logger.error(
+          `📨 [OTP-DELIVERY-FAIL] phone=${phone} code=${code} channel=${result.channel} err=${result.error ?? '-'}`,
+        );
+      }
+    } catch (e: any) {
+      // OtpDelivery 抛错（生产期 console 阻断等）：上层返回 503,用户重试
+      throw new Error(`OTP 投递失败: ${e?.message ?? String(e)}`);
     }
 
     return { sent: true, ttl };
