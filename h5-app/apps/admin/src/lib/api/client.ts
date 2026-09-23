@@ -134,3 +134,74 @@ async function uploadForm<T>(
 export const API_BASE_URL = API_BASE;
 
 export { uploadForm };
+
+/**
+ * 带进度的 multipart/form-data 上传（XMLHttpRequest 实现）
+ * - fetch 无法拿 upload 进度，批量上传场景必须用 XHR
+ * - onProgress(loaded, total) 在上传阶段持续触发
+ * - 返回值与 uploadForm 一致：解析 JSON 后返回
+ */
+export interface UploadProgressHandler {
+  (loaded: number, total: number): void;
+}
+export function uploadFormWithProgress<T>(
+  path: string,
+  form: FormData,
+  onProgress: UploadProgressHandler,
+  opts: FetchOpts = {},
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${API_BASE}${path}`);
+    xhr.responseType = 'text';
+    xhr.withCredentials = true;
+    xhr.setRequestHeader('Accept', 'application/json');
+    if (!opts.skipAuth) {
+      const t = getToken();
+      if (t) xhr.setRequestHeader('Authorization', `Bearer ${t}`);
+    }
+    if (opts.signal) {
+      opts.signal.addEventListener('abort', () => xhr.abort(), { once: true });
+    }
+    xhr.upload.addEventListener('progress', (ev) => {
+      if (ev.lengthComputable) onProgress(ev.loaded, ev.total);
+    });
+    xhr.upload.addEventListener('error', () => {
+      reject(new ApiError(0, '上传过程中网络中断'));
+    });
+    xhr.addEventListener('error', () => {
+      reject(new ApiError(0, '网络错误'));
+    });
+    xhr.addEventListener('abort', () => {
+      reject(new ApiError(0, '上传已取消'));
+    });
+    xhr.addEventListener('load', () => {
+      const text = xhr.responseText ?? '';
+      let json: unknown = null;
+      try {
+        json = text ? JSON.parse(text) : null;
+      } catch {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(text as unknown as T);
+          return;
+        }
+        reject(new ApiError(xhr.status, `POST ${path} → HTTP ${xhr.status} 非 JSON 响应`));
+        return;
+      }
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(json as T);
+        return;
+      }
+      const payload = (json ?? {}) as { message?: string; code?: string; details?: unknown };
+      reject(
+        new ApiError(
+          xhr.status,
+          payload.message ?? `POST ${path} → HTTP ${xhr.status}`,
+          payload.code,
+          payload.details,
+        ),
+      );
+    });
+    xhr.send(form);
+  });
+}

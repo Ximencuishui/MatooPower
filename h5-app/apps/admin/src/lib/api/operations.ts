@@ -1,7 +1,11 @@
 // Admin 后台 API operations（独立于 apps/web 的 lib/api/operations.ts）
 // 仅封装 admin 真正用到的端点，路径/参数与后端 controller 1:1 对齐
 
-import { api, uploadForm } from './client';
+import { api, uploadForm, uploadFormWithProgress, type UploadProgressHandler } from './client';
+import { SKU_IMAGE_LANGS, type SkuImageLang } from '@matoo/shared';
+// re-export 以保持向后兼容（其他模块可能直接引用这些符号）
+export { SKU_IMAGE_LANGS };
+export type { SkuImageLang };
 
 /* ---------- Auth ---------- */
 export interface OtpRequestResult {
@@ -321,6 +325,15 @@ export interface AdminSkuItem {
   activatedAt?: string | null;
   activatedByUserId?: string | null;
   createdAt: string;
+  // v1.4 P2-3:商品库扩展字段(后端 SELECT * FROM Sku 自动返回)
+  description?: string | null;
+  imageUrls?: string | null;
+  videoTrailerUrl?: string | null;
+  guidePriceCents?: number | null;
+  guidePriceCurrency?: string | null;
+  guidePriceNote?: string | null;
+  catalogUpdatedAt?: string | null;
+  catalogUpdatedBy?: string | null;
 }
 export interface AdminSkusDto {
   ok: true;
@@ -338,6 +351,111 @@ export const listAdminSkus = (
   const q = qs.toString();
   return api.get<AdminSkusDto>(`/admin/sku${q ? `?${q}` : ''}`, { signal });
 };
+
+/* ---------- Admin: SKU Catalog (商品库描述/图片/指导价) ---------- */
+export interface SkuCatalogView {
+  id: string;
+  sku: string;
+  serial: string;
+  modelName: string;
+  family: string;
+  description: string | null;
+  imageUrls: string[];
+  videoTrailerUrl: string | null;
+  guidePriceCents: number | null;
+  guidePriceCurrency: string | null;
+  guidePriceNote: string | null;
+  catalogUpdatedAt: string | null;
+  catalogUpdatedBy: string | null;
+}
+export const getSkuCatalog = (id: string, signal?: AbortSignal) =>
+  api.get<{ ok: true; catalog: SkuCatalogView }>(`/admin/sku-catalog/${id}`, { signal });
+
+export interface UpdateSkuCatalogBody {
+  description?: string;
+  imageUrls?: string;
+  videoTrailerUrl?: string;
+  guidePriceCents?: number;
+  guidePriceCurrency?: string;
+  guidePriceNote?: string;
+}
+export const updateSkuCatalog = (id: string, body: UpdateSkuCatalogBody, signal?: AbortSignal) =>
+  api.patch<{ ok: true; catalog: SkuCatalogView }>(`/admin/sku-catalog/${id}`, body, { signal });
+
+/* ---------- Admin: SKU Images (详情图片集) ---------- */
+// 语言常量 + 类型已从 @matoo/shared 导入并 re-export（见文件顶部）
+export interface SkuImageRow {
+  id: string;
+  skuId: string;
+  lang: string;
+  storageKey: string;
+  url: string;
+  mimeType: string;
+  sizeBytes: number;
+  width: number | null;
+  height: number | null;
+  alt: string | null;
+  caption: string | null;
+  sortOrder: number;
+  isCover: number;
+  sha256: string;
+  uploadedByUserId: string | null;
+  uploadedAt: string;
+  deprecatedAt: string | null;
+}
+export const listSkuImages = (
+  params: { skuId: string; lang?: SkuImageLang; includeDeprecated?: boolean },
+  signal?: AbortSignal,
+) => {
+  const qs = new URLSearchParams();
+  qs.set('skuId', params.skuId);
+  if (params.lang) qs.set('lang', params.lang);
+  if (params.includeDeprecated) qs.set('includeDeprecated', 'true');
+  return api.get<{ ok: true; items: SkuImageRow[] }>(`/admin/sku-image?${qs.toString()}`, { signal });
+};
+export const uploadSkuImage = (form: FormData, signal?: AbortSignal) =>
+  uploadForm<{ ok: true; image: SkuImageRow }>('/admin/sku-image', form, { signal });
+export interface SkuBulkUploadFailure {
+  fileName: string;
+  error: string;
+}
+export type SkuBulkUploadResultItem =
+  | { fileName: string; ok: true; image: SkuImageRow }
+  | { fileName: string; ok: false; error: string };
+export interface SkuBulkUploadResult {
+  ok: true;
+  /**
+   * 与输入文件按顺序、与输入等长、按 fileName 一一对应。
+   * 前端必须按 fileName 查找，禁止按数组下标读取 —— 下标在部分失败时会错位。
+   */
+  results: SkuBulkUploadResultItem[];
+  items: SkuImageRow[];
+  failures: SkuBulkUploadFailure[];
+}
+/**
+ * 批量上传 SKU 图片（≤5 张/次，XHR 上传 + 进度回调）
+ * - onProgress(loaded, total)：合并所有上传项的总字节进度
+ * - 返回 results(与输入等长按 fileName 对齐) + items + failures；服务端 207 状态码
+ */
+export const bulkUploadSkuImages = (
+  form: FormData,
+  onProgress: UploadProgressHandler,
+  signal?: AbortSignal,
+) =>
+  uploadFormWithProgress<SkuBulkUploadResult>(
+    '/admin/sku-image/bulk',
+    form,
+    onProgress,
+    { signal },
+  );
+export const updateSkuImage = (
+  id: string,
+  body: { alt?: string; caption?: string; sortOrder?: number; isCover?: boolean },
+  signal?: AbortSignal,
+) =>
+  api.patch<{ ok: true; image: SkuImageRow }>(`/admin/sku-image/${id}`, body, { signal });
+export const deprecateSkuImage = (id: string, signal?: AbortSignal) =>
+  api.del<{ ok: true; image: SkuImageRow }>(`/admin/sku-image/${id}`, { signal });
 
 /* ---------- Admin: Devices (设备列表) ---------- */
 export interface AdminDeviceItem {

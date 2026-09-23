@@ -4,12 +4,14 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Param,
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkuService } from './sku.service';
 import { Public } from '../../common/guards/jwt-auth.guard';
+import { parseStringArray } from '../../common/util/json-array';
 
 /** 解析 SKU_IMAGE_SLUG_MAP 环境变量
  *  格式: "MAT-12V200Ah=power01,MAT-12V300Ah=power02"
@@ -33,6 +35,8 @@ function defaultImageSlug(sku: string): string {
 @Controller('sku')
 @ApiTags('sku')
 export class SkuController {
+  private readonly log = new Logger(SkuController.name);
+
   constructor(private readonly sku: SkuService) {}
 
   /** 公开:返回 SKU 精简 manifest(供 website 同步使用,无敏感字段)
@@ -57,10 +61,19 @@ export class SkuController {
       cycles: string;
       imageSlug: string;
       warrantyMonthsWhole: number;
+      // v1.4 P2-3:商品库同步字段
+      description: string;
+      imageUrls: string[];
+      videoTrailerUrl: string;
+      guidePriceCents: number | null;
+      guidePriceCurrency: string;
+      guidePriceNote: string;
     }>;
   }> {
     const rows = (this.sku as any).db.all(
-      `SELECT id, sku, modelName, family, capacity, voltage, chemistry, cycles, warrantyMonthsWhole
+      `SELECT id, sku, modelName, family, capacity, voltage, chemistry, cycles, warrantyMonthsWhole,
+              description, imageUrls, videoTrailerUrl,
+              guidePriceCents, guidePriceCurrency, guidePriceNote
        FROM Sku ORDER BY createdAt ASC`,
     ) as Array<{
       id: string;
@@ -72,20 +85,38 @@ export class SkuController {
       chemistry: string;
       cycles: string;
       warrantyMonthsWhole: number;
+      description: string | null;
+      imageUrls: string | null;
+      videoTrailerUrl: string | null;
+      guidePriceCents: number | null;
+      guidePriceCurrency: string | null;
+      guidePriceNote: string | null;
     }>;
     const slugMap = parseSlugMap(process.env.SKU_IMAGE_SLUG_MAP);
-    const items = rows.map((r) => ({
-      sku: r.sku,
-      id: r.id,
-      modelName: r.modelName,
-      family: r.family,
-      capacity: r.capacity,
-      voltage: r.voltage,
-      chemistry: r.chemistry,
-      cycles: r.cycles,
-      imageSlug: slugMap[r.sku] ?? defaultImageSlug(r.sku),
-      warrantyMonthsWhole: r.warrantyMonthsWhole,
-    }));
+    const items = rows.map((r) => {
+      const urls = parseStringArray(r.imageUrls);
+      if (r.imageUrls && urls.length === 0) {
+        this.log.warn(`SKU ${r.id} imageUrls 列损坏或非数组,已降级返回空数组`);
+      }
+      return {
+        sku: r.sku,
+        id: r.id,
+        modelName: r.modelName,
+        family: r.family,
+        capacity: r.capacity,
+        voltage: r.voltage,
+        chemistry: r.chemistry,
+        cycles: r.cycles,
+        imageSlug: slugMap[r.sku] ?? defaultImageSlug(r.sku),
+        warrantyMonthsWhole: r.warrantyMonthsWhole,
+        description: r.description ?? '',
+        imageUrls: urls,
+        videoTrailerUrl: r.videoTrailerUrl ?? '',
+        guidePriceCents: r.guidePriceCents,
+        guidePriceCurrency: r.guidePriceCurrency ?? 'BDT',
+        guidePriceNote: r.guidePriceNote ?? '',
+      };
+    });
     return {
       ok: true,
       generatedAt: new Date().toISOString(),
