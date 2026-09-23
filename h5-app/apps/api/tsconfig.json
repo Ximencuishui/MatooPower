@@ -11,7 +11,11 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "paths": {
+      "@matoo/shared": ["../../packages/shared/dist/index.d.ts"],
+      "@matoo/shared/*": ["../../packages/shared/dist/*"]
+    }
   },
   "include": ["src/**/*", "prisma/**/*", "test/**/*"],
   "exclude": ["node_modules", "dist", "src/**/*.spec.ts"]

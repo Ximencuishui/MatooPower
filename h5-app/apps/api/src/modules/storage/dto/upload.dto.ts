@@ -1,12 +1,13 @@
 import { IsEnum, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { CONTENT_LANGS, type DocLang } from '@matoo/shared';
 
 /** 文档类型枚举(对应需求 §3.1 + §3.7) */
 export const DOC_TYPES = ['manual', 'video', 'specsheet', 'faq'] as const;
 export type DocType = (typeof DOC_TYPES)[number];
 
-/** 支持的多语言(对应需求 §5 + §3.1) */
-export const DOC_LANGS = ['zh', 'en', 'bn', 'hi', 'ur'] as const;
-export type DocLang = (typeof DOC_LANGS)[number];
+/** 支持的多语言(对应需求 §5 + §3.1) — 统一从 @matoo/shared 导入，避免与 SKU_IMAGE_LANGS 等重复定义 */
+export const DOC_LANGS = CONTENT_LANGS;
+export type { DocLang };
 
 /** 版本号格式:v\d+(\.\d+)? 例 v1 / v1.0 / v2.3 */
 const VERSION_REGEX = /^v\d+(\.\d+)?$/;

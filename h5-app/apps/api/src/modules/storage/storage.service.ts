@@ -12,6 +12,26 @@ export interface BuildKeyInput {
   mimeType: string;
 }
 
+export interface BuildImageKeyInput {
+  skuId: string;
+  lang: DocLang;
+  sha256: string;
+  mimeType: string;
+}
+
+export function extForImage(mimeType: string): string {
+  if (mimeType === 'image/jpeg') return 'jpg';
+  if (mimeType === 'image/png') return 'png';
+  if (mimeType === 'image/webp') return 'webp';
+  if (mimeType === 'image/gif') return 'gif';
+  return 'bin';
+}
+
+/** sanitize skuId 防止路径穿越(仅保留字母数字-_)，供 buildKey / buildImageKey 共用 */
+export function safeSkuSegment(skuId: string): string {
+  return skuId.replace(/[^a-zA-Z0-9_-]/g, '_');
+}
+
 /**
  * v1.3 P0:文件存储服务（驱动无关的薄包装）
  * - 构造 storageKey(skuId/type/lang/version/uuid.ext,避免冲突)
@@ -25,9 +45,18 @@ export class StorageService {
   buildKey(input: BuildKeyInput): string {
     const uuid = randomBytes(6).toString('hex');
     const ext = extFor(input.type, input.mimeType);
-    // sanitize skuId 防止路径穿越(仅保留字母数字-_)
-    const safeSku = input.skuId.replace(/[^a-zA-Z0-9_-]/g, '_');
-    return `${safeSku}/${input.type}/${input.lang}/${input.version}-${uuid}.${ext}`;
+    return `${safeSkuSegment(input.skuId)}/${input.type}/${input.lang}/${input.version}-${uuid}.${ext}`;
+  }
+
+  /**
+   * SKU 详情图片 storageKey 构造（v1.4）
+   * - 命名规则：<safeSku>/images/<lang>/<sha8>-<rand4>.<ext>
+   * - sha256 段用于内容寻址（同名文件不同 lang 也不冲突）
+   * - randomBytes(2) 用于同 sha256 重传时的去重容错（保留旧 record 不会被覆盖）
+   */
+  buildImageKey(input: BuildImageKeyInput): string {
+    const ext = extForImage(input.mimeType);
+    return `${safeSkuSegment(input.skuId)}/images/${input.lang}/${input.sha256.slice(0, 8)}-${randomBytes(2).toString('hex')}.${ext}`;
   }
 
   put(key: string, data: Buffer | Readable, opts?: { mimeType?: string }): Promise<void> {
