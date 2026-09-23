@@ -81,4 +81,50 @@ body {
   .table-td {
     @apply text-sm text-slate-700 dark:text-slate-200 px-3 py-2 border-b border-slate-100 dark:border-slate-800/60;
   }
+
+  /* Markdown 预览样式（react-markdown 渲染用）
+     - 轻量 typography 替代品，避免装 @tailwindcss/typography
+     - 支持：标题/段落/列表/代码/引用/表格/链接/粗体/斜体/分隔线 */
+  .md-preview {
+    @apply text-sm text-slate-700 dark:text-slate-200 leading-relaxed;
+  }
+  .md-preview > * + * { margin-top: 0.6em; }
+  .md-preview h1 { @apply text-xl font-semibold mt-4 mb-2; }
+  .md-preview h2 { @apply text-lg font-semibold mt-4 mb-2; }
+  .md-preview h3 { @apply text-base font-semibold mt-3 mb-1; }
+  .md-preview h4 { @apply text-sm font-semibold mt-3 mb-1; }
+  .md-preview p { @apply my-1; }
+  .md-preview strong { @apply font-semibold; }
+  .md-preview em { @apply italic; }
+  .md-preview a {
+    @apply text-matoo hover:text-matoo-dark underline underline-offset-2;
+  }
+  .md-preview ul { @apply list-disc list-inside pl-2 my-1; }
+  .md-preview ol { @apply list-decimal list-inside pl-2 my-1; }
+  .md-preview li { @apply my-0.5; }
+  .md-preview code {
+    @apply font-mono text-[12px] px-1 py-0.5 bg-slate-100 dark:bg-slate-800 text-rose-700 dark:text-rose-300 rounded;
+  }
+  .md-preview pre {
+    @apply font-mono text-xs p-2 bg-slate-100 dark:bg-slate-800 rounded overflow-auto;
+  }
+  .md-preview pre code {
+    @apply bg-transparent text-slate-800 dark:text-slate-200 p-0;
+  }
+  .md-preview blockquote {
+    @apply border-l-4 border-slate-300 dark:border-slate-700 pl-3 text-slate-600 dark:text-slate-400 italic;
+  }
+  .md-preview hr {
+    @apply border-t border-slate-200 dark:border-slate-700 my-3;
+  }
+  .md-preview table {
+    @apply w-full text-xs border-collapse border border-slate-200 dark:border-slate-700;
+  }
+  .md-preview th, .md-preview td {
+    @apply border border-slate-200 dark:border-slate-700 px-2 py-1 text-left;
+  }
+  .md-preview th { @apply bg-slate-50 dark:bg-slate-800 font-medium; }
+  .md-preview input[type='checkbox'] {
+    @apply mr-1.5 align-middle;
+  }
 }

@@ -1,9 +1,13 @@
-// Admin SKU 商品列表（桌面端表格）—— 仅读取，不写
+// Admin SKU 商品列表（桌面端表格）—— 增加后台编辑商品资料入口
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { listAdminSkus, type AdminSkuItem } from '@/lib/api/operations';
+import {
+  listAdminSkus,
+  type AdminSkuItem,
+} from '@/lib/api/operations';
+import { SkuCatalogEditDrawer } from '@/components/drawers/SkuCatalogEditDrawer';
 import { useRequireRole, RoleGuardView } from '@/lib/useRequireRole';
 import { PageLoading } from '@/components/PageLoading';
 import { ErrorBlock } from '@/components/ErrorBlock';
@@ -17,6 +21,16 @@ const FAMILY_LABEL: Record<string, string> = {
   panel: '面板',
 };
 
+function parseImageUrls(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  try {
+    const v = JSON.parse(raw);
+    return Array.isArray(v) ? v.filter((u): u is string => typeof u === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function AdminSkuListPage() {
   const guard = useRequireRole(['admin']);
   const { locale } = useLocale();
@@ -27,6 +41,8 @@ export default function AdminSkuListPage() {
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<unknown>(null);
   const [reloadKey, setReloadKey] = useState(0);
+
+  const [editing, setEditing] = useState<AdminSkuItem | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(search), 300);
@@ -100,61 +116,102 @@ export default function AdminSkuListPage() {
                 <th className="table-th">容量</th>
                 <th className="table-th">电压</th>
                 <th className="table-th">批次</th>
+                <th className="table-th">{dict.skuList.guidePrice}</th>
+                <th className="table-th">资料</th>
                 <th className="table-th">状态</th>
                 <th className="table-th">资源</th>
+                <th className="table-th"></th>
               </tr>
             </thead>
             <tbody>
-              {items.map((s) => (
-                <tr key={s.id} className="hover:bg-slate-50/60">
-                  <td className="table-td">
-                    <div className="font-medium font-mono text-sm">{s.sku}</div>
-                    <div className="text-[11px] text-slate-400 font-mono">{s.id}</div>
-                  </td>
-                  <td className="table-td">
-                    <div>{s.modelName}</div>
-                    <div className="text-[11px] text-slate-500 font-mono">{s.serial}</div>
-                  </td>
-                  <td className="table-td">
-                    <span className="chip chip-blue">
-                      {FAMILY_LABEL[s.family] ?? s.family}
-                    </span>
-                  </td>
-                  <td className="table-td text-sm">{s.capacity}</td>
-                  <td className="table-td text-sm">{s.voltage}</td>
-                  <td className="table-td text-xs font-mono">
-                    {s.batchId ? (
+              {items.map((s) => {
+                const imgs = parseImageUrls(s.imageUrls);
+                const priceText = s.guidePriceCents != null
+                  ? `${(s.guidePriceCents / 100).toFixed(2)} ${s.guidePriceCurrency ?? 'BDT'}`
+                  : '—';
+                const hasDesc = !!(s.description && s.description.trim());
+                return (
+                  <tr key={s.id} className="hover:bg-slate-50/60">
+                    <td className="table-td">
+                      <div className="font-medium font-mono text-sm">{s.sku}</div>
+                      <div className="text-[11px] text-slate-400 font-mono">{s.id}</div>
+                    </td>
+                    <td className="table-td">
+                      <div>{s.modelName}</div>
+                      <div className="text-[11px] text-slate-500 font-mono">{s.serial}</div>
+                    </td>
+                    <td className="table-td">
+                      <span className="chip chip-blue">
+                        {FAMILY_LABEL[s.family] ?? s.family}
+                      </span>
+                    </td>
+                    <td className="table-td text-sm">{s.capacity}</td>
+                    <td className="table-td text-sm">{s.voltage}</td>
+                    <td className="table-td text-xs font-mono">
+                      {s.batchId ? (
+                        <Link
+                          href={`/admin/sku-resources?batch=${s.batchId}`}
+                          className="text-matoo hover:underline"
+                        >
+                          {s.batch}
+                        </Link>
+                      ) : (
+                        s.batch
+                      )}
+                    </td>
+                    <td className="table-td text-sm font-mono">{priceText}</td>
+                    <td className="table-td">
+                      <div className="flex items-center gap-1">
+                        {hasDesc && (
+                          <span className="chip chip-green" title={dict.skuList.hasDescription}>文</span>
+                        )}
+                        {imgs.length > 0 && (
+                          <span className="chip chip-blue" title={dict.skuList.hasImages.replace('{n}', String(imgs.length))}>
+                            {imgs.length}
+                          </span>
+                        )}
+                        {!hasDesc && imgs.length === 0 && (
+                          <span className="text-xs text-slate-400">—</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="table-td">
+                      {s.activated ? (
+                        <span className="chip chip-green">{dict.skuList.activated}</span>
+                      ) : (
+                        <span className="chip chip-gray">{dict.skuList.notActivated}</span>
+                      )}
+                    </td>
+                    <td className="table-td">
                       <Link
-                        href={`/admin/sku-resources?batch=${s.batchId}`}
-                        className="text-matoo hover:underline"
+                        href={`/admin/sku-resources?sku=${s.id}`}
+                        className="text-xs text-matoo hover:underline"
                       >
-                        {s.batch}
+                        {dict.skuList.openResources}
                       </Link>
-                    ) : (
-                      s.batch
-                    )}
-                  </td>
-                  <td className="table-td">
-                    {s.activated ? (
-                      <span className="chip chip-green">{dict.skuList.activated}</span>
-                    ) : (
-                      <span className="chip chip-gray">{dict.skuList.notActivated}</span>
-                    )}
-                  </td>
-                  <td className="table-td">
-                    <Link
-                      href={`/admin/sku-resources?sku=${s.id}`}
-                      className="text-xs text-matoo hover:underline"
-                    >
-                      {dict.skuList.openResources}
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="table-td">
+                      <button
+                        onClick={() => setEditing(s)}
+                        className="text-xs text-matoo hover:underline font-medium"
+                      >
+                        {dict.skuList.edit}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       )}
+
+      <SkuCatalogEditDrawer
+        open={!!editing}
+        onClose={() => setEditing(null)}
+        sku={editing}
+        onSaved={() => setReloadKey((k) => k + 1)}
+      />
     </div>
   );
 }
