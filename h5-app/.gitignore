@@ -29,6 +29,7 @@ apps/web/_dark-*.ps1
 .audit-*.pdf
 .audit-*.json
 .audit-*.ps1
+.audit.pdf
 .batch_*.json
 .doc_*.txt
 .qr_*.json
