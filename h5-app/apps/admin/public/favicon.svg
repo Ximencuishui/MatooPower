@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <!-- Hexagon badge -->
+  <path d="M32 4 L56 18 L56 46 L32 60 L8 46 L8 18 Z" fill="#091E42"/>
+  <!-- M with gradient -->
+  <defs>
+    <linearGradient id="favGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0052CC"/>
+      <stop offset="100%" stop-color="#36B37E"/>
+    </linearGradient>
+  </defs>
+  <path d="M18 44 L18 20 L26 20 L32 32 L38 20 L46 20 L46 44 L41 44 L41 26 L36 36 L28 36 L23 26 L23 44 Z" 
+        fill="url(#favGrad)"/>
+  <rect x="42" y="40" width="5" height="5" rx="1" fill="#36B37E"/>
+</svg>
