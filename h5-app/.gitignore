@@ -42,6 +42,10 @@ apps/web/_dark-*.ps1
 _*.txt
 _patch-*.js
 
+# Swagger 自动生成 + tsc 输出（不入仓）
+apps/api/_swagger.json
+apps/api/_tsc.out
+
 # 上传文档存储（运行时写入；不入仓）
 apps/api/storage/
 
