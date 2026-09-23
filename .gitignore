@@ -79,6 +79,7 @@ _*show_corrupt*.ps1
 _*.cjs
 _*.cjs.txt
 _*.cjs.out
+_*.js
 # 例外:跨产品对接中是公开工具脚本,手动调价不需过 _ 前缀
 !website/scripts/sync-sku-manifest.cjs
 !website/scripts/t1d-verify.cjs
