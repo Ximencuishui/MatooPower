@@ -3,10 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --matoo: #0E8F5A;
-  --matoo-dark: #0A6E45;
-  --matoo-light: #E6F7EE;
-  --matoo-energy: #FF7A1A;
+  /* v1.4 T-2d X1:统一到 brand 站三色（与 tailwind.config.ts matoo 变量保持一致）
+     --matoo       #0052CC 主蓝（品牌主色规范）
+     --matoo-dark  #091E42 深色
+     --matoo-light #E6F0FB 蓝浅背景
+     --matoo-energy #36B37E 强调绿（仅--matoo-energy直接引用，其他变量都是 gray/red/orange 衍生） */
+  --matoo: #0052CC;
+  --matoo-dark: #091E42;
+  --matoo-light: #E6F0FB;
+  --matoo-energy: #36B37E;
   --matoo-ink: #0F172A;
   --matoo-muted: #64748B;
   --matoo-bg: #F7FAF8;
@@ -32,7 +37,7 @@
   --matoo-input: #374151;
   --matoo-ink: #F1F5F9;
   --matoo-muted: #94A3B8;
-  --matoo-light: #0F2A22;
+  --matoo-light: #0F1A2A;
   --matoo-chip-gray-bg: #1F2937;
   --matoo-chip-gray-fg: #CBD5E1;
   --matoo-chip-red-bg: #4C1414;
