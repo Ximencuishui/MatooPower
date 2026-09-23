@@ -334,3 +334,103 @@ export const downloadAdminQrBatch = (id: string) =>
 
 export const revokeAdminQr = (qrId: string, opts?: FetchOpts) =>
   api.post<{ ok: true; qrId: string }>(`/admin/qr/${encodeURIComponent(qrId)}/revoke`, undefined, opts);
+
+// ============================================================
+// v1.4 P1:GDPR 软删 + Dealer 表 + SLA + i18n
+// ============================================================
+
+// P1-1:GDPR DELETE /admin/users/:id
+export const gdprDeleteAdminUser = (id: string, opts?: FetchOpts) =>
+  api.delete<{
+    ok: true;
+    id: string;
+    deletedAt: string;
+    anonymizedPhone: string | null;
+    anonymizedEmail: string | null;
+  }>(`/admin/users/${encodeURIComponent(id)}`, opts);
+
+// P1-2:经销商独立 Dealer 表 CRUD + 专属价格
+export type AdminDealerItem = {
+  id: string;
+  companyName: string;
+  country: string;
+  tier: 'silver' | 'gold' | 'platinum';
+  contactEmail: string | null;
+  contactPhone: string | null;
+  status: 'active' | 'suspended';
+  note: string | null;
+  createdByUserId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  memberCount?: number;
+  priceListCount?: number;
+};
+export type AdminDealerPriceItem = {
+  id: string;
+  dealerId: string;
+  skuId: string;
+  priceCents: number;
+  currency: string;
+  effectiveFrom: string;
+  effectiveTo: string | null;
+  createdByUserId: string | null;
+  createdAt: string;
+  skuSku?: string;
+  skuSerial?: string;
+};
+export type AdminDealerDetail = AdminDealerItem & {
+  priceList: AdminDealerPriceItem[];
+  members: Array<{ id: string; phone: string | null; email: string | null; displayName: string | null; role: string }>;
+};
+
+export const listAdminDealers = (params?: { q?: string; status?: string; page?: number; pageSize?: number }, opts?: FetchOpts) => {
+  const q = new URLSearchParams();
+  if (params?.q) q.set('q', params.q);
+  if (params?.status) q.set('status', params.status);
+  if (params?.page) q.set('page', String(params.page));
+  if (params?.pageSize) q.set('pageSize', String(params.pageSize));
+  const qs = q.toString();
+  return api.get<PageResp<AdminDealerItem>>(`/admin/dealers${qs ? `?${qs}` : ''}`, opts);
+};
+
+export const getAdminDealer = (id: string, opts?: FetchOpts) =>
+  api.get<{ ok: true; dealer: AdminDealerDetail }>(`/admin/dealers/${encodeURIComponent(id)}`, opts);
+
+export const createAdminDealer = (body: {
+  companyName: string; country: string;
+  tier?: 'silver' | 'gold' | 'platinum';
+  contactEmail?: string; contactPhone?: string; note?: string;
+}, opts?: FetchOpts) =>
+  api.post<{ ok: true; dealer: AdminDealerItem }>('/admin/dealers', body, opts);
+
+export const updateAdminDealer = (id: string, body: Partial<{
+  companyName: string; country: string; tier: 'silver' | 'gold' | 'platinum';
+  contactEmail: string; contactPhone: string; note: string;
+}>, opts?: FetchOpts) =>
+  api.patch<{ ok: true; dealer: AdminDealerItem }>(`/admin/dealers/${encodeURIComponent(id)}`, body, opts);
+
+export const suspendAdminDealer = (id: string, opts?: FetchOpts) =>
+  api.delete<{ ok: true; dealer: AdminDealerItem }>(`/admin/dealers/${encodeURIComponent(id)}`, opts);
+
+export const activateAdminDealer = (id: string, opts?: FetchOpts) =>
+  api.post<{ ok: true; dealer: AdminDealerItem }>(`/admin/dealers/${encodeURIComponent(id)}/activate`, undefined, opts);
+
+export const addAdminDealerPrice = (dealerId: string, body: {
+  skuId: string; priceCents: number; currency?: string;
+  effectiveFrom?: string; effectiveTo?: string;
+}, opts?: FetchOpts) =>
+  api.post<{ ok: true; price: AdminDealerPriceItem }>(
+    `/admin/dealers/${encodeURIComponent(dealerId)}/prices`, body, opts);
+
+export const removeAdminDealerPrice = (dealerId: string, priceId: string, opts?: FetchOpts) =>
+  api.delete<{ ok: true; id: string }>(
+    `/admin/dealers/${encodeURIComponent(dealerId)}/prices/${encodeURIComponent(priceId)}`, opts);
+
+// P1-3:工单 SLA stats
+export const getTicketSlaStats = (opts?: FetchOpts) =>
+  api.get<{ ok: true; openOver2h: number; highOver4h: number }>('/admin/tickets/sla-stats', opts);
+
+// P1-3:手动触发 SLA sweep(admin only,调试 + 冒烟)
+export const runTicketSlaSweep = (opts?: FetchOpts) =>
+  api.post<{ ok: true; upgraded: number; details: { id: string; from: string; to: string }[] }>(
+    '/admin/tickets/sla-sweep', undefined, opts);

@@ -7,9 +7,9 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? process.env.MATOO_API_BASE 
 
 export async function GET(
   req: NextRequest,
-  ctx: { params: { skuId: string; type: string; lang: string } },
+  ctx: { params: Promise<{ skuId: string; type: string; lang: string }> },
 ) {
-  const { skuId, type, lang } = ctx.params;
+  const { skuId, type, lang } = await ctx.params;
   // 简单的入参校验,避免把异常路径丢给后端
   if (!skuId || !type || !lang) {
     return NextResponse.json({ error: 'MISSING_PARAMS', message: 'skuId/type/lang 必填' }, { status: 400 });

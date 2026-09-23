@@ -1,6 +1,7 @@
 'use client';
-// P1-10:管理员用户列表页 — 角色过滤 + 搜索 + 详情 Drawer
+// P1-10 + v1.4 P1-1:管理员用户列表页 — 角色过滤 + 搜索 + 详情 Drawer + GDPR 删除
 // 列出全部注册用户，支持按角色过滤、按手机/邮箱/名称搜索
+// 已删用户(phone/email 已置 NULL)从列表中过滤；GDPR 删除走二次确认
 
 import { useEffect, useMemo, useState } from 'react';
 import { PhoneShell } from '@/components/PhoneShell';
@@ -10,34 +11,32 @@ import { PageLoading } from '@/components/Spinner';
 import { ErrorBlock } from '@/components/ErrorBlock';
 import { EmptyState } from '@/components/EmptyState';
 import { Drawer } from '@/components/Drawer';
+import { Confirm } from '@/components/Confirm';
 import { useT } from '@/lib/i18n';
-import { listAdminUsers, downloadAdminUsersCsv } from '@/lib/api/operations';
+import { listAdminUsers, downloadAdminUsersCsv, gdprDeleteAdminUser } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
 import { ExportCsvButton } from '@/components/ExportCsvButton';
 import { useRequireRole, RoleGuardView } from '@/hooks/useRequireRole';
 import { useAbortedFetch } from '@/hooks/useAbortedFetch';
 import { useLocaleFormat } from '@/hooks/useLocaleFormat';
+import { toastError, toastSuccess } from '@/components/Toast';
+import { getSession } from '@/lib/api/auth-store';
 import type { AdminUserItem } from '@/lib/api/endpoints';
 
-type RoleFilter = 'all' | 'customer' | 'dealer' | 'admin';
-
-const ROLE_LABEL: Record<RoleFilter, string> = {
-  all: '全部',
-  customer: '客户',
-  dealer: '经销商',
-  admin: '管理员',
-};
+type RoleFilter = 'all' | 'customer' | 'dealer' | 'admin' | 'support';
 
 const ROLE_CHIP: Record<Exclude<RoleFilter, 'all'>, string> = {
   customer: 'chip-blue',
   dealer: 'chip-purple',
   admin: 'chip-red',
+  support: 'chip-green',
 };
 
 export default function AdminUsersPage() {
-  const { t: _t } = useT();
+  const { t } = useT();
   const { formatDate, formatNumber } = useLocaleFormat();
   const guard = useRequireRole(['admin']);
+  const session = getSession();
 
   const [role, setRole] = useState<RoleFilter>('all');
   const [search, setSearch] = useState('');
@@ -46,16 +45,14 @@ export default function AdminUsersPage() {
   const [total, setTotal] = useState(0);
   const [selected, setSelected] = useState<AdminUserItem | null>(null);
   const [error, setError] = useState<unknown>(null);
-  // P0 UX-10:onRetry 时通过递增 reloadKey 触发重新 fetch
   const [reloadKey, setReloadKey] = useState(0);
 
   // 搜索 debounce 300ms
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search), 300);
-    return () => clearTimeout(t);
+    const id = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(id);
   }, [search]);
 
-  // AbortController: 切换 tab/搜索/手动重试时取消上一次的 fetch
   useAbortedFetch((signal) => {
     if (guard.status !== 'ok') return;
     setError(null);
@@ -79,19 +76,35 @@ export default function AdminUsersPage() {
 
   // 角色分组统计
   const groupedCounts = useMemo(() => {
-    const m: Record<string, number> = { customer: 0, dealer: 0, admin: 0 };
+    const m: Record<string, number> = { customer: 0, dealer: 0, admin: 0, support: 0 };
     (items ?? []).forEach((u) => { m[u.role] = (m[u.role] ?? 0) + 1; });
     return m;
   }, [items]);
 
   if (guard.status !== 'ok') {
-    return <RoleGuardView state={guard} title="用户管理" />;
+    return <RoleGuardView state={guard} title={t.adminUsers.title} />;
   }
+
+  const handleGdpr = async (id: string) => {
+    try {
+      const r = await gdprDeleteAdminUser(id);
+      toastSuccess(`${t.common.gdprSuccess} · ${id.slice(0, 8)}…`);
+      setSelected(null);
+      setReloadKey((k) => k + 1);
+      return r;
+    } catch (e) {
+      const msg = e instanceof ApiError
+        ? `${t.common.gdprFailed}: ${e.message}`
+        : t.common.gdprFailed;
+      toastError(msg);
+      throw e;
+    }
+  };
 
   return (
     <PhoneShell>
       <TopBar
-        title="用户管理"
+        title={t.adminUsers.title}
         leftExtra={<AdminBreadcrumb />}
         right={
           <>
@@ -110,13 +123,13 @@ export default function AdminUsersPage() {
         <section className="px-4 mt-3">
           <div className="card p-3">
             <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-              <span>用户总数</span>
+              <span>{t.adminUsers.total}</span>
               <span className="text-lg font-bold text-slate-900 dark:text-slate-100">
                 {formatNumber(total)}
               </span>
             </div>
-            <div className="grid grid-cols-3 gap-2 mt-2">
-              {(['customer', 'dealer', 'admin'] as const).map((r) => (
+            <div className="grid grid-cols-4 gap-2 mt-2">
+              {(['customer', 'dealer', 'admin', 'support'] as const).map((r) => (
                 <button
                   key={r}
                   onClick={() => setRole(r)}
@@ -126,7 +139,7 @@ export default function AdminUsersPage() {
                       : 'bg-slate-50 dark:bg-slate-800/40'
                   }`}
                 >
-                  <div className="text-slate-500 dark:text-slate-400">{ROLE_LABEL[r]}</div>
+                  <div className="text-slate-500 dark:text-slate-400">{t.adminUsers[`role_${r}` as const]}</div>
                   <div className="text-base font-semibold mt-0.5">{groupedCounts[r] ?? 0}</div>
                 </button>
               ))}
@@ -134,14 +147,14 @@ export default function AdminUsersPage() {
           </div>
         </section>
 
-        {/* 搜索 + Tab */}
+        {/* 搜索 */}
         <div className="px-4 mt-3">
           <form onSubmit={(e) => e.preventDefault()} className="relative">
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="搜索手机号 / 邮箱 / 名称"
+              placeholder={t.adminUsers.searchPh}
               dir="auto"
               className="input pr-9"
               aria-label="search users"
@@ -152,15 +165,23 @@ export default function AdminUsersPage() {
 
         <div className="px-4 mt-2">
           <div role="tablist" className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs">
-            {(Object.keys(ROLE_LABEL) as RoleFilter[]).map((k) => (
+            <button
+              role="tab"
+              aria-selected={role === 'all'}
+              onClick={() => setRole('all')}
+              className={`flex-1 py-2 rounded-lg ${role === 'all' ? 'bg-white dark:bg-slate-800 shadow-sm font-semibold' : 'text-slate-500'}`}
+            >
+              {t.adminUsers.role_all}
+            </button>
+            {(['customer', 'dealer', 'admin', 'support'] as const).map((r) => (
               <button
-                key={k}
+                key={r}
                 role="tab"
-                aria-selected={role === k}
-                onClick={() => setRole(k)}
-                className={`flex-1 py-2 rounded-lg ${role === k ? 'bg-white dark:bg-slate-800 shadow-sm font-semibold' : 'text-slate-500'}`}
+                aria-selected={role === r}
+                onClick={() => setRole(r)}
+                className={`flex-1 py-2 rounded-lg ${role === r ? 'bg-white dark:bg-slate-800 shadow-sm font-semibold' : 'text-slate-500'}`}
               >
-                {ROLE_LABEL[k]}
+                {t.adminUsers[`role_${r}` as const]}
               </button>
             ))}
           </div>
@@ -177,7 +198,7 @@ export default function AdminUsersPage() {
           )}
           {!error && !items && <PageLoading />}
           {!error && items && items.length === 0 && (
-            <EmptyState icon="??" title="暂无用户" />
+            <EmptyState icon="👥" title={t.adminUsers.empty} />
           )}
           {items?.map((u) => (
             <button key={u.id} onClick={() => setSelected(u)} className="card p-3 w-full text-left">
@@ -193,14 +214,14 @@ export default function AdminUsersPage() {
                     {u.phone && <span className="font-mono">{u.phone}</span>}
                     {u.phone && u.email && ' · '}
                     {u.email && <span>{u.email}</span>}
-                    {!u.phone && !u.email && <span className="text-slate-400 dark:text-slate-500">未绑定联系方式</span>}
+                    {!u.phone && !u.email && <span className="text-slate-400 dark:text-slate-500">{t.adminUsers.noContact}</span>}
                   </div>
                   <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-                    {formatDate(u.createdAt)} · 保修 {u.warrantyCount} 件
+                    {formatDate(u.createdAt)} · {t.adminUsers.warrantyCountLabel} {u.warrantyCount}
                   </div>
                 </div>
                 <span className={`chip text-[10px] ${ROLE_CHIP[u.role as Exclude<RoleFilter, 'all'>] ?? 'chip-gray'}`}>
-                  {ROLE_LABEL[u.role as RoleFilter] ?? u.role}
+                  {t.adminUsers[`role_${u.role}` as keyof typeof t.adminUsers] ?? u.role}
                 </span>
               </div>
             </button>
@@ -209,7 +230,7 @@ export default function AdminUsersPage() {
       </main>
 
       {/* 详情 Drawer */}
-      <Drawer open={!!selected} onClose={() => setSelected(null)} title="用户详情">
+      <Drawer open={!!selected} onClose={() => setSelected(null)} title={t.adminUsers.detailTitle}>
         {selected && (
           <div className="p-4 space-y-4">
             <div className="card p-4 flex items-center gap-3">
@@ -218,52 +239,60 @@ export default function AdminUsersPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold truncate">
-                  {selected.displayName ?? '匿名用户'}
+                  {selected.displayName ?? 'Anonymous'}
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate font-mono">
                   {selected.id}
                 </div>
               </div>
               <span className={`chip ${ROLE_CHIP[selected.role as Exclude<RoleFilter, 'all'>] ?? 'chip-gray'}`}>
-                {ROLE_LABEL[selected.role as RoleFilter] ?? selected.role}
+                {t.adminUsers[`role_${selected.role}` as keyof typeof t.adminUsers] ?? selected.role}
               </span>
             </div>
 
             <div className="card p-4 space-y-2 text-sm">
               <div className="flex justify-between gap-2">
-                <span className="text-slate-500 dark:text-slate-400">手机号</span>
+                <span className="text-slate-500 dark:text-slate-400">{t.adminUsers.phoneLabel}</span>
                 <span className="font-mono">{selected.phone ?? '—'}</span>
               </div>
               <div className="flex justify-between gap-2">
-                <span className="text-slate-500 dark:text-slate-400">邮箱</span>
+                <span className="text-slate-500 dark:text-slate-400">{t.adminUsers.emailLabel}</span>
                 <span className="truncate max-w-[60%]">{selected.email ?? '—'}</span>
               </div>
               <div className="flex justify-between gap-2">
-                <span className="text-slate-500 dark:text-slate-400">注册时间</span>
+                <span className="text-slate-500 dark:text-slate-400">{t.adminUsers.createdAtLabel}</span>
                 <span>{formatDate(selected.createdAt)}</span>
               </div>
               <div className="flex justify-between gap-2">
-                <span className="text-slate-500 dark:text-slate-400">激活保修</span>
-                <span className="font-semibold">{selected.warrantyCount} 件</span>
+                <span className="text-slate-500 dark:text-slate-400">{t.adminUsers.warrantyCountLabel}</span>
+                <span className="font-semibold">{selected.warrantyCount}</span>
               </div>
             </div>
 
-            {/* 操作区(占位:实际功能需后端接口支持) */}
-            <div className="card p-4 space-y-2 text-sm">
-              <h4 className="font-semibold text-sm">管理员操作</h4>
+            {/* 操作区 */}
+            <div className="card p-4 space-y-3 text-sm">
+              <h4 className="font-semibold text-sm">{t.adminUsers.actionSection}</h4>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                调整用户角色、停用账号、查看保修历史等功能需后端
-                <code className="font-mono mx-1">PATCH /admin/users/:id/role</code>
-                <code className="font-mono mx-1">DELETE /admin/users/:id</code>
-                等接口上线后开放。当前为只读列表。
+                {t.adminUsers.actionHint}
               </p>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                <button disabled className="btn-secondary text-sm opacity-50 cursor-not-allowed">
-                  修改角色
-                </button>
-                <button disabled className="btn-ghost text-red-600 dark:text-red-400 text-sm opacity-50 cursor-not-allowed">
-                  停用账号
-                </button>
+              <div className="grid grid-cols-1 gap-2 mt-2">
+                <Confirm
+                  destructive
+                  trigger={(open) => (
+                    <button
+                      onClick={open}
+                      disabled={session?.userId === selected.id}
+                      className="btn-ghost text-red-600 dark:text-red-400 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={session?.userId === selected.id ? t.common.gdprForbiddenSelf : ''}
+                    >
+                      {t.adminUsers.gdprBtn}
+                    </button>
+                  )}
+                  title={t.common.gdprConfirmTitle}
+                  description={t.common.gdprConfirmBody}
+                  confirmLabel={t.common.gdprBtn}
+                  onConfirm={() => handleGdpr(selected.id)}
+                />
               </div>
             </div>
           </div>

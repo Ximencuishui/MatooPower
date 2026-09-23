@@ -68,11 +68,15 @@ export default function AdminOverviewPage() {
               <Kpi label={t.adminOverview.deviceTotal} value={overview.device.total} sub={t.adminOverview.deviceThisMonth.replace('{n}', String(overview.device.boundThisMonth))} />
             </section>
 
-            {/* P1-4:紧急阈值告警 */}
+            {/* P1-4:紧急阈值告警(v1.4 P1-5:走 i18n) */}
             {overview.ticket.urgent >= 5 && (
               <div className="card p-3 urgent-border text-sm">
-                <div className="font-semibold text-red-600 dark:text-red-300">⚠ 紧急工单达 {overview.ticket.urgent} 条</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">建议立即在客服工作台处理。</div>
+                <div className="font-semibold text-red-600 dark:text-red-300">
+                  {t.adminOverviewUrgentAlert.title.replace('{n}', String(overview.ticket.urgent))}
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  {t.adminOverviewUrgentAlert.hint}
+                </div>
               </div>
             )}
 
@@ -89,12 +93,16 @@ export default function AdminOverviewPage() {
             <section>
               <h3 className="text-sm font-semibold mb-2">{t.adminOverview.quickLinks}</h3>
               <div className="grid grid-cols-2 gap-3">
-                <QuickLink href="/admin/tickets" emoji="🎫" label={t.ticket.adminTitle} />
-                <QuickLink href="/admin/warranties" emoji="🛡" label="保修审核" />
-                <QuickLink href="/admin/users" emoji="👥" label="用户管理" />
-                <QuickLink href="/dealer/dashboard" emoji="🛒" label={t.dealer.title} />
-                <QuickLink href="/devices" emoji="📱" label={t.tabs.devices} />
-                <QuickLink href="/scan" emoji="📷" label={t.scanEntry.title} />
+                <QuickLink href="/admin/tickets" emoji="🎫" label={t.adminQuickLinks.tickets} />
+                <QuickLink href="/admin/warranties" emoji="🛡" label={t.adminQuickLinks.warranties} />
+                <QuickLink href="/admin/users" emoji="👥" label={t.adminQuickLinks.users} />
+                <QuickLink href="/admin/dealers" emoji="🏢" label={t.adminQuickLinks.dealers} />
+                <QuickLink href="/admin/sku" emoji="📦" label={t.adminQuickLinks.sku} />
+                <QuickLink href="/admin/analytics" emoji="📈" label={t.adminQuickLinks.analytics} />
+                <QuickLink href="/admin/audit" emoji="📜" label={t.adminQuickLinks.audit} />
+                <QuickLink href="/dealer/dashboard" emoji="🛒" label={t.adminQuickLinks.dealerDashboard} />
+                <QuickLink href="/devices" emoji="📱" label={t.adminQuickLinks.devices} />
+                <QuickLink href="/scan" emoji="📷" label={t.adminQuickLinks.scan} />
               </div>
             </section>
           </>

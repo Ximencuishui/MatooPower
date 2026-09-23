@@ -1,5 +1,6 @@
 'use client';
 // 管理员保修审核页 — 列表 + 状态过滤 + 审核 Drawer
+// P1-4:所有硬编码已替换为 i18n key(t.adminWarranties.*)
 import { useEffect, useRef, useState } from 'react';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar, AdminBreadcrumb } from '@/components/TopBar';
@@ -73,25 +74,29 @@ export default function AdminWarrantiesPage() {
         if (ctrl.signal.aborted) return;
         setSelected(r.warranty);
         setNotes('');
-        toastSuccess(t.ticket.setResolved + ' ✓');
+        toastSuccess(`${t.adminWarranties.reviewedDone} ✓`);
         load();
       })
       .catch((e: unknown) => {
         if ((e as { name?: string })?.name === 'AbortError') return;
-        const msg = e instanceof ApiError ? e.message : (e instanceof Error ? e.message : '审核失败');
+        const msg = e instanceof ApiError ? e.message : (e instanceof Error ? e.message : t.adminWarranties.reviewFailed);
         toast(msg, 'error');
       })
       .finally(() => { if (!ctrl.signal.aborted) setBusy(false); });
   }
 
   if (guard.status !== 'ok') {
-    return <RoleGuardView state={guard} title="保修审核" />;
+    return <RoleGuardView state={guard} title={t.adminWarranties.title} />;
   }
+
+  // 把后端返回的 status 字符串映射成 i18n key(英文)
+  const statusLabel = (s: string) =>
+    t.adminWarranties[`status_${s}` as keyof typeof t.adminWarranties] as string ?? s;
 
   return (
     <PhoneShell>
       <TopBar
-        title="保修审核"
+        title={t.adminWarranties.title}
         leftExtra={<AdminBreadcrumb />}
         right={
           <>
@@ -112,7 +117,7 @@ export default function AdminWarrantiesPage() {
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="搜索 SKU / 序列号 / 经销商"
+              placeholder={t.adminWarranties.searchPlaceholder}
               dir="auto"
               className="input pr-9"
               aria-label="search warranties"
@@ -124,10 +129,10 @@ export default function AdminWarrantiesPage() {
         <div className="px-4 mt-2">
           <div role="tablist" className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs">
             {([
-              { k: 'pending' as Tab, l: '待审' },
-              { k: 'active' as Tab, l: '已激活' },
-              { k: 'rejected' as Tab, l: '已驳回' },
-              { k: 'all' as Tab, l: '全部' },
+              { k: 'pending' as Tab, l: t.adminWarranties.tabs.pending },
+              { k: 'active' as Tab, l: t.adminWarranties.tabs.active },
+              { k: 'rejected' as Tab, l: t.adminWarranties.tabs.rejected },
+              { k: 'all' as Tab, l: t.adminWarranties.tabs.all },
             ]).map((tb) => (
               <button
                 key={tb.k}
@@ -145,7 +150,7 @@ export default function AdminWarrantiesPage() {
         <section className="px-4 mt-3 space-y-2">
           {error != null && !items && <ErrorBlock error={error} onRetry={load} showLoginLink={error instanceof ApiError && error.status === 401} loginNext="/admin/warranties" />}
           {!error && !items && <PageLoading />}
-          {!error && items && items.length === 0 && <EmptyState icon="🛡" title="暂无保修记录" />}
+          {!error && items && items.length === 0 && <EmptyState icon="🛡" title={t.adminWarranties.empty} />}
           {items?.map((w) => (
             <button key={w.id} onClick={() => setSelected(w)} className="card p-3 w-full text-left">
               <div className="flex items-start gap-2">
@@ -166,42 +171,42 @@ export default function AdminWarrantiesPage() {
                   w.status === 'active' ? 'chip-green' :
                   w.status === 'rejected' ? 'chip-red' :
                   w.status === 'expired' ? 'chip-gray' : 'chip-orange'
-                }`}>{w.status}</span>
+                }`}>{statusLabel(w.status)}</span>
               </div>
             </button>
           ))}
         </section>
       </main>
 
-      <Drawer open={!!selected} onClose={() => { setSelected(null); setNotes(''); }} title="保修详情">
+      <Drawer open={!!selected} onClose={() => { setSelected(null); setNotes(''); }} title={t.adminWarranties.detailTitle}>
         {selected && (
           <div className="p-4 space-y-4">
             <div className="card p-4 space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">SKU</span><span className="font-mono">{selected.s_sku ?? selected.skuId}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">型号</span><span>{selected.s_modelName ?? '—'}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">序列号</span><span className="font-mono">{selected.s_serial ?? '—'}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">用户</span><span>{selected.user_displayName ?? selected.user_phone ?? selected.userId}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">地区</span><span>{selected.country} {selected.city && `· ${selected.city}`}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">经销商</span><span>{selected.dealerName ?? '—'}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">发票号</span><span className="font-mono">{selected.invoiceNo ?? '—'}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">发票日期</span><span>{selected.invoiceDate ? formatDate(selected.invoiceDate) : '—'}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">发票金额</span><span>{selected.invoiceAmount != null ? formatCurrency(selected.invoiceAmount, 'BDT') : '—'}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">状态</span><span className={`chip ${selected.status === 'active' ? 'chip-green' : selected.status === 'rejected' ? 'chip-red' : 'chip-orange'}`}>{selected.status}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">激活时间</span><span>{formatDate(selected.startAt)}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">保修期止</span><span>{formatDate(selected.endAtWhole)}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_sku}</span><span className="font-mono">{selected.s_sku ?? selected.skuId}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_model}</span><span>{selected.s_modelName ?? '—'}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_serial}</span><span className="font-mono">{selected.s_serial ?? '—'}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_user}</span><span>{selected.user_displayName ?? selected.user_phone ?? selected.userId}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_region}</span><span>{selected.country} {selected.city && `· ${selected.city}`}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_dealer}</span><span>{selected.dealerName ?? '—'}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_invoiceNo}</span><span className="font-mono">{selected.invoiceNo ?? '—'}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_invoiceDate}</span><span>{selected.invoiceDate ? formatDate(selected.invoiceDate) : '—'}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_invoiceAmount}</span><span>{selected.invoiceAmount != null ? formatCurrency(selected.invoiceAmount, 'BDT') : '—'}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_status}</span><span className={`chip ${selected.status === 'active' ? 'chip-green' : selected.status === 'rejected' ? 'chip-red' : 'chip-orange'}`}>{statusLabel(selected.status)}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_activatedAt}</span><span>{formatDate(selected.startAt)}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">{t.adminWarranties.field_warrantyEnd}</span><span>{formatDate(selected.endAtWhole)}</span></div>
               {selected.reviewNotes && (
                 <div className="pt-2 border-t dark:border-slate-700">
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">已审核备注</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t.adminWarranties.notes_reviewed}</div>
                   <div className="text-sm">{selected.reviewNotes}</div>
                 </div>
               )}
             </div>
 
             <div>
-              <label className="label">审核备注（可选）</label>
+              <label className="label">{t.adminWarranties.notes_label}</label>
               <textarea
                 className="input min-h-[80px] py-2"
-                placeholder="如填写发票号错误、批次疑似伪造等"
+                placeholder={t.adminWarranties.notes_placeholder}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 disabled={busy}
@@ -212,13 +217,13 @@ export default function AdminWarrantiesPage() {
 
             <div className="grid grid-cols-2 gap-2">
               <button onClick={() => doReview('active')} disabled={busy} className="btn-primary text-sm inline-flex items-center justify-center gap-2">
-                {busy && <Spinner size="sm" />}批准激活
+                {busy && <Spinner size="sm" />}{t.adminWarranties.actions_approve}
               </button>
               <button onClick={() => doReview('rejected')} disabled={busy} className="btn-secondary text-red-600 dark:text-red-400 text-sm inline-flex items-center justify-center gap-2">
-                {busy && <Spinner size="sm" />}驳回
+                {busy && <Spinner size="sm" />}{t.adminWarranties.actions_reject}
               </button>
-              <button onClick={() => doReview('pending')} disabled={busy} className="btn-ghost text-sm">标记为待审</button>
-              <button onClick={() => doReview('expired')} disabled={busy} className="btn-ghost text-slate-500 dark:text-slate-400 text-sm">标记为过期</button>
+              <button onClick={() => doReview('pending')} disabled={busy} className="btn-ghost text-sm">{t.adminWarranties.actions_pending}</button>
+              <button onClick={() => doReview('expired')} disabled={busy} className="btn-ghost text-slate-500 dark:text-slate-400 text-sm">{t.adminWarranties.actions_expired}</button>
             </div>
           </div>
         )}

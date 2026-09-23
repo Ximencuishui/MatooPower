@@ -9,7 +9,7 @@ import { ErrorBlock } from '@/components/ErrorBlock';
 import { EmptyState } from '@/components/EmptyState';
 import { Drawer } from '@/components/Drawer';
 import { useT } from '@/lib/i18n';
-import { listAllTickets, getTicketDetail, replyTicket, updateTicket, getTicketStats, downloadAdminTicketsCsv } from '@/lib/api/operations';
+import { listAllTickets, getTicketDetail, replyTicket, updateTicket, getTicketStats, downloadAdminTicketsCsv, getTicketSlaStats, runTicketSlaSweep } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
 import { ExportCsvButton } from '@/components/ExportCsvButton';
 import { toast, toastSuccess } from '@/components/Toast';
@@ -29,6 +29,7 @@ export default function AdminTicketsPage() {
   const [search, setSearch] = useState('');
   const [tickets, setTickets] = useState<TicketItem[] | null>(null);
   const [stats, setStats] = useState<TicketStatsDto['stats'] | null>(null);
+  const [slaStats, setSlaStats] = useState<{ openOver2h: number; highOver4h: number } | null>(null);
   const [selected, setSelected] = useState<TicketDetail | null>(null);
   const [error, setError] = useState<unknown>(null);
 
@@ -58,10 +59,12 @@ export default function AdminTicketsPage() {
     Promise.all([
       listAllTickets({ status: statusFilter, q: debouncedSearch.trim() || undefined }, { signal }),
       getTicketStats({ signal }),
+      getTicketSlaStats({ signal }),
     ])
-      .then(([t, st]) => {
+      .then(([t, st, sla]) => {
         setTickets(t.items);
         setStats(st.stats);
+        setSlaStats({ openOver2h: sla.openOver2h, highOver4h: sla.highOver4h });
       })
       .catch((e: unknown) => {
         if ((e as { name?: string })?.name === 'AbortError') return;
@@ -126,6 +129,24 @@ export default function AdminTicketsPage() {
   // 组件卸载时清空进行中的 detail 请求
   useEffect(() => () => { detailCtrlRef.current?.abort(); }, []);
 
+  // P1-3 v1.4:手动触发 SLA sweep(admin only) — 调试/冒烟用
+  const [sweepBusy, setSweepBusy] = useState(false);
+  const session = getSession();
+  const isAdmin = session?.role === 'admin';
+  function doSlaSweep() {
+    setSweepBusy(true);
+    runTicketSlaSweep()
+      .then((r) => {
+        toastSuccess(`${t.sla.autoEscalated}: ${r.upgraded}`);
+        load();
+      })
+      .catch((e: unknown) => {
+        const msg = e instanceof ApiError ? e.message : (e instanceof Error ? e.message : t.common.networkErr);
+        toast(msg, 'error');
+      })
+      .finally(() => setSweepBusy(false));
+  }
+
   // P1-10:紧急工单置顶
   const filtered = useMemo(() => {
     if (!tickets) return null;
@@ -170,6 +191,30 @@ export default function AdminTicketsPage() {
               <OverviewStat label={t.ticket.kpiUrgent} value={stats.urgent} highlight={stats.urgent > 0} />
               <OverviewStat label={t.ticket.kpiTodayNew} value={stats.todayNew} />
             </div>
+
+            {/* P1-3 v1.4 SLA 预警卡 — openOver2h / highOver4h,有任一超标高亮红 */}
+            {slaStats && (
+              <div className={`mt-2 card p-3 ${(slaStats.openOver2h + slaStats.highOver4h) > 0 ? 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800' : ''}`}>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-200">
+                    <span aria-hidden="true">⚠️ </span>
+                    {t.sla.warningCardTitle}
+                  </div>
+                  {isAdmin && (
+                    <button onClick={doSlaSweep} disabled={sweepBusy} className="text-[10px] text-matoo hover:underline disabled:opacity-50">
+                      {sweepBusy ? t.common.loading : t.sla.runSweep}
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <OverviewStat label={t.sla.openOver2h} value={slaStats.openOver2h} highlight={slaStats.openOver2h > 0} />
+                  <OverviewStat label={t.sla.highOver4h} value={slaStats.highOver4h} highlight={slaStats.highOver4h > 0} />
+                </div>
+                {(slaStats.openOver2h + slaStats.highOver4h) === 0 && (
+                  <div className="mt-1 text-[10px] text-green-700 dark:text-green-400 text-center">{t.sla.allOk}</div>
+                )}
+              </div>
+            )}
           </section>
         )}
 
