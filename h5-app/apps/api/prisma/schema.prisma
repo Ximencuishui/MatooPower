@@ -33,6 +33,7 @@ model User {
   assignedTickets  Ticket[]  @relation("TicketAssignee")
   ticketMessages   TicketMessage[] @relation("TicketSender")
   createdDealers   Dealer[]  @relation("DealerCreator")
+  uploadedSkuImages SkuImage[] @relation("SkuImageUploader")
 
   @@index([role])
   @@index([dealerId])
@@ -83,6 +84,15 @@ model Sku {
   warrantyMonthsCell    Int?
   warrantyMonthsBms     Int?
   warrantyMonthsParts   Int?
+  // v1.4 P2-3:商品库扩展字段(后台可编辑)
+  description           String?   // 商品资料/富文本描述(≤5000字)
+  imageUrls             String?   // JSON 字符串数组(主图集快照;权威数据在 SkuImage 表)
+  videoTrailerUrl       String?   // 主视频预告 URL(与 SkuDocument video 互补)
+  guidePriceCents       Int?      // 全局指导价(最小单位:分)
+  guidePriceCurrency    String?   // ISO 4217 三字母,默认 BDT
+  guidePriceNote        String?   // 价格备注(例 "限时活动 -5%" / "含税")
+  catalogUpdatedAt      DateTime? // 最后一次后台编辑时间(便于审计 + cache 失效)
+  catalogUpdatedBy      String?   // 最后编辑人 userId(便于审计)
   activated             Boolean  @default(false)
   activatedAt           DateTime?
   activatedByUserId     String?
@@ -93,10 +103,41 @@ model Sku {
   warranties   Warranty[]
   devices      Device[]
   documents    SkuDocument[]
+  images       SkuImage[]
 
   @@index([sku])
   @@index([batch])
   @@index([batchId])
+  @@index([catalogUpdatedAt])
+}
+
+// v1.4 P2-3:SKU 详情图片集(多语言 + 排序 + 软删除)
+model SkuImage {
+  id                String    @id @default(cuid())
+  skuId             String
+  sku               Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  lang              String    @default("en")    // 'zh' | 'en' | 'bn' | 'hi' | 'ur'
+  storageKey        String
+  url               String
+  mimeType          String
+  sizeBytes         Int
+  width             Int?
+  height            Int?
+  alt               String?
+  caption           String?
+  sortOrder         Int       @default(0)
+  isCover           Boolean   @default(false)
+  sha256            String
+  uploadedByUserId  String?
+  uploadedBy        User?    @relation("SkuImageUploader", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  uploadedAt        DateTime  @default(now())
+  deprecatedAt      DateTime?
+
+  @@index([skuId, lang])
+  @@index([skuId, sortOrder])
+  @@index([sha256])
+  @@index([deprecatedAt])
+  @@index([skuId, isCover])
 }
 
 model QrSignature {
