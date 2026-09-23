@@ -1,4 +1,4 @@
-﻿{
+{
   "_meta": {
     "lang": "ja",
     "label": "日本語",
@@ -153,5 +153,6 @@
     "title": "PACK Line Cooperation",
     "desc": "Turnkey battery pack production lines. SKD/CKD supply, training, and certification.",
     "cta": "View cooperation →"
-  }
+  },
+  "__smoke_test__": ""
 }
