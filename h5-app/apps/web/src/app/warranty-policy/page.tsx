@@ -17,15 +17,15 @@ export default function WarrantyPolicyPage() {
 
           <section className="card p-4 space-y-3">
             <h2 className="font-semibold">A · 发票日优先</h2>
-            <p className="text-xs text-slate-600 dark:text-slate-400">
+            <p className="text-xs text-slate-600 dark:text-slate-300">
               提供有效发票时,保修期自发票日期起算;发票日期早于出厂日的,以出厂日起算。
             </p>
             <h2 className="font-semibold">B · MFG + 60 天兜底</h2>
-            <p className="text-xs text-slate-600 dark:text-slate-400">
+            <p className="text-xs text-slate-600 dark:text-slate-300">
               无发票或发票缺失时,保修期按出厂日 + 60 天宽限起算。
             </p>
             <h2 className="font-semibold">C · 不同部件保修期</h2>
-            <ul className="text-xs text-slate-600 dark:text-slate-400 list-disc list-inside space-y-1">
+            <ul className="text-xs text-slate-600 dark:text-slate-300 list-disc list-inside space-y-1">
               <li>整机(Whole unit):36 个月</li>
               <li>电芯(Cells):60 个月</li>
               <li>BMS:36 个月</li>
@@ -33,7 +33,7 @@ export default function WarrantyPolicyPage() {
             </ul>
           </section>
 
-          <p className="text-[11px] text-slate-400">{t.legal.demoNote}</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500">{t.legal.demoNote}</p>
         </div>
       </main>
     </PhoneShell>

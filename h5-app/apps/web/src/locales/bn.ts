@@ -1,11 +1,11 @@
-// Bengali (bn) — demo placeholder
-// 演示占位:仅基础 UI 字符串翻译,关键业务文案复用 en(通过下方 ...en 继承)
-// 生产期由专业译员填充完整字典
+// Bengali (bn) — v1.1 四语完整补齐(继承 zh-CN.ts 全部 key,本地化覆盖关键文案)
+// 已翻译字段:app / tabs / common / home / scanEntry / auth / onboarding / adminOverview / ticket
+// 其余从 en 继承(完整 v1.0 文案)
 
 import { en } from './en';
 
 export const bn = {
-  ...en, // fallback:未翻译字段全部继承 en
+  ...en,
   app: {
     name: 'Matoo Power',
     tagline: 'পণ্যের জীবনচক্র সেবা ও যন্ত্রাংশ প্ল্যাটফর্ম',
@@ -22,6 +22,10 @@ export const bn = {
     retry: 'আবার চেষ্টা',
     goLogin: 'সাইন ইন',
     logout: 'সাইন আউট',
+    exportCsv: 'CSV রপ্তানি',
+    exportCsvDone: '{n}টি রেকর্ড রপ্তানি হয়েছে',
+    exportCsvFailed: 'রপ্তানি ব্যর্থ',
+    exportCsvEmpty: 'রপ্তানির জন্য কোনো ডেটা নেই',
   },
   scanEntry: {
     title: 'স্ক্যান',
@@ -70,5 +74,45 @@ export const bn = {
     next: 'পরবর্তী',
     start: 'শুরু করুন',
     skip: 'এড়িয়ে যান',
+  },
+  ticket: {
+    ...en.ticket,
+    adminTitle: 'সাপোর্ট ডেস্ক',
+    typeGeneral: 'সাধারণ',
+    typeWarranty: 'ওয়ারেন্টি',
+    typeInquiry: 'আগে-বিক্রয়',
+    typeRemote: 'দূরবর্তী ডায়াগনস্টিক',
+    sevLow: 'কম',
+    sevNormal: 'সাধারণ',
+    sevHigh: 'উচ্চ',
+    sevUrgent: 'জরুরি',
+    status_open: 'খোলা',
+    status_in_progress: 'চলমান',
+    status_waiting_customer: 'গ্রাহকের অপেক্ষা',
+    status_resolved: 'সমাধান হয়েছে',
+    status_closed: 'বন্ধ',
+    kpiOpen: 'খোলা',
+    kpiUrgent: 'জরুরি',
+    kpiThisMonth: 'এই মাসে নতুন',
+    kpiTodayNew: 'আজ নতুন',
+    searchPlaceholder: 'বিষয় / বিবরণ / আইডি অনুসন্ধান',
+  },
+  adminOverview: {
+    ...en.adminOverview,
+    title: 'প্ল্যাটফর্ম ওভারভিউ',
+    skuTotal: 'মোট SKU',
+    skuActivated: '{n}টি সক্রিয়',
+    userTotal: 'মোট ব্যবহারকারী',
+    userDealer: '{n}জন ডিলার',
+    warrantyActive: 'সক্রিয় ওয়ারেন্টি',
+    warrantyThisMonth: 'এই মাসে {n}টি',
+    deviceTotal: 'মোট ডিভাইস',
+    deviceThisMonth: 'এই মাসে {n}টি বাঁধা',
+    ticketsTitle: 'টিকিট',
+    ticketsOpen: 'খোলা',
+    ticketsUrgent: 'জরুরি',
+    ticketsNew: 'এই মাসে নতুন',
+    viewTickets: 'টিকিট দেখুন',
+    quickLinks: 'দ্রুত লিঙ্ক',
   },
 } as any;

@@ -1,12 +1,10 @@
-// Urdu (ur) — demo placeholder
-// 演示占位:仅基础 UI 字符串翻译,关键业务文案复用 en(通过 ...en 继承)
-// 生产期由专业译员填充完整字典
+// Urdu (ur) — v1.1 四语完整补齐(继承 en,本地化关键文案)
 // 注意:ur 是 RTL 语言,CSS 端需配 dir="rtl" 镜像(已在 i18n.tsx 处理)
 
 import { en } from './en';
 
 export const ur = {
-  ...en, // fallback:未翻译字段全部继承 en
+  ...en,
   app: {
     name: 'Matoo Power',
     tagline: 'پروڈکٹ لائف سائیکل سروس اور پرزہ مارکیٹ',
@@ -23,6 +21,10 @@ export const ur = {
     retry: 'دوبارہ کوشش',
     goLogin: 'سائن ان',
     logout: 'سائن آؤٹ',
+    exportCsv: 'CSV ایکسپورٹ',
+    exportCsvDone: '{n} ریکارڈ ایکسپورٹ',
+    exportCsvFailed: 'ایکسپورٹ ناکام',
+    exportCsvEmpty: 'ایکسپورٹ کے لیے کوئی ڈیٹا نہیں',
   },
   scanEntry: {
     title: 'سکین',
@@ -71,5 +73,45 @@ export const ur = {
     next: 'اگلا',
     start: 'شروع کریں',
     skip: 'چھوڑیں',
+  },
+  ticket: {
+    ...en.ticket,
+    adminTitle: 'سپورٹ ڈیسک',
+    typeGeneral: 'عمومی',
+    typeWarranty: 'وارنٹی',
+    typeInquiry: 'پری سیلز',
+    typeRemote: 'ریموٹ تشخیص',
+    sevLow: 'کم',
+    sevNormal: 'عام',
+    sevHigh: 'زیادہ',
+    sevUrgent: 'فوری',
+    status_open: 'کھلا',
+    status_in_progress: 'جاری',
+    status_waiting_customer: 'گاہک کا انتظار',
+    status_resolved: 'حل شدہ',
+    status_closed: 'بند',
+    kpiOpen: 'کھلے',
+    kpiUrgent: 'فوری',
+    kpiThisMonth: 'اس ماہ نئے',
+    kpiTodayNew: 'آج نئے',
+    searchPlaceholder: 'موضوع / تفصیل / ID تلاش',
+  },
+  adminOverview: {
+    ...en.adminOverview,
+    title: 'پلیٹ فارم جائزہ',
+    skuTotal: 'کل SKU',
+    skuActivated: '{n} فعال',
+    userTotal: 'کل صارفین',
+    userDealer: '{n} ڈیلرز',
+    warrantyActive: 'فعال وارنٹی',
+    warrantyThisMonth: 'اس ماہ {n}',
+    deviceTotal: 'کل آلات',
+    deviceThisMonth: 'اس ماہ {n} بندھے',
+    ticketsTitle: 'ٹکٹ',
+    ticketsOpen: 'کھلے',
+    ticketsUrgent: 'فوری',
+    ticketsNew: 'اس ماہ نئے',
+    viewTickets: 'ٹکٹ دیکھیں',
+    quickLinks: 'فوری لنکس',
   },
 } as any;

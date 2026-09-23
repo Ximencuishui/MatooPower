@@ -133,7 +133,7 @@ export class TicketService {
   /** 用户看自己的工单 / 客服看所有人；返回带 sku 关联 */
   getDetail(id: string, userId: string, role: string) {
     const t = this.getById(id);
-    if (role !== 'admin' && t.userId !== userId) {
+    if (role !== 'admin' && role !== 'support' && t.userId !== userId) {
       throw new ForbiddenException('无权访问此工单');
     }
     const messages = this.db.all(
@@ -151,14 +151,14 @@ export class TicketService {
   /** 用户回复工单 */
   reply(id: string, userId: string, role: string, body: string) {
     const t = this.getById(id);
-    if (role !== 'admin' && t.userId !== userId) {
+    if (role !== 'admin' && role !== 'support' && t.userId !== userId) {
       throw new ForbiddenException('无权回复此工单');
     }
     const now = new Date().toISOString();
     const msgId = `tm-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     this.db.run(
       `INSERT INTO TicketMessage (id, ticketId, senderUserId, senderRole, body, createdAt) VALUES (?, ?, ?, ?, ?, ?)`,
-      msgId, id, userId, role === 'admin' ? 'support' : 'customer', body, now,
+      msgId, id, userId, (role === 'admin' || role === 'support') ? 'support' : 'customer', body, now,
     );
     this.db.run(
       `UPDATE Ticket SET updatedAt = ?, status = CASE WHEN status = 'waiting_customer' THEN 'in_progress' ELSE status END WHERE id = ?`,
@@ -170,12 +170,23 @@ export class TicketService {
   /** 客服 / admin 更新工单状态 */
   update(id: string, dto: UpdateTicketDto, actorUserId: string) {
     const t = this.getById(id);
+    const fromStatus = t.status;
     const now = new Date().toISOString();
     const resolvedAt = dto.status === 'resolved' ? (t.resolvedAt ?? now) : t.resolvedAt;
     this.db.run(
       `UPDATE Ticket SET status = ?, resolution = COALESCE(?, resolution), assigneeUserId = COALESCE(?, assigneeUserId), resolvedAt = ?, updatedAt = ? WHERE id = ?`,
       dto.status, dto.resolution ?? null, dto.assigneeUserId ?? null, resolvedAt, now, id,
     );
+
+    // v1.1 audit: 写 TicketStatusLog（状态变化才记录）
+    if (fromStatus !== dto.status) {
+      const logId = `tsl-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      this.db.run(
+        `INSERT INTO TicketStatusLog (id, ticketId, actorUserId, fromStatus, toStatus, resolution, createdAt)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        logId, id, actorUserId, fromStatus, dto.status, dto.resolution ?? null, now,
+      );
+    }
 
     // 系统消息
     const sysMsgId = `tm-sys-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -195,6 +206,99 @@ export class TicketService {
     const today = new Date(); today.setHours(0,0,0,0);
     const todayNew = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Ticket WHERE createdAt >= ?', today.toISOString())?.c ?? 0;
     return { open, resolved, urgent, todayNew };
+  }
+
+  /**
+   * P1-3 v1.4:SLA 自动升级 sweep
+   * - normal 创建后超过 N 分钟且无客服消息 → 升 high
+   * - high 创建后超过 M 分钟且未 resolved/closed → 升 urgent
+   * - 自动升级写一行 TicketStatusLog(actorUserId='system-sla', resolution='自动 SLA 升级')
+   * - 默认阈值通过环境变量 TICKET_SLA_NORMAL_TO_HIGH_MIN / TICKET_SLA_HIGH_TO_URGENT_MIN 配置
+   * - 返回 { upgraded, details } 供调试与冒烟
+   */
+  runSlaSweep(): {
+    upgraded: number;
+    details: Array<{ id: string; fromSeverity: string; toSeverity: string; reason: string }>;
+    error?: string;
+  } {
+    const nToHighMin = Number(process.env.TICKET_SLA_NORMAL_TO_HIGH_MIN ?? 120);
+    const hToUrgentMin = Number(process.env.TICKET_SLA_HIGH_TO_URGENT_MIN ?? 240);
+    const details: Array<{ id: string; fromSeverity: string; toSeverity: string; reason: string }> = [];
+
+    // normal → high:normal 创建后超 N 分钟 且 没有 support/system 消息
+    if (nToHighMin >= 0) {
+      try {
+        const candidates = this.db.all<{ id: string; createdAt: string }>(
+          `SELECT id, createdAt FROM Ticket
+           WHERE severity = 'normal' AND status NOT IN ('resolved','closed')
+             AND (julianday('now') - julianday(createdAt)) * 24 * 60 >= ?
+             AND NOT EXISTS (
+               SELECT 1 FROM TicketMessage m
+               WHERE m.ticketId = Ticket.id AND m.senderRole = 'support'
+             )`,
+          nToHighMin,
+        );
+        for (const c of candidates) {
+          this.db.run(`UPDATE Ticket SET severity = 'high', updatedAt = CURRENT_TIMESTAMP WHERE id = ?`, c.id);
+          this.writeSlaLog(c.id, 'normal', 'high');
+          details.push({ id: c.id, fromSeverity: 'normal', toSeverity: 'high', reason: `created ${nToHighMin}m ago, no support reply` });
+        }
+      } catch (e: any) {
+        // 演示期 SLA sweep 异常不要 block 整个端点 — 返回 details + error
+        return { upgraded: details.length, details, error: String(e?.message ?? e) };
+      }
+    }
+
+    // high → urgent:high 创建后超 M 分钟 且 未 resolved/closed
+    if (hToUrgentMin >= 0) {
+      try {
+        const candidates = this.db.all<{ id: string; createdAt: string }>(
+          `SELECT id, createdAt FROM Ticket
+           WHERE severity = 'high' AND status NOT IN ('resolved','closed')
+             AND (julianday('now') - julianday(createdAt)) * 24 * 60 >= ?`,
+          hToUrgentMin,
+        );
+        for (const c of candidates) {
+          this.db.run(`UPDATE Ticket SET severity = 'urgent', updatedAt = CURRENT_TIMESTAMP WHERE id = ?`, c.id);
+          this.writeSlaLog(c.id, 'high', 'urgent');
+          details.push({ id: c.id, fromSeverity: 'high', toSeverity: 'urgent', reason: `high ${hToUrgentMin}m ago, not resolved` });
+        }
+      } catch (e: any) {
+        return { upgraded: details.length, details, error: String(e?.message ?? e) };
+      }
+    }
+
+    return { upgraded: details.length, details };
+  }
+
+  /** SLA stats — 用于 admin dashboard SLA 预警卡片 */
+  slaStats(): { openOver2h: number; highOver4h: number } {
+    const openOver2h = this.db.get<{ c: number }>(
+      `SELECT COUNT(*) AS c FROM Ticket
+       WHERE severity IN ('normal','low') AND status NOT IN ('resolved','closed')
+         AND (julianday('now') - julianday(createdAt)) * 24 * 60 >= 120`,
+    )?.c ?? 0;
+    const highOver4h = this.db.get<{ c: number }>(
+      `SELECT COUNT(*) AS c FROM Ticket
+       WHERE severity = 'high' AND status NOT IN ('resolved','closed')
+         AND (julianday('now') - julianday(createdAt)) * 24 * 60 >= 240`,
+    )?.c ?? 0;
+    return { openOver2h, highOver4h };
+  }
+
+  private writeSlaLog(ticketId: string, from: string, to: string) {
+    const now = new Date().toISOString();
+    const id = `tsl-sla-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    this.db.run(
+      `INSERT INTO TicketStatusLog (id, ticketId, actorUserId, fromStatus, toStatus, resolution, createdAt)
+       VALUES (?, ?, 'system-sla', ?, ?, ?, ?)`,
+      id, ticketId, from, to, 'Auto SLA escalation', now,
+    );
+    const sysMsgId = `tm-sla-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    this.db.run(
+      `INSERT INTO TicketMessage (id, ticketId, senderRole, body, createdAt) VALUES (?, ?, 'system', ?, ?)`,
+      sysMsgId, ticketId, `Auto SLA escalation: severity ${from} -> ${to}`, now,
+    );
   }
 
   private typeLabel(t: string) {

@@ -60,7 +60,7 @@
 
 | 系统 | 状态 | 缺口数 |
 |------|------|--------|
-| **h5-app**（独立产品） | 已实现完整演示期：21 REST + 14 路由 + 6 组件 + 213 i18n + SQLite + JWT/RBAC + Swagger + CI 3-job | **12 P0 / 11 P1 / 8 P2** |
+| **h5-app**（独立产品） | 已实现完整演示期：21 REST + 14 路由 + 6 组件 + 213 i18n + SQLite + JWT/RBAC + Swagger + CI 3-job | **11 P0 / 11 P1 / 8 P2**（F.P0-1 已修） |
 | **website**（营销站） | 已 production-ready：12 HTML + 14 语言 × 18,396 键值对 + 174 assets + 208/208 自动验收通过 | **6 P0 / 8 P1 / 5 P2** |
 | **admin**（website 的内容编辑工具） | 已实现 scrypt + CSRF + 5 视图 + i18n 编辑 | 归入 website 缺口 |
 
@@ -186,7 +186,7 @@ h5-app/
 - zh-CN（419 行，source of truth） + en（419 行，逐字对齐）→ **完整**
 - bn / hi / ur（各 125 行，仅部分键）→ **占位**（fallback 到 en + β 标识 + lang-marker title）
 
-**测试**：vitest 34 用例（i18n 对称 / 4 占位符位置对齐 / auth-store CRUD+过期 / api 5 场景 / Shop filter 6 / Compare best/worst 5 / Ticket 状态机 6）。
+**测试**：vitest 47 用例（i18n 对称 / 4 占位符位置对齐 / auth-store CRUD+过期 / api 5 场景 / Shop filter 6 / Compare best/worst 5 / Ticket 状态机 6 / useRequireRole 状态机+RoleGuardView 12）。
 
 **Security headers**：next.config.mjs 加 X-Content-Type-Options / X-Frame-Options DENY / Referrer-Policy / Permissions-Policy camera+geo / HSTS (HTTPS)。
 
@@ -415,6 +415,107 @@ h5-app/
 - 需求 §3.6 "联系客服（WhatsApp/在线聊天）"
 - **修**：加 `wa.me/+86xxxxxxxxxx` 链接；FAQ 加 `/faq` 静态页。
 
+### 5.1 本轮完成 P2 体验优化增量（2026-09-21）
+
+> 上一次对话基于 `ACCEPTANCE-TEST-REPORT.md` §2.3 UX-22 / UX-23 / UX-24 三类体验问题推进，下列子项已全部落地并通过 `tsc --noEmit` + `vitest 35 用例` + `next build` 全绿验证。
+
+| 子项 | 来源 | 落地位置 | 实现要点 |
+|------|------|----------|----------|
+| **P2-9** TabBar 窄屏切图标模式 | UX-22「TabBar 5 个 tab 在窄屏文字截断」 | `apps/web/src/app/globals.css:240-256` | `@media (max-width: 360px)` / `@media (max-width: 320px)` — 隐藏 `.tab-label`（保留 aria-label 给屏幕阅读器），图标 22→26→24px 阶梯放大；`.tabbar` 内边距同步压缩；`.tab:hover` / `.tab.active .tab-icon` 加色/缩放过渡 |
+| **P2-17** `<input dir="auto">` 输入法适配 | UX-24「`app.lang="ur"` 时未显式声明 dir」 | 共 7 个文件、15 处文本输入：`dealer/batch/page.tsx`、`dealer/pickup/page.tsx`、`activate/[id]/page.tsx`、`tickets/new/page.tsx`、`tickets/[id]/page.tsx`、`devices/page.tsx`、`admin/tickets/page.tsx`、`admin/warranties/page.tsx`、`admin/users/page.tsx` | 所有面向用户文本的 `<input>` / `<textarea>` 加 `dir="auto"`；自动检测首字符 Unicode 块（LTR/RTL 双向）→ 浏览器自动切输入法方向，避免 ur/ar 用户在中文姓名/英文地址场景下手工切换 |
+| **P2-22** 消息滑入动画 | UX-23「消息没有滑入动画」 | `apps/web/src/app/globals.css:287-308` + `messages/page.tsx:165,191` + `tickets/[id]/page.tsx:2-3,29-52,145-154` | 新增 `@keyframes slide-in-right` / `slide-in-up` / `bubble-pop-in` / `slide-in-left`（RTL 反向）+ `.slide-in-right` / `.bubble-in` 工具类；`/messages` 列表卡片 35 ms × index 错落入场（封顶 12 项）；`/tickets/[id]` 回复气泡用 `seenIds` ref 追踪 — **仅新消息** 触发 `bubble-in`，避免历史刷新重复动画；`firstRender` state + `requestAnimationFrame` 关闭首批错落模式 |
+| **P2-23** SoC 趋势 mobile 适配 | UX-23「SoC 趋势 hover 移动端无效」+ UX-16「趋势图无 X 轴」 | `apps/web/src/app/device/[id]/page.tsx:200-378` + `globals.css:311-356` | `SparkLine` 完全重写：useRef + useState 持有 SVG 元素 + 激活点；X 轴 `-6h` / `-3h` / `now`、Y 轴 `max` / `mid` / `min` 网格 + 标签；`pointerMove` / `pointerLeave` / `pointerCancel` 三事件统一触/鼠交互；max / min / current 三点特殊高亮；`.sparkline-line` 用 `stroke-dasharray` + `spark-draw .55s` 描线动画；hover/touch 时弹 `.spark-tooltip` 显示 `%` + 时间偏移；`prefers-reduced-motion` 下关闭描线 |
+
+**附加 RTL 适配**：`globals.css:298` `[dir='rtl'] .slide-in-right { animation-name: slide-in-left; }` — ur/ar 语言下消息自动从左侧滑入。
+
+**构建验证**：
+```
+$ pnpm --filter web exec tsc --noEmit     # EXIT 0
+$ pnpm exec vitest run                    # 35 passed
+$ pnpm run build                          # EXIT 0 · 24 routes 生成
+```
+
+> 备注：Next.js 16 已移除 `next lint` 子命令（执行报 "Invalid project directory"），改用 `tsc --noEmit` + vitest 替代，等价覆盖类型与单元层面。
+
+### 5.2 本轮 logo + 社媒图标对齐 website（2026-09-21）
+
+> 用户要求 h5-app 的 logo 与社媒图标与 `website/assets/logo.svg` + `website/assets/icon-*.svg` **视觉一致**。本次落地：六边形 + 蓝绿渐变 M logo 组件化、社媒图标行（7 平台，含 WhatsApp）内联 SVG、PWA icon 同步、PWA 顶栏/设备卡/Profile 三处使用新品牌。
+
+| 子项 | 落地位置 | 实现要点 |
+|------|----------|----------|
+| **Brand 组件** | `apps/web/src/components/Brand.tsx`（新） | 内联 SVG 六边形（28:32 长宽比 + #091E42）+ 蓝→绿渐变 M（#0052CC → #36B37E）+ 绿色 accent；提供 `variant: 'icon' \| 'wordmark' \| 'full'` 与 `tone: 'dark' \| 'light'` 双轴组合 — `icon` 32×36 viewBox（小尺寸用）、`wordmark` 180×40 viewBox（完整字标+POWER）；颜色/坐标与 `website/assets/logo.svg` 1:1 |
+| **SocialIcons 组件** | `apps/web/src/components/SocialIcons.tsx`（新） | 7 平台内联 SVG（Facebook / WeChat / LinkedIn / Twitter / YouTube / Instagram / WhatsApp），viewBox 48×48；路径**完全复用** `website/assets/icon-*.svg` 的 `d=` 属性；新增 `SocialRow` 整行组件，支持 `tone: 'dark' \| 'light'`（深底白 path / 浅底深 path）+ 平台悬停 brightness filter（对齐 website `.footer-social-icon:hover`） |
+| **home 顶栏 + 设备卡** | `apps/web/src/app/home/page.tsx:9,44-47,100-102` | 顶栏 logo（M 字电池 SVG）→ `<Brand variant="icon" />`；"我的设备"卡片内 48×48 圆角容器内嵌 `<Brand variant="icon" />`，与顶栏 logo 视觉一致 |
+| **profile Follow Us 区** | `apps/web/src/app/profile/page.tsx:9-10,28-40,209-251` | 在 "Matoo Power · 独立产品" 介绍卡之后新增 `<section>`：标题 `<Brand icon>` 横排、副文案 + `SocialRow`（7 平台 links via env `NEXT_PUBLIC_SOCIAL_*`）+ WeChat 走 ID 复制 fallback；i18n 新增 `profile.followUs` / `profile.followHint`（zh + en 同步） |
+| **CSS hover** | `apps/web/src/app/globals.css:385-407` | `.social-icon-link` translateY(-2px) 180ms + `.social-icon-{platform}:hover brightness(1.1)`；覆盖 `prefers-reduced-motion` |
+| **PWA icons** | `apps/web/public/icon.svg` · `icon-192.svg` · `icon-512.svg` | 三份 PWA 图标替换为同源六边形 + 蓝绿渐变 + accent；192×192 用 5× 缩放 hex（坐标 26,56 → 166,56 → 166,136 → 96,176）；512×512 用 16× 缩放 hex（坐标 32,144 → 480,144 → 480,384 → 256,512）|
+| **i18n** | `zh-CN.ts:349-350` + `en.ts:350-351` | 新增 `profile.followUs` + `profile.followHint`（zh + en 对称），同步到 `Dict` 类型 |
+
+**对比基线**：
+
+| 元素 | website（原版） | h5-app（现） |
+|------|----------------|-------------|
+| Logo SVG | `assets/logo.svg` 180×40 viewBox，深蓝 hex + 蓝绿 M + Matoo 字标 | `<Brand>` 内联 SVG，hex 路径 `M16 2 L30 10 L30 26 L16 34 L2 26 L2 10 Z`、M 路径 `M8 24 ... Z` 完全一致 |
+| Hex 填色 | `#091E42` | `#091E42`（常量） |
+| Gradient | `#0052CC → #36B37E` | `#0052CC → #36B37E`（linearGradient id=`brandGrad*`） |
+| Accent | `#36B37E` | `#36B37E` |
+| 社媒 6 平台 | `assets/icon-{facebook,wechat,linkedin,twitter,youtube,instagram}.svg` | `<SocialRow>` 内联 path，每个 `d=` 属性逐字复用；外加 WhatsApp（h5-app 客服主通道） |
+| Hover 行为 | `website/styles/main.css:618-623` 各平台 brightness(1.1) | `.social-icon-link:hover .social-icon-{p}` brightness(1.1) |
+
+**构建验证**：
+```
+$ pnpm --filter web exec tsc --noEmit     # EXIT 0
+$ pnpm --filter web exec vitest run        # 35 passed (i18n 对称覆盖新 keys)
+$ pnpm --filter web run build             # EXIT 0 · 24 routes 生成）
+```
+
+### 5.3 本轮 P0 admin role 守卫修复（2026-09-21）
+
+> 用户选择"P0 修复：admin role 前端守卫"。AUDIT F.P0-1 此前指出的"`/admin/*` 仅 `if (!s?.token)` 检查，customer 也能进 admin 骨架再被 API 踢出"问题已通过统一 hook 抽象彻底修复。
+
+| 子项 | 落地位置 | 实现要点 |
+|------|----------|----------|
+| **useRequireRole hook** | `apps/web/src/hooks/useRequireRole.tsx`（新建） | 状态机 `RoleGuardState = 'checking' \| 'ok' \| 'need-login' \| 'forbidden'`；基于 `localStorage.AuthSession.role` 判断；过期 token 自动清除；`allowed.join(',')` 作为依赖保证 allowed 数组变更时重算 |
+| **RoleGuardView 组件** | 同文件 | 三种守卫 UI：checking → `…` 占位 + 标题；need-login → 🔐 + 提示 + `/auth?next=…` CTA；forbidden → 403 + 当前角色 + 所需角色（用 `/` 分隔）+ 返回首页 + 退出登录按钮 |
+| **admin 5 页接入** | `apps/web/src/app/admin/{overview,tickets,analytics,warranties,users}/page.tsx` | `useRequireRole(['admin'])` + 顶层 `if (guard.status !== 'ok') return <RoleGuardView … />`；fetch 仅在 `status === 'ok'` 触发，避免无效请求 |
+| **dealer 3 页接入** | `apps/web/src/app/dealer/{dashboard,batch,pickup}/page.tsx` | `useRequireRole(['dealer', 'admin'])` — admin 互访合法（与后端 `@Roles('dealer', 'admin')` 对齐） |
+| **admin/tickets + admin/users 叠加 useAbortedFetch** | 同上文件 | Tab/搜索切换时取消旧 fetch（已有 hook，与 role 守卫正交） |
+| **单元测试** | `apps/web/test/useRequireRole.test.tsx`（新） | 12 用例：状态机 7（无 session / 过期 / 白名单内 / 白名单外 / admin 互访 dealer / customer 越界 dealer / dealer 越界 admin） + RoleGuardView 5（checking 占位 / need-login CTA / forbidden 403 诊断 / 多角色展示 / ok 返回 null） |
+
+**状态机示意**：
+```
+mount → checking ──[getSession]
+                       │
+            ┌──────────┼──────────┐
+            ▼          ▼          ▼
+       need-login   forbidden     ok
+   （无 token / 过  （角色不在白  （匹配）
+    期 + 自动清理）  名单内 + 诊
+                    断信息）
+```
+
+**对比基线**：
+
+| 路径 | 修复前 | 修复后 |
+|------|--------|--------|
+| `/admin/overview` | customer 进 → UI 全渲染 → API 403 → ErrorBlock | customer 进 → `RoleGuardView` 显示 403 + "当前角色: customer / 需要: admin" + 返回首页按钮 |
+| `/admin/overview` | 未登录进 → UI 全渲染 → API 401 → ErrorBlock | 未登录进 → `RoleGuardView` 显示 🔐 + "请先登录" + `/auth?next=/admin/overview` CTA |
+| `/dealer/batch` | admin 进 → UI 全渲染 → API 200（合法但 UI 信息泄漏） | admin 进 → ok 状态直接渲染（**审计上正确**） |
+| `/dealer/batch` | customer 进 → UI 全渲染 → API 403 | customer 进 → `RoleGuardView` 显示 403 + "需要: dealer / admin" |
+
+**构建验证**：
+```
+$ pnpm --filter web exec tsc --noEmit     # EXIT 0
+$ pnpm --filter web exec vitest run        # 47 passed (35 i18n + 12 useRequireRole)
+$ pnpm --filter web run build             # EXIT 0 · 24 routes 生成
+```
+
+**文档同步**：
+- `ACCEPTANCE-TEST-REPORT.md` §2.1 路由表 4 行 admin + 1 行 dealer：🔴 → ✅（"role 守卫前置拦截"）
+- `ACCEPTANCE-TEST-REPORT.md` §2.3 UX-7 章节：状态改"✅ 已修复"，新增 hook 实现代码 + 单元测试引用
+- `AUDIT.md` F.P0-1：状态改"✅ 已修"，新增守卫状态机说明
+- `AUDIT.md` §0.1 一句话结论缺口数：`12 P0` → `11 P0`（F.P0-1 已修复）
+
 ---
 
 ## 6. 测试覆盖度（实测 vs 声称）
@@ -422,7 +523,7 @@ h5-app/
 | 项 | 声称 | 实测 | 缺口 |
 |----|------|------|------|
 | API e2e | 20 | **16** | 4 |
-| Web vitest | 34 | **34** ✅ | 0 |
+| Web vitest | 34 | **47** ✅（35 i18n + 12 useRequireRole） | 0 |
 | Shared test | (未明) | 1 placeholder (`test sanity` 在 i18n.test.ts 内) | — |
 | 组件/UI 测试 | 0 | 0 | 整个 UI 层零覆盖 |
 | shared qr 验签单测 | (未明) | 未发现 `packages/shared/test/*.test.ts` | **单元覆盖空白** |
@@ -1062,7 +1163,11 @@ ticket-1789894625974-988  customer  general  normal  resolved  "?????"（userId 
 - **位置**：`apps/web/src/app/admin/{overview,tickets,analytics}/page.tsx`
 - **代码**：仅 `if (!s?.token) setError(...)` — **任何 customer 登录后都能进 `/admin/overview`**
 - **影响**：API 端 403 但 UI 已渲染完整 admin 骨架
-- **修复**：admin/* 路由统一加 `useRequireRole('admin')` hook，未授权 → redirect `/home`
+- **修复**：✅ **已修**（详见 §5.3 本轮 P0 修复）
+  - 新建 `apps/web/src/hooks/useRequireRole.tsx` — 统一角色守卫 hook + `<RoleGuardView>` 组件（checking / need-login / forbidden / ok 四态状态机）
+  - 接入全部 5 个 admin 页（overview / tickets / analytics / warranties / users）白名单 `['admin']`
+  - 接入全部 3 个 dealer 页（dashboard / batch / pickup）白名单 `['dealer', 'admin']` — admin 互访合法
+  - 12 项单元测试覆盖状态机全部分支 + RoleGuardView 三态可见性（`apps/web/test/useRequireRole.test.tsx`）
 
 ## F.P0-2 `apps/web/package.json` 缺 `packageManager` 与 `engines`
 
@@ -1109,7 +1214,7 @@ ticket-1789894625974-988  customer  general  normal  resolved  "?????"（userId 
 | 模块 | 文件 | 覆盖度 |
 |------|------|--------|
 | h5-app backend | NestJS / Jest | **16 e2e**（README 声称 20 — **少 4**） |
-| h5-app frontend | vitest | **34 单元**（i18n/auth/api 客户端）— **0 组件测试** |
+| h5-app frontend | vitest | **47 单元**（i18n/auth/api 客户端/useRequireRole 12）— **0 组件测试** |
 | h5-app shared | node:test | **1 placeholder**（test sanity） |
 | website admin | 手动 | **0 自动化**（`smoke-admin.js` 是单次脚本） |
 | website 前端 | 手动 | **0 测试**（纯 HTML+JS） |

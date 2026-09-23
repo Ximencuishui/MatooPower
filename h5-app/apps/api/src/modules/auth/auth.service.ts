@@ -4,11 +4,13 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ThrottlerException } from '@nestjs/throttler';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { randomInt, randomBytes } from 'crypto';
 import { DbService } from '../../common/db/db';
+import { OtpDelivery, createOtpDelivery } from '../../common/otp-delivery';
 
 interface UserRow {
   id: string;
@@ -22,17 +24,43 @@ interface UserRow {
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
+  // v1.4 T-2d X4:OTP 投递抽象（演示 console / 生产 http-webhook）
+  private readonly otpDelivery: OtpDelivery = createOtpDelivery(this.logger);
 
   constructor(
     private readonly jwt: JwtService,
     private readonly cfg: ConfigService,
     private readonly db: DbService,
-  ) {}
+  ) {
+    this.logger.log(`[OtpDelivery] channel=${this.otpDelivery.channel} (OTP_DELIVERY=${process.env.OTP_DELIVERY ?? 'console'})`);
+  }
+
+  /** P0-9：统计窗口内（默认 15 分钟）失败次数 */
+  private countRecentFails(phone: string, lockMinutes: number): number {
+    return this.db.get<{ c: number }>(
+      `SELECT COUNT(*) AS c FROM OtpAttempt
+       WHERE phone = ? AND ok = 0
+       AND createdAt >= datetime('now', ?)`,
+      phone, `-${lockMinutes} minutes`,
+    )?.c ?? 0;
+  }
+
+  /** P0-9：落一条验证尝试审计行（ok=1 成功 / ok=0 失败） */
+  private recordOtpAttempt(phone: string, ok: boolean) {
+    this.db.run(
+      'INSERT INTO OtpAttempt (id, phone, ok) VALUES (?, ?, ?)',
+      'otpa_' + randomBytes(8).toString('hex'), phone, ok ? 1 : 0,
+    );
+  }
 
   /** 演示策略：生成 6 位数字验证码 → console.log + 落库 */
   async requestOtp(phone: string): Promise<{ sent: true; ttl: number }> {
     const ttl = Number(this.cfg.get('OTP_TTL_SECONDS') ?? 300);
-    const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
+    // 演示期可设 DEV_FIXED_OTP=123456 跳过随机码，调试更顺手；生产必须留空
+    const fixed = this.cfg.get<string>('DEV_FIXED_OTP');
+    const code = fixed && fixed.trim().length > 0
+      ? fixed.trim().padStart(6, '0').slice(-6)
+      : String(randomInt(0, 1_000_000)).padStart(6, '0');
     const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
     const id = 'otp_' + randomBytes(8).toString('hex');
 
@@ -41,9 +69,20 @@ export class AuthService {
       id, phone, code, expiresAt,
     );
 
-    this.logger.warn(
-      `📨 [OTP] phone=${phone} code=${code} ttl=${ttl}s (从后端终端读取验证码)`,
-    );
+    // v1.4 T-2d X4:统一走 OtpDelivery 抽象层（演示 console / 生产 http-webhook）
+    // 仍然落 OtpRequest 库保留锁定 / 审计能力；渠道只负责转发验证码
+    try {
+      const result = await this.otpDelivery.deliver({ phone, code, ttlSeconds: ttl });
+      if (!result.ok) {
+        // 投递失败：记录但不抛错（验证码仍然有效，用户可以重试；这与邮件发送失败时仍返回成功的 UX 一致）
+        this.logger.error(
+          `📨 [OTP-DELIVERY-FAIL] phone=${phone} code=${code} channel=${result.channel} err=${result.error ?? '-'}`,
+        );
+      }
+    } catch (e: any) {
+      // OtpDelivery 抛错（生产期 console 阻断等）：上层返回 503,用户重试
+      throw new Error(`OTP 投递失败: ${e?.message ?? String(e)}`);
+    }
 
     return { sent: true, ttl };
   }
@@ -54,6 +93,15 @@ export class AuthService {
     code: string,
     meta?: { userAgent?: string; ip?: string },
   ): Promise<{ token: string; user: { id: string; phone: string; role: string; displayName: string | null } }> {
+    // P0-9 账户级锁定：15 分钟窗口内失败 ≥ OTP_MAX_FAILS(5) → 429（锁定优先于 code 校验）
+    // 与 P0-5 的 IP 级限流（5/min 全端点）互补：此为本 phone 维度爆破防护
+    const maxFails = Number(this.cfg.get('OTP_MAX_FAILS') ?? 5);
+    const lockMinutes = Number(this.cfg.get('OTP_LOCK_MINUTES') ?? 15);
+    const fails = this.countRecentFails(phone, lockMinutes);
+    if (fails >= maxFails) {
+      throw new ThrottlerException('OTP 验证失败次数过多，账户已锁定，请稍后再试');
+    }
+
     const otp = this.db.get<{ id: string; code: string; expiresAt: string }>(
       `SELECT id, code, expiresAt FROM OtpRequest
        WHERE phone = ? AND consumedAt IS NULL
@@ -62,19 +110,28 @@ export class AuthService {
     );
 
     if (!otp) {
+      this.recordOtpAttempt(phone, false);
       throw new BadRequestException('OTP 不存在或已过期');
     }
     if (new Date(otp.expiresAt).getTime() < Date.now()) {
+      this.recordOtpAttempt(phone, false);
       throw new BadRequestException('OTP 已过期');
     }
     if (otp.code !== code) {
-      throw new BadRequestException('OTP 错误');
+      this.recordOtpAttempt(phone, false);
+      const rest = maxFails - fails - 1;
+      throw new BadRequestException(
+        rest > 0 ? `OTP 错误（剩余 ${rest} 次机会）` : 'OTP 错误',
+      );
     }
 
     this.db.run(
       'UPDATE OtpRequest SET consumedAt = CURRENT_TIMESTAMP WHERE id = ?',
       otp.id,
     );
+    // 成功：清零失败计数（删除窗口内失败记录）+ 落一条成功审计行
+    this.db.run('DELETE FROM OtpAttempt WHERE phone = ? AND ok = 0', phone);
+    this.recordOtpAttempt(phone, true);
 
     // 找/建用户
     let user = this.db.get<UserRow>('SELECT * FROM User WHERE phone = ?', phone);

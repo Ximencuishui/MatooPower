@@ -1,6 +1,6 @@
 'use client';
 // P1-1:从 /device/mine 拉真实设备列表进行对比
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar } from '@/components/TopBar';
@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { useT } from '@/lib/i18n';
 import { listMyDevices } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
+import { useAbortedFetch } from '@/hooks/useAbortedFetch';
 import type { DeviceDto } from '@/lib/api/endpoints';
 
 type Direction = 'high-good' | 'low-good';
@@ -38,19 +39,28 @@ export default function ComparePage() {
   const [error, setError] = useState<unknown>(null);
   const [leftId, setLeftId] = useState<string | undefined>(undefined);
   const [rightId, setRightId] = useState<string | undefined>(undefined);
+  // P0 UX-10:onRetry 时递增 reloadKey 触发重新 fetch
+  const [reloadKey, setReloadKey] = useState(0);
 
   function load() {
     setError(null);
-    listMyDevices()
+    setReloadKey((k) => k + 1);
+  }
+
+  // P0 UX-10:用 useAbortedFetch 取代裸 useEffect+load,组件卸载或 reload 时取消
+  useAbortedFetch((signal) => {
+    setError(null);
+    listMyDevices({ signal })
       .then((r) => {
         setItems(r.items);
         if (r.items.length >= 1) setLeftId(r.items[0]?.id);
         if (r.items.length >= 2) setRightId(r.items[1]?.id);
       })
-      .catch((e) => setError(e));
-  }
-
-  useEffect(() => { load(); }, []);
+      .catch((e) => {
+        if ((e as { name?: string })?.name === 'AbortError') return;
+        setError(e);
+      });
+  }, [reloadKey]);
 
   if (error) {
     return (
@@ -75,7 +85,7 @@ export default function ComparePage() {
       <PhoneShell>
         <TopBar title={t.compare.title} />
         <main className="p-4">
-          <EmptyState icon="📊" title={t.compare.emptyHint} hint="需要至少 2 台设备" />
+          <EmptyState icon="??" title={t.compare.emptyHint} hint="需要至少 2 台设备" />
         </main>
       </PhoneShell>
     );
@@ -86,7 +96,7 @@ export default function ComparePage() {
 
   return (
     <PhoneShell>
-      <TopBar title={t.compare.title} right={<span className="text-xs text-slate-400">{t.compare.picked.replace('{n}', '2')}</span>} />
+      <TopBar title={t.compare.title} right={<span className="text-xs text-slate-400 dark:text-slate-500">{t.compare.picked.replace('{n}', '2')}</span>} />
       <main className="flex-1 overflow-auto pb-6">
         {/* 设备选择条 */}
         <div className="p-4 grid grid-cols-2 gap-3">
@@ -95,7 +105,7 @@ export default function ComparePage() {
             { side: 'right' as const, id: rightId, setId: setRightId, label: t.compare.sideRight, device: right },
           ].map(({ side, id, setId, label, device }) => (
             <div key={side} className="card p-3">
-              <label htmlFor={`cmp-${side}`} className="text-[11px] text-slate-500">{label}</label>
+              <label htmlFor={`cmp-${side}`} className="text-[11px] text-slate-500 dark:text-slate-400">{label}</label>
               <select
                 id={`cmp-${side}`}
                 value={id}
@@ -109,7 +119,7 @@ export default function ComparePage() {
                   </option>
                 ))}
               </select>
-              <div className="text-[11px] text-slate-500 truncate">{device.s_modelName ?? device.skuId}</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate" title={device.s_modelName ?? device.skuId}>{device.s_modelName ?? device.skuId}</div>
             </div>
           ))}
         </div>
@@ -118,9 +128,9 @@ export default function ComparePage() {
         <div className="px-4 grid grid-cols-2 gap-3">
           {[left, right].map((d, i) => (
             <div key={i} className="card p-3 bg-gradient-to-br from-matoo-light to-white">
-              <div className="w-10 h-10 rounded-lg bg-white text-matoo flex items-center justify-center font-bold">M</div>
-              <div className="mt-2 text-sm font-semibold truncate">{d.s_modelName ?? d.skuId}</div>
-              <div className="text-[11px] text-slate-500 font-mono">{d.s_serial ?? d.skuId}</div>
+              <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 text-matoo flex items-center justify-center font-bold">M</div>
+              <div className="mt-2 text-sm font-semibold truncate" title={d.s_modelName ?? d.skuId}>{d.s_modelName ?? d.skuId}</div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">{d.s_serial ?? d.skuId}</div>
             </div>
           ))}
         </div>
@@ -128,7 +138,7 @@ export default function ComparePage() {
         {/* 指标对比表 */}
         <div className="px-4 mt-4">
           <div className="card overflow-hidden">
-            <div className="grid grid-cols-3 text-xs text-slate-500 bg-slate-50 dark:bg-slate-800">
+            <div className="grid grid-cols-3 text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/40">
               <div className="px-3 py-2 font-medium">{t.compare.metric}</div>
               <div className="px-3 py-2 text-center">L</div>
               <div className="px-3 py-2 text-center">R</div>
@@ -146,7 +156,7 @@ export default function ComparePage() {
                 <div key={m.key} className="grid grid-cols-3 text-sm border-t border-slate-100 dark:border-slate-700">
                   <div className="px-3 py-3">
                     <div className="font-medium">{t.compare[`label_${m.key}` as keyof typeof t.compare] as string}</div>
-                    <div className="text-[10px] text-slate-400">
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">
                       {m.dir === 'high-good' ? t.compare.dirHigh : t.compare.dirLow}
                     </div>
                   </div>
@@ -162,7 +172,7 @@ export default function ComparePage() {
               );
             })}
           </div>
-          <p className="text-[11px] text-slate-500 mt-3">{t.compare.rule}</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-3">{t.compare.rule}</p>
         </div>
 
         <div className="px-4 mt-4 grid grid-cols-2 gap-3">

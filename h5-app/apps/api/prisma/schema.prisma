@@ -11,21 +11,32 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  phone         String?  @unique
-  email         String?  @unique
-  passwordHash  String?
-  role          String   @default("customer") // 'customer' | 'dealer' | 'admin'
-  displayName   String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id               String    @id @default(cuid())
+  phone            String?   @unique
+  email            String?   @unique
+  passwordHash     String?
+  role             String    @default("customer") // 'customer' | 'dealer' | 'admin' | 'support' | 'anonymous'
+  displayName      String?
+  dealerId         String?   // v1.4 P1-2:经销商独立 Dealer 表外键,旧 dealer user 暂留 null
+  dealer           Dealer?   @relation("DealerMembers", fields: [dealerId], references: [id])
+  deletedAt        DateTime? // v1.4 P1-1:GDPR 软删时间戳
+  anonymizedPhone  String?   // v1.4 P1-1:删除前 phone 哈希备份(SHA256),用于审计
+  anonymizedEmail  String?   // v1.4 P1-1:删除前 email 哈希备份
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  sessions      Session[]
-  warranties    Warranty[]
-  devices       Device[]
-  activatedSkus Sku[]    @relation("ActivatedBy")
+  sessions         Session[]
+  warranties       Warranty[]
+  devices          Device[]
+  activatedSkus    Sku[]     @relation("ActivatedBy")
+  tickets          Ticket[]  @relation("TicketAuthor")
+  assignedTickets  Ticket[]  @relation("TicketAssignee")
+  ticketMessages   TicketMessage[] @relation("TicketSender")
+  createdDealers   Dealer[]  @relation("DealerCreator")
 
   @@index([role])
+  @@index([dealerId])
+  @@index([deletedAt])
 }
 
 model OtpRequest {
@@ -59,6 +70,8 @@ model Sku {
   sku                   String
   serial                String   @unique
   batch                 String
+  batchId               String?
+  batchRel              SkuBatch? @relation(fields: [batchId], references: [id])
   mfgDate               DateTime
   modelName             String
   family                String   // 'battery' | 'controller' | 'panel'
@@ -79,9 +92,11 @@ model Sku {
   qrSignatures QrSignature[]
   warranties   Warranty[]
   devices      Device[]
+  documents    SkuDocument[]
 
   @@index([sku])
   @@index([batch])
+  @@index([batchId])
 }
 
 model QrSignature {
@@ -148,9 +163,9 @@ model Device {
 }
 
 model Ticket {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   userId          String
-  user            User     @relation("TicketAuthor", fields: [userId], references: [id])
+  user            User      @relation("TicketAuthor", fields: [userId], references: [id])
   skuId           String?
   sku             Sku?     @relation(fields: [skuId], references: [id])
   deviceId        String?
@@ -162,7 +177,7 @@ model Ticket {
   contactPhone    String?
   status          String   @default("open")     // 'open' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed'
   assigneeUserId  String?
-  assignee        User?    @relation("TicketAssignee", fields: [assigneeUserId], references: [id])
+  assignee        User?     @relation("TicketAssignee", fields: [assigneeUserId], references: [id])
   resolution      String?
   resolvedAt      DateTime?
   createdAt       DateTime @default(now())
@@ -180,10 +195,160 @@ model TicketMessage {
   ticketId     String
   ticket       Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   senderUserId String?
-  sender       User?    @relation(fields: [senderUserId], references: [id])
+  sender       User?    @relation("TicketSender", fields: [senderUserId], references: [id])
   senderRole   String                                // 'customer' | 'support' | 'system'
   body         String
   createdAt    DateTime @default(now())
 
   @@index([ticketId])
+}
+
+model TicketStatusLog {
+  id          String   @id @default(cuid())
+  ticketId    String
+  actorUserId String
+  fromStatus  String
+  toStatus    String
+  resolution  String?
+  createdAt   DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([actorUserId])
+  @@index([createdAt])
+}
+
+model WarrantyReviewLog {
+  id          String   @id @default(cuid())
+  warrantyId  String
+  actorUserId String
+  fromStatus  String
+  toStatus    String
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@index([warrantyId])
+  @@index([actorUserId])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  actorRole   String?
+  action      String
+  resource    String?
+  payload     String?
+  ip          String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// v1.4 P1-2:经销商独立 Dealer 表(解耦 User.role='dealer')
+model Dealer {
+  id              String   @id @default(cuid())
+  companyName     String
+  country         String   // ISO 3166-1 alpha-2
+  tier            String   @default("silver")   // 'silver' | 'gold' | 'platinum'
+  contactEmail    String?
+  contactPhone    String?
+  status          String   @default("active")  // 'active' | 'suspended'
+  note            String?
+  createdByUserId  String?
+  createdBy       User?    @relation("DealerCreator", fields: [createdByUserId], references: [id])
+  members         User[]   @relation("DealerMembers")
+  priceLists      DealerPriceList[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([country])
+}
+
+// v1.4 P1-2:Dealer 专属价(某 dealer 对某 SKU 的特别价格)
+model DealerPriceList {
+  id              String    @id @default(cuid())
+  dealerId        String
+  dealer          Dealer    @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+  skuId           String
+  sku             Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  priceCents      Int
+  currency        String    @default("BDT")
+  effectiveFrom   DateTime  @default(now())
+  effectiveTo     DateTime?
+  createdByUserId String?
+  createdAt       DateTime  @default(now())
+
+  @@index([dealerId])
+  @@index([skuId])
+  @@index([effectiveFrom, effectiveTo])
+}
+
+// v1.3 P0:SKU 批次表（生产批次维度）
+model SkuBatch {
+  id                  String   @id @default(cuid())
+  batchCode           String   @unique                       // 例 'BATCH-2026Q3-001'
+  mfgDate             DateTime
+  factory             String?                                // 例 'Matoo Plant A'
+  destinationCountry  String?                                // ISO 3166-1 alpha-2
+  totalQuantity       Int      @default(0)                   // 计划生产数
+  note                String?
+  createdByUserId     String?
+  createdAt           DateTime @default(now())
+
+  skus       Sku[]
+  documents  SkuDocument[]
+  qrBatches  QrBatch[]
+
+  @@index([mfgDate])
+}
+
+// v1.3 P0:SKU 文档表（多语言 + 多版本）
+model SkuDocument {
+  id                String    @id @default(cuid())
+  skuId             String
+  sku               Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  batchId           String?
+  batch             SkuBatch? @relation(fields: [batchId], references: [id])
+  type              String                                 // 'manual' | 'video' | 'specsheet' | 'faq'
+  lang              String                                 // 'zh' | 'en' | 'bn' | 'hi' | 'ur'
+  version           String                                 // 手动版本号 'v1.0' / 'v1.1'
+  title             String
+  fileName          String
+  mimeType          String
+  sizeBytes         Int
+  storageKey        String                                 // 本地相对路径或对象存储 key
+  sha256            String                                 // 内容哈希，防篡改 + 重复上传检测
+  uploadedByUserId  String?
+  uploadedAt        DateTime  @default(now())
+  deprecatedAt      DateTime?                              // 软删除：保留历史，7 天后清理磁盘
+
+  @@unique([skuId, type, lang, version])
+  @@index([skuId, type, lang])
+  @@index([batchId])
+  @@index([sha256])
+  @@index([deprecatedAt])
+}
+
+// v1.3 P0:QR 批量生成任务
+model QrBatch {
+  id                 String                @id @default(cuid())
+  batchId            String
+  batch              SkuBatch             @relation(fields: [batchId], references: [id])
+  totalQuantity      Int
+  generatedCount     Int                   @default(0)
+  status             String                @default('pending')  // 'pending' | 'running' | 'done' | 'failed'
+  zipStorageKey      String?
+  errorMessage       String?
+  generatedByUserId  String
+  startedAt          DateTime?
+  finishedAt         DateTime?
+  createdAt          DateTime              @default(now())
+
+  @@index([batchId])
+  @@index([status])
+  @@index([createdAt])
 }

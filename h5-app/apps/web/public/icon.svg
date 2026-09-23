@@ -1,5 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
-  <rect width="192" height="192" rx="36" fill="#0E8F5A"/>
-  <path d="M48 132 V60 l32 36 V60 l32 36 V60 l32 36" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="144" cy="132" r="10" fill="#FF7A1A"/>
+  <!-- PWA 主图标 — 对齐 website/assets/logo.svg -->
+  <rect width="192" height="192" rx="36" fill="#F7FAF8"/>
+  <defs>
+    <linearGradient id="iconGradMain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0052CC"/>
+      <stop offset="100%" stop-color="#36B37E"/>
+    </linearGradient>
+  </defs>
+  <path d="M96 16 L166 56 L166 136 L96 176 L26 136 L26 56 Z" fill="#091E42"/>
+  <path d="M66 136 L66 76 L86 76 L106 106 L146 76 L146 136 L131 136 L131 91 L116 116 L96 116 L81 91 L81 136 Z" fill="url(#iconGradMain)"/>
+  <rect x="136" y="126" width="15" height="15" rx="2" fill="#36B37E"/>
 </svg>

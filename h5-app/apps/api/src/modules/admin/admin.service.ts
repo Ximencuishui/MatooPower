@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { DbService } from '../../common/db/db';
 
 export interface PageResult<T> {
@@ -45,14 +46,21 @@ export class AdminService {
     );
   }
 
-  /** 用户列表 */
+  /** 用户列表（隐藏 GDPR 已删除的用户） */
   async listUsers(opts: { q?: string; page?: number; pageSize?: number; role?: string } = {}): Promise<PageResult<any>> {
     return this.paginated(
-      `SELECT u.id, u.phone, u.email, u.role, u.displayName, u.createdAt,
+      `SELECT u.id, u.phone, u.email, u.role, u.displayName, u.createdAt, u.deletedAt,
               (SELECT COUNT(*) FROM Warranty w WHERE w.userId = u.id) AS warrantyCount,
               (SELECT COUNT(*) FROM Device d WHERE d.userId = u.id) AS deviceCount
        FROM User u`,
-      { ...opts, extraWhere: opts.role ? 'u.role = ?' : undefined, extraParams: opts.role ? [opts.role] : [] },
+      {
+        ...opts,
+        extraWhere: [
+          'u.deletedAt IS NULL',
+          opts.role ? 'u.role = ?' : null,
+        ].filter(Boolean).join(' AND ') || undefined,
+        extraParams: opts.role ? [opts.role] : [],
+      },
       ['phone', 'email', 'displayName', 'id'],
       'u.createdAt ASC',
     );
@@ -89,9 +97,19 @@ export class AdminService {
     }
     const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
 
+    // P1-1 v1.4:COUNT 用独立子查询内嵌 WHERE(避免 subquery 别名在外层不可见)
+    // 把 extraWhere 内嵌到 inner SELECT 的 FROM/WHERE,搜索 LIKE 同样内嵌
+    const innerWhere: string[] = [];
+    if (q) {
+      const like = `%${q}%`;
+      innerWhere.push('(' + searchCols.map((c) => `${c} LIKE ?`).join(' OR ') + ')');
+    }
+    if (opts.extraWhere) innerWhere.push(opts.extraWhere);
+    const innerWhereSql = innerWhere.length ? `WHERE ${innerWhere.join(' AND ')}` : '';
     const totalRow = this.db.get<{ c: number }>(
-      `SELECT COUNT(*) AS c FROM (${baseSql}) ${whereSql}`,
-      ...params,
+      `SELECT COUNT(*) AS c FROM (${baseSql} ${innerWhereSql})`,
+      ...(q ? searchCols.map(() => `%${q}%`) : []),
+      ...(opts.extraParams ?? []),
     );
     const total = totalRow?.c ?? 0;
 
@@ -103,11 +121,62 @@ export class AdminService {
     return { items, total, page, pageSize };
   }
 
-  async reviewWarranty(id: string, status: 'active' | 'pending' | 'expired' | 'rejected', notes?: string) {
-    const w = this.db.get<{ id: string; reviewNotes: string | null }>('SELECT id, reviewNotes FROM Warranty WHERE id = ?', id);
+  async reviewWarranty(id: string, status: 'active' | 'pending' | 'expired' | 'rejected', notes?: string, actorUserId?: string) {
+    const w = this.db.get<{ id: string; status: string; reviewNotes: string | null }>(
+      'SELECT id, status, reviewNotes FROM Warranty WHERE id = ?', id);
     if (!w) throw new NotFoundException(`warranty ${id} 不存在`);
+    const fromStatus = w.status;
     this.db.run('UPDATE Warranty SET status = ?, reviewNotes = ? WHERE id = ?', status, notes ?? w.reviewNotes, id);
+
+    // v1.1 audit: 写 WarrantyReviewLog
+    if (actorUserId && fromStatus !== status) {
+      this.writeReviewLog(id, actorUserId, fromStatus, status, notes);
+    }
+
     return this.db.get('SELECT * FROM Warranty WHERE id = ?', id);
+  }
+
+  /**
+   * P0-6 v1.2 增量:批量审核（admin 批量操作场景，如批量拒绝伪造批次）
+   * - 逐条复用 reviewWarranty 写入逻辑,保持审计/状态机一致
+   * - 任一条失败抛出 BadRequest,事务已写入行不回滚(演示期 sqlite 简化),调用方按失败列表重试
+   * - 返回值含 succeeded/failed 两条,便于前端展示
+   */
+  async bulkReviewWarranties(
+    ids: string[],
+    status: 'active' | 'pending' | 'expired' | 'rejected',
+    notes: string | undefined,
+    actorUserId: string,
+  ): Promise<{ succeeded: Array<{ id: string; status: string }>; failed: Array<{ id: string; reason: string }>; total: number }> {
+    const succeeded: Array<{ id: string; status: string }> = [];
+    const failed: Array<{ id: string; reason: string }> = [];
+    for (const id of ids) {
+      try {
+        const w = this.db.get<{ id: string; status: string; reviewNotes: string | null }>(
+          'SELECT id, status, reviewNotes FROM Warranty WHERE id = ?', id);
+        if (!w) {
+          failed.push({ id, reason: 'warranty 不存在' });
+          continue;
+        }
+        const fromStatus = w.status;
+        this.db.run('UPDATE Warranty SET status = ?, reviewNotes = ? WHERE id = ?', status, notes ?? w.reviewNotes, id);
+        if (fromStatus !== status) this.writeReviewLog(id, actorUserId, fromStatus, status, notes);
+        succeeded.push({ id, status });
+      } catch (e) {
+        failed.push({ id, reason: (e as Error).message ?? 'unknown' });
+      }
+    }
+    return { succeeded, failed, total: ids.length };
+  }
+
+  /** 写 WarrantyReviewLog（reviewWarranty/bulkReviewWarranties 共用） */
+  private writeReviewLog(warrantyId: string, actorUserId: string, fromStatus: string, toStatus: string, notes?: string) {
+    const logId = `wrl-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    this.db.run(
+      `INSERT INTO WarrantyReviewLog (id, warrantyId, actorUserId, fromStatus, toStatus, notes, createdAt)
+       VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+      logId, warrantyId, actorUserId, fromStatus, toStatus, notes ?? null,
+    );
   }
 
   /**
@@ -222,6 +291,148 @@ export class AdminService {
       warranty: { active: warrantyActive, activeThisMonth: warrantyThisMonth },
       device: { total: deviceTotal, boundThisMonth: deviceThisMonth },
       ticket: { open: ticketOpen, urgent: ticketUrgent, newThisMonth: ticketThisMonth },
+    };
+  }
+
+  /** 单用户详情（含近 N 条保修） — GDPR 已删除用户返回 404 */
+  async getUserDetail(id: string) {
+    const user = this.db.get(
+      `SELECT id, phone, email, role, displayName, createdAt, deletedAt
+       FROM User WHERE id = ? AND deletedAt IS NULL`, id);
+    if (!user) throw new NotFoundException(`user ${id} 不存在`);
+    const warrantyCount = this.db.get<{ c: number }>(
+      'SELECT COUNT(*) AS c FROM Warranty WHERE userId = ?', id)?.c ?? 0;
+    const warranties = this.db.all(
+      `SELECT w.id, w.skuId, w.status, w.country, w.createdAt, w.reviewNotes,
+              s.sku AS s_sku, s.modelName AS s_modelName, s.serial AS s_serial
+       FROM Warranty w JOIN Sku s ON w.skuId = s.id
+       WHERE w.userId = ? ORDER BY w.createdAt DESC LIMIT 20`, id);
+    return { ...user, warrantyCount, warranties };
+  }
+
+  /** 单保修详情（含审计轨迹） */
+  async getWarrantyDetail(id: string) {
+    const w = this.db.get(
+      `SELECT w.*, u.phone AS user_phone, u.displayName AS user_displayName,
+              s.sku AS s_sku, s.modelName AS s_modelName, s.serial AS s_serial
+       FROM Warranty w
+       JOIN User u ON w.userId = u.id
+       JOIN Sku s ON w.skuId = s.id
+       WHERE w.id = ?`, id);
+    if (!w) throw new NotFoundException(`warranty ${id} 不存在`);
+    const logs = this.db.all<{ id: string; actorUserId: string; fromStatus: string; toStatus: string; notes: string | null; createdAt: string }>(
+      `SELECT id, actorUserId, fromStatus, toStatus, notes, createdAt
+       FROM WarrantyReviewLog WHERE warrantyId = ? ORDER BY createdAt DESC LIMIT 20`, id);
+    const auditLogs = logs.map((l) => ({
+      at: l.createdAt,
+      by: l.actorUserId,
+      action: `${l.fromStatus} → ${l.toStatus}`,
+      notes: l.notes ?? undefined,
+    }));
+    return { ...w, auditLogs };
+  }
+
+  /** 更新用户角色（admin 专用）— 不允许修改已 GDPR 删除的用户 */
+  async updateUserRole(id: string, role: 'admin' | 'dealer' | 'customer') {
+    const u = this.db.get<{ id: string; deletedAt: string | null }>('SELECT id, deletedAt FROM User WHERE id = ?', id);
+    if (!u) throw new NotFoundException(`user ${id} 不存在`);
+    if (u.deletedAt) throw new ConflictException(`user ${id} 已被 GDPR 删除,不可修改`);
+    this.db.run('UPDATE User SET role = ? WHERE id = ?', role, id);
+    return this.db.get(
+      `SELECT id, phone, email, role, displayName, createdAt FROM User WHERE id = ?`, id);
+  }
+
+  /**
+   * P1-1 v1.4 GDPR 软删:DELETE /admin/users/:id
+   * - 不能物理删(Warranty/Device/Ticket/Session 等 FK 全部关联,破坏审计完整性)
+   * - 软删 + 匿名化:phone/email/passwordHash/displayName 置 NULL,role='anonymous',deletedAt=now
+   * - 脱敏备份:phone/email 哈希保存到 anonymizedPhone/anonymizedEmail,供审计追溯
+   * - Session 一次性清空(避免持有已删除用户 token)
+   * - AuditLog 写一行 user.gdpr_delete
+   * - 限制:
+   *   ① 不能删自己(actor === target) → 409
+   *   ② 不能删最后一个 admin(剩余 admin 数 = 1 且 target 是 admin) → 409
+   *   ③ 已删除的不能再删(幂等保护)
+   */
+  async gdprDeleteUser(id: string, actorUserId: string) {
+    const target = this.db.get<{
+      id: string;
+      role: string;
+      phone: string | null;
+      email: string | null;
+      deletedAt: string | null;
+    }>(
+      'SELECT id, role, phone, email, deletedAt FROM User WHERE id = ?',
+      id,
+    );
+    if (!target) throw new NotFoundException(`user ${id} 不存在`);
+    if (target.deletedAt) throw new ConflictException(`user ${id} 已被删除,无需重复操作`);
+
+    // 最后一个 admin 检查:若是 admin 且总 admin 数 ≤ 1,拒绝
+    //   优先于自删检查:即使你想"辞职"也必须先交接给另一个 admin
+    if (target.role === 'admin') {
+      const adminCount = this.db.get<{ c: number }>(
+        "SELECT COUNT(*) AS c FROM User WHERE role = 'admin' AND deletedAt IS NULL",
+      )?.c ?? 0;
+      if (adminCount <= 1) {
+        throw new ConflictException('不能删除最后一个管理员');
+      }
+    }
+
+    if (actorUserId === id) {
+      throw new ConflictException('不能删除当前登录账号');
+    }
+
+    // SHA256 哈希(用于审计追溯,不暴露明文)
+    const phoneHash = target.phone
+      ? crypto.createHash('sha256').update(target.phone).digest('hex')
+      : null;
+    const emailHash = target.email
+      ? crypto.createHash('sha256').update(target.email.toLowerCase()).digest('hex')
+      : null;
+
+    // 一次性事务:匿名化 + 清 Session + 写 AuditLog
+    this.db.run('BEGIN');
+    try {
+      this.db.run(
+        `UPDATE User
+         SET phone = NULL,
+             email = NULL,
+             passwordHash = NULL,
+             displayName = NULL,
+             role = 'anonymous',
+             anonymizedPhone = ?,
+             anonymizedEmail = ?,
+             deletedAt = CURRENT_TIMESTAMP
+         WHERE id = ?`,
+        phoneHash,
+        emailHash,
+        id,
+      );
+      // 清 Session(token 不可继续使用)
+      this.db.run('DELETE FROM Session WHERE userId = ?', id);
+      // AuditLog
+      const auditId = 'aud-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+      this.db.run(
+        `INSERT INTO AuditLog (id, actorUserId, actorRole, action, resource, payload, createdAt)
+         VALUES (?, ?, 'admin', 'user.gdpr_delete', ?, ?, CURRENT_TIMESTAMP)`,
+        auditId,
+        actorUserId,
+        `user:${id}`,
+        JSON.stringify({ anonymizedPhone: phoneHash, anonymizedEmail: emailHash }),
+      );
+      this.db.run('COMMIT');
+    } catch (e) {
+      this.db.run('ROLLBACK');
+      throw e;
+    }
+
+    return {
+      ok: true,
+      id,
+      deletedAt: new Date().toISOString(),
+      anonymizedPhone: phoneHash,
+      anonymizedEmail: emailHash,
     };
   }
 }

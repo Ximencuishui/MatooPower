@@ -19,16 +19,19 @@ export class ApiError extends Error {
   }
 }
 
-type FetchOpts = {
+export type FetchOpts = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
   auth?: boolean; // 默认 true；公开端点传 false
   signal?: AbortSignal;
+  /** multipart/form-data 上传（body 传 FormData） */
+  isForm?: boolean;
 };
 
 async function request<T>(path: string, opts: FetchOpts = {}): Promise<T> {
-  const { method = 'GET', body, auth = true, signal } = opts;
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const { method = 'GET', body, auth = true, signal, isForm } = opts;
+  const headers: Record<string, string> = {};
+  if (!isForm) headers['Content-Type'] = 'application/json';
   if (auth) {
     const s = getSession();
     if (s?.token) headers.Authorization = `Bearer ${s.token}`;
@@ -37,9 +40,11 @@ async function request<T>(path: string, opts: FetchOpts = {}): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? (isForm ? (body as BodyInit) : JSON.stringify(body)) : undefined,
     signal,
-    credentials: 'omit',
+    // P0-8 Phase 1：携带 httpOnly cookie（后端登录已 Set-Cookie matoo_token）；
+    // 演示期鉴权仍以 Authorization header 为主，cookie 为生产期通道铺路
+    credentials: 'include',
   });
 
   const text = await res.text();
@@ -65,6 +70,26 @@ export const api = {
     request<T>(path, { ...opts, method: 'POST', body }),
   put: <T>(path: string, body?: unknown, opts?: Omit<FetchOpts, 'method' | 'body'>) =>
     request<T>(path, { ...opts, method: 'PUT', body }),
+  // v1.3 P0:补齐 PATCH / DELETE
+  patch: <T>(path: string, body?: unknown, opts?: Omit<FetchOpts, 'method' | 'body'>) =>
+    request<T>(path, { ...opts, method: 'PATCH', body }),
+  delete: <T>(path: string, opts?: Omit<FetchOpts, 'method' | 'body'>) =>
+    request<T>(path, { ...opts, method: 'DELETE' }),
 };
+
+/** 下载 CSV（不走 JSON 解析;返回 Blob） */
+export async function downloadCsv(path: string): Promise<Blob> {
+  const s = getSession();
+  const headers: Record<string, string> = {};
+  if (s?.token) headers.Authorization = `Bearer ${s.token}`;
+  const res = await fetch(`${BASE}${path}`, { method: 'GET', headers, credentials: 'include' });
+  if (!res.ok) {
+    const text = await res.text();
+    let data: any = null;
+    try { data = JSON.parse(text); } catch { /* */ }
+    throw new ApiError(res.status, data?.error ?? `HTTP_${res.status}`, data?.message ?? res.statusText);
+  }
+  return res.blob();
+}
 
 export const API_BASE = BASE;

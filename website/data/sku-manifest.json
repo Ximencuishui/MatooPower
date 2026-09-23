@@ -1,0 +1,57 @@
+{
+  "_meta": {
+    "syncedAt": "2026-09-23T10:44:22.460Z",
+    "source": "http://127.0.0.1:3001/sku/manifest",
+    "count": 4
+  },
+  "items": [
+    {
+      "sku": "MAT-12V200Ah",
+      "id": "MATO-MAT12200-DEMO0001",
+      "modelName": "Matoo Power 12V 200Ah LiFePO4 Battery",
+      "family": "battery",
+      "capacity": "200 Ah / 2560 Wh",
+      "voltage": "12.8 V",
+      "chemistry": "LiFePO4 (A-grade)",
+      "cycles": "≥ 6000 @ 80% DoD",
+      "imageSlug": "mat-12v200ah",
+      "warrantyMonthsWhole": 36
+    },
+    {
+      "sku": "MAT-12V200Ah",
+      "id": "MATO-MAT12200-DEMO0002",
+      "modelName": "Matoo Power 12V 200Ah LiFePO4 Battery",
+      "family": "battery",
+      "capacity": "200 Ah / 2560 Wh",
+      "voltage": "12.8 V",
+      "chemistry": "LiFePO4 (A-grade)",
+      "cycles": "≥ 6000 @ 80% DoD",
+      "imageSlug": "mat-12v200ah",
+      "warrantyMonthsWhole": 36
+    },
+    {
+      "sku": "MAT-12V200Ah",
+      "id": "MATO-MAT12200-DEMO0003",
+      "modelName": "Matoo Power 12V 200Ah LiFePO4 Battery",
+      "family": "battery",
+      "capacity": "200 Ah / 2560 Wh",
+      "voltage": "12.8 V",
+      "chemistry": "LiFePO4 (A-grade)",
+      "cycles": "≥ 6000 @ 80% DoD",
+      "imageSlug": "mat-12v200ah",
+      "warrantyMonthsWhole": 36
+    },
+    {
+      "sku": "MAT-12V300Ah",
+      "id": "MATO-MAT12300-DEMO0004",
+      "modelName": "Matoo Power 12V 300Ah LiFePO4 Battery",
+      "family": "battery",
+      "capacity": "300 Ah / 3840 Wh",
+      "voltage": "12.8 V",
+      "chemistry": "LiFePO4 (A-grade)",
+      "cycles": "≥ 6000 @ 80% DoD",
+      "imageSlug": "mat-12v300ah",
+      "warrantyMonthsWhole": 36
+    }
+  ]
+}

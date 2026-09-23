@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="40" viewBox="0 0 180 40" fill="none">
+  <!-- White version -->
+  <g transform="translate(4,4)">
+    <path d="M16 2 L30 10 L30 26 L16 34 L2 26 L2 10 Z" 
+          fill="#FFFFFF"/>
+    <defs>
+      <linearGradient id="logoGradW" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0052CC"/>
+        <stop offset="100%" stop-color="#36B37E"/>
+      </linearGradient>
+    </defs>
+    <path d="M8 24 L8 12 L12 12 L16 18 L20 12 L24 12 L24 24 L21 24 L21 15 L18 20 L14 20 L11 15 L11 24 Z" 
+          fill="url(#logoGradW)"/>
+    <rect x="22" y="22" width="3" height="3" rx="0.5" fill="#36B37E"/>
+  </g>
+  <text x="46" y="21" font-family="Inter, -apple-system, sans-serif" font-size="17" font-weight="700" fill="#FFFFFF" letter-spacing="-0.3">Matoo</text>
+  <text x="46" y="33" font-family="Inter, -apple-system, sans-serif" font-size="8" font-weight="600" fill="#B3D4FF" letter-spacing="3.5">POWER</text>
+</svg>

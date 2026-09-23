@@ -6,7 +6,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { DatabaseSync } = require('node:sqlite');
 
-const db = new DatabaseSync(path.join(process.cwd(), 'prisma', 'dev.db'));
+const db = new DatabaseSync(process.env.DEV_DB || path.join(process.cwd(), 'prisma', 'dev.db'));
 db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
 
 const QR_HMAC_SECRET = process.env.QR_HMAC_SECRET || 'dev-only-secret-change-me';
@@ -72,6 +72,42 @@ function upsertDevice(d) {
   const customer = upsertUser('+8801000000002', 'customer', 'Demo Customer');
   const dealer = upsertUser('+8801000000003', 'dealer', 'Demo Dealer (BD)');
   console.log(`  · users: admin=${admin.slice(0,12)}…, customer=${customer.slice(0,12)}…, dealer=${dealer.slice(0,12)}…`);
+
+  // v1.4 P1-3: SLA sweep 系统 actor(迁移 0005 已完成,这里 idempotent 保证)
+  db.prepare(`INSERT OR IGNORE INTO User (id, phone, email, role, displayName, createdAt, updatedAt)
+              VALUES ('system-sla', '+00000000000', 'system-sla@matoo.local', 'support', 'System (SLA Sweep)', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`).run();
+
+  // v1.4 P1-2: 经销商独立 Dealer 实体 + DealerPriceList 专属价
+  function upsertDealer(d) {
+    const existing = db.prepare('SELECT id FROM Dealer WHERE id = ?').get(d.id);
+    if (existing) {
+      db.prepare(`UPDATE Dealer SET companyName=?, country=?, tier=?, contactEmail=?, contactPhone=?, status=?, note=?, updatedAt=CURRENT_TIMESTAMP WHERE id=?`)
+        .run(d.companyName, d.country, d.tier, d.contactEmail ?? null, d.contactPhone ?? null, d.status, d.note ?? null, d.id);
+      return d.id;
+    }
+    db.prepare(`INSERT INTO Dealer (id, companyName, country, tier, contactEmail, contactPhone, status, note, createdByUserId, createdAt, updatedAt)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`)
+      .run(d.id, d.companyName, d.country, d.tier, d.contactEmail ?? null, d.contactPhone ?? null, d.status, d.note ?? null, d.createdByUserId ?? null);
+    return d.id;
+  }
+  function upsertDealerPrice(p) {
+    const existing = db.prepare('SELECT id FROM DealerPriceList WHERE id = ?').get(p.id);
+    if (existing) return p.id;
+    db.prepare(`INSERT INTO DealerPriceList (id, dealerId, skuId, priceCents, currency, effectiveFrom, effectiveTo, createdByUserId, createdAt)
+                VALUES (?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), ?, ?, CURRENT_TIMESTAMP)`)
+      .run(p.id, p.dealerId, p.skuId, p.priceCents, p.currency ?? 'BDT', p.effectiveFrom ?? null, p.effectiveTo ?? null, p.createdByUserId ?? null);
+    return p.id;
+  }
+  const dealer1 = upsertDealer({ id: 'dlr-demo-0001', companyName: 'Matoo BD Distribution Ltd.', country: 'BD', tier: 'gold', contactEmail: 'bd@matoo-dist.local', contactPhone: '+8801711000001', status: 'active', note: 'Gold partner covering Bangladesh', createdByUserId: admin });
+  const dealer2 = upsertDealer({ id: 'dlr-demo-0002', companyName: 'Matoo IN Solar Pvt.', country: 'IN', tier: 'silver', contactEmail: 'in@matoo-dist.local', contactPhone: '+919811000002', status: 'active', note: 'Silver partner - India', createdByUserId: admin });
+  const dealer3 = upsertDealer({ id: 'dlr-demo-0003', companyName: 'Matoo PK Energy', country: 'PK', tier: 'platinum', contactEmail: 'pk@matoo-dist.local', contactPhone: '+923001000003', status: 'suspended', note: 'Compliance review pending', createdByUserId: admin });
+  console.log(`  · dealers: 3 (gold/silver/platinum, 1 suspended)`);
+  // 把 demo dealer User 绑定到 dealer1 实体(dealerId 外键)
+  db.prepare(`UPDATE User SET dealerId = ? WHERE id = ?`).run(dealer1, dealer);
+  upsertDealerPrice({ id: 'dpl-demo-0001', dealerId: dealer1, skuId: 'MATO-MAT12200-DEMO0001', priceCents: 72000_00, currency: 'BDT', createdByUserId: admin });
+  upsertDealerPrice({ id: 'dpl-demo-0002', dealerId: dealer1, skuId: 'MATO-MAT12300-DEMO0004', priceCents: 105000_00, currency: 'BDT', createdByUserId: admin });
+  upsertDealerPrice({ id: 'dpl-demo-0003', dealerId: dealer2, skuId: 'MATO-MAT12200-DEMO0001', priceCents: 75000_00, currency: 'INR', createdByUserId: admin });
+  console.log(`  · dealer prices: 3`);
 
   const skuSeeds = [
     { id: 'MATO-MAT12200-DEMO0001', sku: 'MAT-12V200Ah', serial: 'SN24B0801A0001', batch: 'B202408-A', mfgDate: new Date('2024-08-12'), modelName: 'Matoo Power 12V 200Ah LiFePO4 Battery', family: 'battery', capacity: '200 Ah / 2560 Wh', voltage: '12.8 V', chemistry: 'LiFePO4 (A-grade)', cycles: '≥ 6000 @ 80% DoD', warrantyMonthsWhole: 36, warrantyMonthsCell: 60, warrantyMonthsBms: 36, warrantyMonthsParts: 12 },

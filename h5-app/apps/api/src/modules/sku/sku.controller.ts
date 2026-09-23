@@ -11,12 +11,90 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkuService } from './sku.service';
 import { Public } from '../../common/guards/jwt-auth.guard';
 
+/** 解析 SKU_IMAGE_SLUG_MAP 环境变量
+ *  格式: "MAT-12V200Ah=power01,MAT-12V300Ah=power02"
+ *  未配映射则用 defaultImageSlug() 从 sku 字符串生成 */
+function parseSlugMap(raw: string | undefined): Record<string, string> {
+  const map: Record<string, string> = {};
+  if (!raw) return map;
+  for (const pair of raw.split(',')) {
+    const [k, v] = pair.split('=').map((s) => s.trim());
+    if (k && v) map[k] = v;
+  }
+  return map;
+}
+
+/** 默认 imageSlug:把 SKU 字符串转 URL-friendly slug
+ *  例:MAT-12V200Ah → mat-12v200ah(运营方可在 SKU_IMAGE_SLUG_MAP 里覆盖) */
+function defaultImageSlug(sku: string): string {
+  return sku.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
 @Controller('sku')
 @ApiTags('sku')
 export class SkuController {
   constructor(private readonly sku: SkuService) {}
 
-  /** 公开：根据 id 查 SKU + 二维码签名（前端扫码页用） */
+  /** 公开:返回 SKU 精简 manifest(供 website 同步使用,无敏感字段)
+   *  - 只返公开字段:sku/modelName/family/capacity/voltage/chemistry/cycles
+   *  - 不含 serial/batchId/QR signature/warranty userId(与 admin/裂开解耦)
+   *  - 带 SKU_IMAGE_SLUG_MAP 环境变量可选映射到 brand 站图片 slug(默认原样返回) */
+  @Public()
+  @Get('manifest')
+  @ApiOperation({ summary: 'Get public SKU manifest (for website sync)' })
+  async manifest(): Promise<{
+    ok: true;
+    generatedAt: string;
+    count: number;
+    items: Array<{
+      sku: string;
+      id: string;
+      modelName: string;
+      family: string;
+      capacity: string;
+      voltage: string;
+      chemistry: string;
+      cycles: string;
+      imageSlug: string;
+      warrantyMonthsWhole: number;
+    }>;
+  }> {
+    const rows = (this.sku as any).db.all(
+      `SELECT id, sku, modelName, family, capacity, voltage, chemistry, cycles, warrantyMonthsWhole
+       FROM Sku ORDER BY createdAt ASC`,
+    ) as Array<{
+      id: string;
+      sku: string;
+      modelName: string;
+      family: string;
+      capacity: string;
+      voltage: string;
+      chemistry: string;
+      cycles: string;
+      warrantyMonthsWhole: number;
+    }>;
+    const slugMap = parseSlugMap(process.env.SKU_IMAGE_SLUG_MAP);
+    const items = rows.map((r) => ({
+      sku: r.sku,
+      id: r.id,
+      modelName: r.modelName,
+      family: r.family,
+      capacity: r.capacity,
+      voltage: r.voltage,
+      chemistry: r.chemistry,
+      cycles: r.cycles,
+      imageSlug: slugMap[r.sku] ?? defaultImageSlug(r.sku),
+      warrantyMonthsWhole: r.warrantyMonthsWhole,
+    }));
+    return {
+      ok: true,
+      generatedAt: new Date().toISOString(),
+      count: items.length,
+      items,
+    };
+  }
+
+  /** 公开:根据 id 查 SKU + 二维码签名(前端扫码页用) */
   @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Get SKU by id (public)' })

@@ -84,6 +84,32 @@ describe('i18n dictionary symmetry', () => {
       expect(dict.app.name, `${name}.app.name`).toBe('Matoo Power');
     }
   });
+
+  it('v1.1: 四语完整补齐后,bn/hi/ur 与 en 顶级 keys 一致', () => {
+    const enKeys = Object.keys(en).sort();
+    for (const [name, dict] of [['bn', bn], ['hi', hi], ['ur', ur]] as const) {
+      const keys = Object.keys(dict).sort();
+      // 允许 placeholder 多覆盖;缺失则 fail
+      expect(keys, `${name} 顶级 key 缺失: ${enKeys.filter((k) => !keys.includes(k)).join(',')}`).toEqual(enKeys);
+    }
+  });
+
+  it('v1.1: common.exportCsv* 关键文案在 4 语中均存在且非空', () => {
+    for (const [name, dict] of [['zh', zh], ['en', en], ['bn', bn], ['hi', hi], ['ur', ur]] as const) {
+      expect(dict.common.exportCsv, `${name}.common.exportCsv`).toBeTruthy();
+      expect(dict.common.exportCsvDone, `${name}.common.exportCsvDone`).toBeTruthy();
+      expect(dict.common.exportCsvFailed, `${name}.common.exportCsvFailed`).toBeTruthy();
+      expect(dict.common.exportCsvEmpty, `${name}.common.exportCsvEmpty`).toBeTruthy();
+    }
+  });
+
+  it('v1.1: ticket.kpiTodayNew 与 adminOverview.* 在 4 语中均非空', () => {
+    for (const [name, dict] of [['zh', zh], ['en', en], ['bn', bn], ['hi', hi], ['ur', ur]] as const) {
+      expect(dict.ticket.kpiTodayNew, `${name}.ticket.kpiTodayNew`).toBeTruthy();
+      expect(dict.adminOverview.title, `${name}.adminOverview.title`).toBeTruthy();
+      expect(dict.adminOverview.skuTotal, `${name}.adminOverview.skuTotal`).toBeTruthy();
+    }
+  });
 });
 
 // ========== auth-store ==========
@@ -123,7 +149,7 @@ describe('auth-store', () => {
 });
 
 // ========== API client 错误归一化 ==========
-import { ApiError, api } from '../src/lib/api/client';
+import { ApiError, api, downloadCsv } from '../src/lib/api/client';
 
 describe('ApiError', () => {
   it('正确构造 + 继承 Error', () => {
@@ -155,7 +181,7 @@ describe('api.get / api.post', () => {
     expect(r.data).toBe(42);
     expect(mock).toHaveBeenCalledWith(
       expect.stringContaining('/x'),
-      expect.objectContaining({ method: 'GET', credentials: 'omit' }),
+      expect.objectContaining({ method: 'GET', credentials: 'include' }),
     );
   });
 
@@ -237,6 +263,43 @@ describe('api.get / api.post', () => {
     await api.get('/x');
     const call = mock.mock.calls[0][1];
     expect(call.body).toBeUndefined();
+  });
+});
+
+describe('v1.1 downloadCsv (Blob 下载)', () => {
+  beforeEach(() => {
+    if (typeof window !== 'undefined') window.localStorage.removeItem('matoo.session');
+  });
+
+  it('成功 → 返回 Blob', async () => {
+    const blob = new Blob(['\ufeffid,name\r\n1,x\r\n'], { type: 'text/csv' });
+    const mock = vi.fn().mockResolvedValue({
+      ok: true,
+      blob: () => Promise.resolve(blob),
+    });
+    globalThis.fetch = mock as unknown as typeof fetch;
+    const r = await downloadCsv('/admin/users.csv');
+    expect(r).toBeInstanceOf(Blob);
+    expect(mock).toHaveBeenCalledWith(
+      expect.stringContaining('/admin/users.csv'),
+      expect.objectContaining({ method: 'GET', credentials: 'include' }),
+    );
+  });
+
+  it('失败 → 抛 ApiError(从 text 解析 error/message)', async () => {
+    const mock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 403,
+      statusText: 'Forbidden',
+      text: () => Promise.resolve(JSON.stringify({ error: 'FORBIDDEN', message: '需要 admin' })),
+      blob: () => Promise.resolve(new Blob()),
+    });
+    globalThis.fetch = mock as unknown as typeof fetch;
+    await expect(downloadCsv('/admin/users.csv')).rejects.toMatchObject({
+      name: 'ApiError',
+      status: 403,
+      code: 'FORBIDDEN',
+    });
   });
 });
 

@@ -30,6 +30,45 @@ const crypto = require('crypto');
 const config = require('../lib/config');
 const logger = require('../lib/logger');
 
+// v1.4 T-2d X2:询盘写盘后异步转发到 h5-app 公开端点。
+// 失败仅 console.warn,不阻断主响应(本地 inquiries.log 始终为第一落点)。
+async function forwardToH5App(record, body) {
+  if (config.h5AppApiDisabled) return;
+  const url = config.h5AppApiUrl;
+  const payload = {
+    _form: body._form,
+    _lang: body._lang,
+    _source: body._source,
+    name: body.name,
+    company: body.company,
+    email: body.email,
+    phone: body.phone,
+    message: body.message,
+    inquiryId: record.id,
+  };
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), config.h5AppApiTimeoutMs);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: ctl.signal,
+    });
+    const txt = res.ok ? await res.text() : '';
+    logger.log({
+      user: 'system',
+      action: 'inquiry.forwarded',
+      target: record.id,
+      after: url + ' -> ' + res.status + ' ' + txt.slice(0, 200),
+    });
+  } catch (e) {
+    console.warn('[inquiries] forward to h5-app failed:', record.id, e.name || '', e.message || '');
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 const router = express.Router();
 
 // Honeypot field — if filled, the submission is almost certainly a bot.
@@ -157,6 +196,9 @@ router.post('/', (req, res) => {
     // entry above will at least show the attempt.
     console.error('[inquiries] failed to persist:', err.message);
   }
+
+  // v1.4 T-2d X2:异步转发到 h5-app 公开端点(fire-and-forget,不 await,不阻断响应)
+  forwardToH5App(record, body);
 
   res.json({ ok: true, id: record.id, channel: 'api' });
 });

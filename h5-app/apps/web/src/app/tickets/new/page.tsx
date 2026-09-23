@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PhoneShell } from '@/components/PhoneShell';
@@ -95,14 +95,14 @@ function NewTicketInner() {
 
         <div>
           <label className="label" htmlFor="t-subject">{t.ticket.subjectLabel}</label>
-          <input id="t-subject" className="input" placeholder={t.ticket.subjectPh} value={subject} onChange={(e) => setSubject(e.target.value)} maxLength={120} />
-          <div className="text-[11px] text-slate-400 mt-1 text-right">{subject.length} / 120</div>
+          <input id="t-subject" className="input" placeholder={t.ticket.subjectPh} value={subject} onChange={(e) => setSubject(e.target.value)} maxLength={120} dir="auto" />
+          <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 text-right">{subject.length} / 120</div>
         </div>
 
         <div>
           <label className="label" htmlFor="t-desc">{t.ticket.descLabel}</label>
-          <textarea id="t-desc" className="input min-h-[140px] py-2" placeholder={t.ticket.descPh} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={1000} />
-          <div className="text-[11px] text-slate-400 mt-1 text-right">{description.length} / 1000</div>
+          <textarea id="t-desc" className="input min-h-[140px] py-2" placeholder={t.ticket.descPh} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={1000} dir="auto" />
+          <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 text-right">{description.length} / 1000</div>
         </div>
 
         {error && <div role="alert" className="text-xs text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 p-3 rounded-xl">{error}</div>}
@@ -120,7 +120,7 @@ function NewTicketFallback() {
   return (
     <PhoneShell>
       <TopBar title="…" />
-      <main className="p-5 text-slate-400 text-sm">Loading…</main>
+      <main className="p-5 text-slate-400 dark:text-slate-500 text-sm">Loading…</main>
     </PhoneShell>
   );
 }

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useT } from '@/lib/i18n';
 
 const LANGS: Array<{ key: 'zh' | 'en' | 'bn' | 'hi' | 'ur'; label: string; code: string }> = [
@@ -22,7 +22,7 @@ export function LangSwitch() {
             aria-pressed={active}
             title={`${l.code}${active && l.key !== 'zh' && l.key !== 'en' ? ' (placeholder)' : ''}`}
             className={`px-1.5 py-1 rounded ${
-              active ? 'bg-matoo-light text-matoo-dark font-semibold' : 'text-slate-500 hover:bg-slate-100'
+              active ? 'bg-matoo-light text-matoo-dark font-semibold' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100'
             }`}
           >
             {l.label}

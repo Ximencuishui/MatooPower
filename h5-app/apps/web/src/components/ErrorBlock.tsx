@@ -42,7 +42,7 @@ export function ErrorBlock({
       : 'p-3 rounded-xl';
 
   return (
-    <div role="alert" className={`${cls} text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 space-y-2`}>
+    <div role="alert" aria-live="assertive" className={`${cls} text-red-600 bg-red-50 dark:bg-red-950/40 dark:text-red-300 space-y-2`}>
       <div className="flex items-start gap-2">
         <span aria-hidden="true" className="text-base leading-none mt-0.5">⚠</span>
         <div className="flex-1 min-w-0">

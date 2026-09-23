@@ -10,7 +10,8 @@ import sqlite from 'node:sqlite';
 
 const { DatabaseSync } = sqlite as any;
 
-const DB_FILE = path.resolve(process.cwd(), 'prisma', 'dev.db');
+// P0-10 惯例：支持 DEV_DB 覆盖（Playwright 等测试库播种用；默认 dev.db）
+const DB_FILE = process.env.DEV_DB || path.resolve(process.cwd(), 'prisma', 'dev.db');
 const QR_HMAC_SECRET = process.env.QR_HMAC_SECRET || 'dev-only-secret-change-me';
 
 function sign(text: string): string {
@@ -109,6 +110,28 @@ for (const s of skuSeeds) {
     console.log(`  · qr signed: ${s.id}`);
   }
 }
+
+// 按 sku.batch 分组创建 SkuBatch 行并回填 Sku.batchId
+const batchGroups = new Map<string, number>();
+for (const s of skuSeeds) {
+  batchGroups.set(s.batch, (batchGroups.get(s.batch) ?? 0) + 1);
+}
+for (const [batchCode, qty] of batchGroups) {
+  const sample = skuSeeds.find((s) => s.batch === batchCode)!;
+  const batchId = 'batch-' + randomBytes(8).toString('hex');
+  const exists = db.prepare('SELECT id FROM SkuBatch WHERE batchCode = ?').get(batchCode);
+  let finalBatchId = batchId;
+  if (!exists) {
+    db.prepare(
+      `INSERT INTO SkuBatch (id, batchCode, mfgDate, factory, destinationCountry, totalQuantity, note)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    ).run(batchId, batchCode, new Date(sample.mfgDate).toISOString(), 'Matoo Plant A', sample.sku.startsWith('MAT-12V') ? 'BD' : null, qty, 'seed 演示数据');
+  } else {
+    finalBatchId = (exists as any).id;
+  }
+  db.prepare('UPDATE Sku SET batchId = ? WHERE batch = ? AND (batchId IS NULL OR batchId = \'\')').run(finalBatchId, batchCode);
+}
+console.log(`  · sku-batches: ${batchGroups.size}`);
 
 upsertWarranty({ id: 'warranty-seed-0001', skuId: 'MATO-MAT12200-DEMO0002', userId: customer, country: 'BD', city: 'Dhaka', dealerName: 'Matoo BD', invoiceNo: 'INV-DEMO-001', invoiceDate: '2025-01-14', invoiceAmount: 76000, status: 'active', startAt: '2025-01-14', endAtWhole: '2028-01-14', endAtCell: '2030-01-14', endAtBms: '2028-01-14', endAtParts: '2026-01-14' });
 upsertWarranty({ id: 'warranty-seed-0002', skuId: 'MATO-MAT12200-DEMO0003', userId: customer, country: 'IN', city: 'Kolkata', dealerName: 'Matoo IN', invoiceNo: 'INV-DEMO-002', invoiceDate: '2024-12-05', invoiceAmount: 76000, status: 'active', startAt: '2024-12-05', endAtWhole: '2027-12-05', endAtCell: '2029-12-05', endAtBms: '2027-12-05', endAtParts: '2025-12-05' });

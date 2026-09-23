@@ -1,0 +1,14 @@
+{
+  // P0-11：monorepo 严格基线，api / web / shared 三端共享（防类型严格度漂移）
+  // - api：原 strictNullChecks/noImplicitAny/strictBindCallApply 为 false → 对齐 strict: true（0 错误，2026-09-21 实测）
+  // - web / shared：本已 strict，extends 后行为不变，仅收敛重复项
+  // - 差异化项（target / module / jsx / outDir / paths）留在各包自身 tsconfig
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  }
+}

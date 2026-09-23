@@ -11,6 +11,29 @@ import { ApiError } from '@/lib/api/client';
 import type { SkuDto } from '@/lib/api/endpoints';
 
 // 演示用失败 ID（生产期由后端真正返回 4xx 替代）
+type DocKind = 'manual' | 'video' | 'specsheet' | 'faq';
+type DocState =
+  | { kind: DocKind; status: 'loading' }
+  | { kind: DocKind; status: 'ok'; mime: string; url: string; title: string; sizeBytes?: number }
+  | { kind: DocKind; status: 'missing' }; // 后端 404
+
+// v1.3 P0:扫码页拿多语言文档(走前端 /api/public 代理)
+async function fetchDoc(skuId: string, kind: DocKind, lang: string): Promise<DocState> {
+  const url = `/api/public/sku-document/${encodeURIComponent(skuId)}/${kind}/${lang}`;
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    if (res.status === 404) return { kind, status: 'missing' };
+    if (!res.ok) return { kind, status: 'missing' };
+    return {
+      kind, status: 'ok',
+      mime: res.headers.get('content-type') ?? 'application/octet-stream',
+      url, title: kind,
+    };
+  } catch {
+    return { kind, status: 'missing' };
+  }
+}
+
 const DEMO_FAIL_MAP: Record<string, { kind: 'fake' | 'revoked' | 'network'; code: string }> = {
   'FAKE-CODE-0000': { kind: 'fake', code: 'ERR_QR_SIGNATURE_INVALID' },
   'REVOKED-CODE-0000': { kind: 'revoked', code: 'ERR_BATCH_REVOKED' },
@@ -32,6 +55,9 @@ export default function ScanPage() {
   const [sku, setSku] = useState<SkuDto | null>(null);
   const [failKind, setFailKind] = useState<'fake' | 'revoked' | 'network' | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // v1.3 P0:多语言文档状态(manual/video 各按当前 UI lang 取一份)
+  const [manualDoc, setManualDoc] = useState<DocState>({ kind: 'manual', status: 'loading' });
+  const [videoDoc, setVideoDoc] = useState<DocState>({ kind: 'video', status: 'loading' });
 
   useEffect(() => {
     // 1. 演示期 demo 失败码直接跳
@@ -45,8 +71,19 @@ export default function ScanPage() {
 
     // 2. 正常路径：调后端
     setState('loading');
+    setManualDoc({ kind: 'manual', status: 'loading' });
+    setVideoDoc({ kind: 'video', status: 'loading' });
     getSku(id)
-      .then((s) => { setSku(s); setState('ok'); })
+      .then((s) => {
+        setSku(s);
+        setState('ok');
+        // v1.3 P0:取当前语言的 manual + video 文档(拿不到则隐藏卡片)
+        const curLang = (typeof window !== 'undefined'
+          ? (window.localStorage.getItem('matoo.lang') ?? 'en')
+          : 'en') as string;
+        fetchDoc(s.id, 'manual', curLang).then(setManualDoc).catch(() => setManualDoc({ kind: 'manual', status: 'missing' }));
+        fetchDoc(s.id, 'video', curLang).then(setVideoDoc).catch(() => setVideoDoc({ kind: 'video', status: 'missing' }));
+      })
       .catch((err: unknown) => {
         // API 错误 → 跳统一失败页
         let kind: 'fake' | 'revoked' | 'network' = 'fake';
@@ -97,6 +134,9 @@ export default function ScanPage() {
   if (!sku) return null;
   const isRepeated = sku.activated;
   const repeatedTime = sku.activatedAt ? new Date(sku.activatedAt).toLocaleString() : '—';
+  // P1-3:扫码次数异常提示(>10 次疑似盗扫)
+  const scanCount = sku.qr?.scanCount ?? 0;
+  const scanCountWarn = scanCount > 10;
 
   return (
     <PhoneShell>
@@ -119,6 +159,24 @@ export default function ScanPage() {
             </div>
           </div>
         </section>
+
+        {/* P1-3:扫码次数异常提示 */}
+        {scanCountWarn && (
+          <div role="alert" className="mx-4 mt-3 card p-3 border-red-100 dark:border-red-900 bg-red-50/60 dark:bg-red-950/30 text-red-700 dark:text-red-300 text-xs flex gap-2">
+            <span aria-hidden="true">⚠</span>
+            <div>
+              <div className="font-semibold">扫码次数异常:已累计 {scanCount} 次</div>
+              <div className="mt-0.5 opacity-90">可能为多次复印或盗扫,请联系客服核验真伪。</div>
+            </div>
+          </div>
+        )}
+
+        {/* P1-3:扫码次数小提示 */}
+        {!scanCountWarn && scanCount > 0 && (
+          <div className="mx-4 mt-2 text-[11px] text-slate-500 text-right">
+            累计扫码 {scanCount} 次
+          </div>
+        )}
 
         <section className="px-4 -mt-2">
           <div className="card p-4">
@@ -174,28 +232,71 @@ export default function ScanPage() {
           <div className="card p-4">
             <h3 className="text-sm font-semibold mb-3">{t.scan.docs}</h3>
             <div className="space-y-2">
-              {[0, 1].map((i) => (
-                <button key={i} className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50">
+              {/* 说明书 manual */}
+              {manualDoc.status === 'loading' && (
+                <div className="w-full flex items-center gap-3 p-2 rounded-lg bg-slate-50 animate-pulse">
+                  <div className="w-8 h-8 rounded bg-slate-200" />
+                  <div className="flex-1">
+                    <div className="h-3 bg-slate-200 rounded w-24" />
+                    <div className="h-2 bg-slate-100 rounded w-16 mt-1.5" />
+                  </div>
+                </div>
+              )}
+              {manualDoc.status === 'ok' && (
+                <a href={manualDoc.url} target="_blank" rel="noopener noreferrer"
+                  className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50">
                   <div className="flex items-center gap-3">
                     <div aria-hidden="true" className="w-8 h-8 rounded bg-matoo-light text-matoo flex items-center justify-center text-sm">📕</div>
                     <div className="text-left">
                       <div className="text-sm font-medium">{t.scan.manual}</div>
-                      <div className="text-xs text-slate-500">PDF · {(3.0 + i * 0.1).toFixed(1)} MB</div>
+                      <div className="text-xs text-slate-500">{manualDoc.mime}</div>
                     </div>
                   </div>
                   <span aria-hidden="true" className="text-matoo text-sm">↓</span>
-                </button>
-              ))}
-              <button className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50">
-                <div className="flex items-center gap-3">
-                  <div aria-hidden="true" className="w-8 h-8 rounded bg-matoo-light text-matoo flex items-center justify-center text-sm">▶</div>
+                </a>
+              )}
+              {manualDoc.status === 'missing' && (
+                <div className="w-full flex items-center gap-3 p-2 rounded-lg text-slate-400">
+                  <div aria-hidden="true" className="w-8 h-8 rounded bg-slate-100 text-slate-400 flex items-center justify-center text-sm">📕</div>
                   <div className="text-left">
-                    <div className="text-sm font-medium">{t.scan.video}</div>
-                    <div className="text-xs text-slate-500">04:18</div>
+                    <div className="text-sm">{t.scan.manual}</div>
+                    <div className="text-xs">{t.scan.manualUnavailable ?? '该语言暂无说明书'}</div>
                   </div>
                 </div>
-                <span aria-hidden="true" className="text-matoo text-sm">▶</span>
-              </button>
+              )}
+
+              {/* 视频 video */}
+              {videoDoc.status === 'loading' && (
+                <div className="w-full flex items-center gap-3 p-2 rounded-lg bg-slate-50 animate-pulse">
+                  <div className="w-8 h-8 rounded bg-slate-200" />
+                  <div className="flex-1">
+                    <div className="h-3 bg-slate-200 rounded w-20" />
+                    <div className="h-2 bg-slate-100 rounded w-12 mt-1.5" />
+                  </div>
+                </div>
+              )}
+              {videoDoc.status === 'ok' && (
+                <a href={videoDoc.url} target="_blank" rel="noopener noreferrer"
+                  className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-slate-50">
+                  <div className="flex items-center gap-3">
+                    <div aria-hidden="true" className="w-8 h-8 rounded bg-matoo-light text-matoo flex items-center justify-center text-sm">▶</div>
+                    <div className="text-left">
+                      <div className="text-sm font-medium">{t.scan.video}</div>
+                      <div className="text-xs text-slate-500">{videoDoc.mime}</div>
+                    </div>
+                  </div>
+                  <span aria-hidden="true" className="text-matoo text-sm">▶</span>
+                </a>
+              )}
+              {videoDoc.status === 'missing' && (
+                <div className="w-full flex items-center gap-3 p-2 rounded-lg text-slate-400">
+                  <div aria-hidden="true" className="w-8 h-8 rounded bg-slate-100 text-slate-400 flex items-center justify-center text-sm">▶</div>
+                  <div className="text-left">
+                    <div className="text-sm">{t.scan.video}</div>
+                    <div className="text-xs">{t.scan.videoUnavailable ?? '该语言暂无视频'}</div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>

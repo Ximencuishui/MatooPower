@@ -5,11 +5,15 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+import { SECURITY_HEADERS } from '../../src/common/security';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import { execSync } from 'child_process';
 import request from 'supertest';
+import { JwtService } from '@nestjs/jwt';
 import { AppModule } from '../../src/app.module';
 
 // 每个 describe 拿一个临时 db 文件
@@ -25,6 +29,8 @@ export function initDb(dbFile: string) {
   process.env.QR_HMAC_SECRET = 'test-hmac-secret';
   process.env.OTP_TTL_SECONDS = '300';
   process.env.PORT = '0';
+  // P0-5 测试环境标志：pino silent（防刷屏）+ AppThrottlerGuard 放行（防 OTP 5/min 误伤）
+  process.env.NODE_ENV = 'test';
 
   const cwd = path.resolve(__dirname, '../..');
   execSync(`node "${path.join(cwd, 'prisma/init-sqlite.cjs')}" "${dbFile}"`, {
@@ -51,6 +57,10 @@ export async function startApp(): Promise<AppHandle> {
   }).compile();
 
   const app = moduleRef.createNestApplication({ cors: false });
+  // P0-5 与生产 main.ts 对齐：挂同一 helmet 配置（安全头一致性）
+  app.use(helmet(SECURITY_HEADERS));
+  // P0-8 与生产对齐：cookie 解析（jwt.strategy cookie 通道测试需要）
+  app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: false,
@@ -96,6 +106,33 @@ export async function loginAndGetToken(phone: string): Promise<string> {
   const verify = await tmp.req.post('/auth/otp/verify').send({ phone, code });
   const token = (verify.body?.token ?? '') as string;
   await tmp.close();
+  return token;
+}
+
+/**
+ * 直接在 DB 创建 admin 用户 + 用 JwtService 直接 mint token
+ * 绕过 OTP 流程(v1.3 P0 测试用,避免跨 app OTP 500 干扰)
+ */
+export async function mintAdminToken(handle: AppHandle, phone = '+8801000000000'): Promise<string> {
+  const dbFile = process.env.DATABASE_URL!.replace(/^file:/, '');
+  const userId = 'usr_admin_' + Math.random().toString(36).slice(2, 10);
+  const script = path.join(process.env.TEMP || '/tmp', `admin-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.cjs`);
+  fs.writeFileSync(script, `
+const { DatabaseSync } = require('node:sqlite');
+const db = new DatabaseSync(${JSON.stringify(dbFile)});
+db.prepare("INSERT OR REPLACE INTO User (id, phone, role) VALUES (?, ?, 'admin')").run(${JSON.stringify(userId)}, ${JSON.stringify(phone)});
+`);
+  try {
+    execSync(`node "${script}"`, { encoding: 'utf8', stdio: 'pipe' });
+  } finally {
+    try { fs.unlinkSync(script); } catch {}
+  }
+
+  const jwt = handle.app.get(JwtService);
+  const token = await jwt.signAsync(
+    { sub: userId, role: 'admin', phone },
+    { expiresIn: '7d' },
+  );
   return token;
 }
 

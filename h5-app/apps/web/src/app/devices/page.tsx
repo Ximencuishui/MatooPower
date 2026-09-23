@@ -1,5 +1,5 @@
-'use client';
-import { useEffect, useState, useMemo } from 'react';
+﻿'use client';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TabBar } from '@/components/TabBar';
@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { useT } from '@/lib/i18n';
 import { listMyDevices } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
+import { useAbortedFetch } from '@/hooks/useAbortedFetch';
 import type { DeviceDto } from '@/lib/api/endpoints';
 
 type StatusFilter = 'all' | 'bound' | 'online';
@@ -19,15 +20,24 @@ export default function DevicesPage() {
   const [error, setError] = useState<unknown>(null);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<StatusFilter>('all');
+  // P0 UX-10:onRetry 时递增 reloadKey 触发重新 fetch
+  const [reloadKey, setReloadKey] = useState(0);
 
   function load() {
     setError(null);
-    listMyDevices()
-      .then((r) => setItems(r.items))
-      .catch((e: unknown) => setError(e));
+    setReloadKey((k) => k + 1);
   }
 
-  useEffect(() => { load(); }, []);
+  // P0 UX-10:用 useAbortedFetch 取代裸 useEffect+load,组件卸载或 reload 时取消
+  useAbortedFetch((signal) => {
+    setError(null);
+    listMyDevices({ signal })
+      .then((r) => setItems(r.items))
+      .catch((e: unknown) => {
+        if ((e as { name?: string })?.name === 'AbortError') return;
+        setError(e);
+      });
+  }, [reloadKey]);
 
   const filtered = useMemo(() => {
     if (!items) return [];
@@ -57,7 +67,7 @@ export default function DevicesPage() {
         <Link href="/devices/compare" className="card p-3 flex items-center justify-between bg-gradient-to-br from-matoo-light to-white">
           <div>
             <div className="text-sm font-semibold">📊 {t.devices.compareTitle}</div>
-            <div className="text-[11px] text-slate-500">{t.devices.compareHint}</div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400">{t.devices.compareHint}</div>
           </div>
           <span className="text-matoo text-sm" aria-hidden="true">›</span>
         </Link>
@@ -65,17 +75,18 @@ export default function DevicesPage() {
         {/* P2-9:搜索 + 筛选 */}
         {!error && items && items.length > 0 && (
           <div className="space-y-2">
-            <div className="relative">
+            <form onSubmit={(e) => e.preventDefault()} className="relative">
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="搜索 序列号 / 型号"
                 aria-label="search devices"
+                dir="auto"
                 className="input pr-9"
               />
-              <span aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">⌕</span>
-            </div>
+              <span aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm">⌕</span>
+            </form>
             <div role="tablist" className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs">
               {([
                 { k: 'all' as StatusFilter, l: '全部' },
@@ -86,7 +97,7 @@ export default function DevicesPage() {
                   role="tab"
                   aria-selected={filter === tb.k}
                   onClick={() => setFilter(tb.k)}
-                  className={`flex-1 py-1.5 rounded-lg ${filter === tb.k ? 'bg-white dark:bg-slate-700 shadow-sm font-semibold' : 'text-slate-500'}`}
+                  className={`flex-1 py-1.5 rounded-lg ${filter === tb.k ? 'bg-white dark:bg-slate-800 shadow-sm font-semibold' : 'text-slate-500'}`}
                 >
                   {tb.l}
                 </button>
@@ -117,14 +128,14 @@ export default function DevicesPage() {
             <div className="flex items-start gap-3">
               <div className="w-14 h-14 rounded-xl bg-matoo-light flex items-center justify-center text-matoo font-bold text-lg">M</div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold truncate">{d.s_modelName ?? d.skuId}</div>
-                <div className="text-xs text-slate-500 font-mono">{d.s_serial ?? d.skuId}</div>
+                <div className="text-sm font-semibold truncate" title={d.s_modelName ?? d.skuId}>{d.s_modelName ?? d.skuId}</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">{d.s_serial ?? d.skuId}</div>
                 <div className="mt-2 flex flex-wrap gap-2 text-xs">
                   <span className="chip chip-green" role="status">{t.devices.bound}</span>
                   <span className="chip chip-gray">{t.device.fw}: {d.fw ?? 'unknown'}</span>
                 </div>
               </div>
-              <span className="text-slate-400" aria-hidden="true">›</span>
+              <span className="text-slate-400 dark:text-slate-500" aria-hidden="true">›</span>
             </div>
           </Link>
         ))}

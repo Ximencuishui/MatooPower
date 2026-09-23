@@ -192,6 +192,60 @@ JS 自动接管提交，POST 到 `/api/inquiries`，携带语言、来源页、U
 
 ---
 
+## 🔌 跨产品对接(v1.4)
+
+To B 品牌站与 H5-App 管理后台为同一主体下的两个产品,通过以下三个机制贯通:
+
+### 1. 询盘转发(website → h5-app Ticket)
+
+`/contact.html` 表单提交 → website 后端 `/api/inquiries` → **异步 fire-and-forget** 转发到 h5-app `POST /public/inquiry-from-web` → h5-app 写入 Ticket `type='inquiry'` + 触发 SLA sweep。
+
+配置项(`website/api/lib/config.js`):
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `H5_APP_API_URL` | `http://127.0.0.1:3001/public/inquiry-from-web` | h5-app 接收端点 |
+| `H5_APP_API_TIMEOUT_MS` | `4000` | 超时 |
+| `H5_APP_API_DISABLED` | `false` | 紧急熔断(为 true 时只落库不转发) |
+
+**乐观语义**:转发失败不影响本地记录(超时/网关拥塞时仅落本地 inquiries.log)。
+
+### 2. SKU Manifest 同步(h5-app → website products)
+
+admin 后台增/删/改 SKU 后,运营/CI 跑一次 sync 脚本:
+
+```bash
+# 从默认 http://127.0.0.1:3001 拉
+node scripts/sync-sku-manifest.cjs
+
+# 从生产 API 拉
+MATOO_API_URL=https://api.matoopower.com node scripts/sync-sku-manifest.cjs
+```
+
+脚本拉取 h5-app `GET /sku/manifest` 公开端点 → 写入 `website/data/sku-manifest.json`(快照文件)。
+
+**品牌站产品图命名约定**(由运营方维护):
+- `website/assets/product-{imageSlug}-{view}@{480,800}.jpg`
+- 其中 `imageSlug` 字段默认由 SKU 字符串推导(MAT-12V200Ah → mat-12v200ah)
+- **推荐在 h5-app env 配 `SKU_IMAGE_SLUG_MAP="MAT-12V200Ah=power01,MAT-12V300Ah=power02"`** 覆盖默认 slug,直接复用现有图片资产
+
+同步后 brand 站前端可选 `fetch('/data/sku-manifest.json')` 动态渲染产品列表(hardcoded fallback 保留)。详细架构见 `h5-app/ACCEPTANCE-V14-REPORT.md`。
+
+### 3. OTP 渠道(h5-app auth)
+
+h5-app OTP 交付是抽象层,配置项见 `h5-app/apps/api/.env.example`:
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `OTP_DELIVERY` | `console` | `console`(演示)/ `http-webhook`(生产) |
+| `OTP_WEBHOOK_URL` | - | 生产期 SMS 网关 URL(必填) |
+| `OTP_WEBHOOK_TOKEN` | - | Bearer/HMAC token(可选) |
+| `OTP_WEBHOOK_TIMEOUT_MS` | `5000` | 网关超时 |
+| `DEV_FIXED_OTP` | 留空 | 演示期固定调试码,生产期必须留空 |
+| `OTP_ALLOW_CONSOLE_IN_PROD` | 0 | 生产期启用 console 的紧急开关(默认禁用) |
+
+**生产期硬阻断**:当 `NODE_ENV=production` 且 `OTP_DELIVERY=console` 时,h5-app **不返回验证码到日志**(避免泄露到生产日志聚合平台)。
+
+---
+
 ## 📞 联系人
 
 | 角色 | 联系方式 |

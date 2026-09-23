@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TopBar } from '@/components/TopBar';
 import { useT } from '@/lib/i18n';
@@ -18,7 +18,7 @@ export default function TermsPage() {
           <p>{t.legal.termsSection2}</p>
           <h2 className="font-semibold mt-4">{t.legal.termsSection3Title}</h2>
           <p>{t.legal.termsSection3}</p>
-          <p className="text-[11px] text-slate-400 mt-6">{t.legal.demoNote}</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-6">{t.legal.demoNote}</p>
         </div>
       </main>
     </PhoneShell>

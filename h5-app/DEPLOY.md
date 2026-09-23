@@ -163,7 +163,55 @@ DATABASE_URL=postgresql://... node prisma/run-seed.cjs  # 需改写为 Prisma cl
 
 ---
 
-## 4. CI/CD 流水线（已写）
+## 4. 文件存储（v1.3 P0 本地磁盘 + S3 切换点）
+
+### 4.1 演示期：本地磁盘
+
+```bash
+# 默认路径：apps/api/storage/{manuals,videos,thumbnails}/
+# 后端进程 UID 需要可写（755 权限）
+mkdir -p apps/api/storage/{manuals,videos,thumbnails}
+```
+
+接口：`LocalStorageDriver` 实现 `put/get/delete/exists/getStream/getUrl`，生成 `storageKey = ${skuId}/${type}/${lang}/${version}-${uuid}.${ext}` 避免路径穿越。
+
+### 4.2 Nginx X-Accel-Redirect（防直连）
+
+```nginx
+location /storage/ {
+    internal;  # 禁止外部直接访问
+    alias /var/matoo/storage/;
+    add_header Content-Disposition "attachment;";  # 补充响应头
+}
+
+location /api/public/sku-document/ {
+    # 前端代理 → 后端 → X-Accel-Redirect
+    proxy_pass http://api_backend;
+    proxy_set_header X-Accel-Redirect $upstream_http_x_accel_redirect;
+}
+```
+
+### 4.3 清理脚本（软删 7 天后）
+
+```bash
+# /etc/cron.daily/matoo-storage-cleanup
+find /var/matoo/storage -type f -mtime +7 -name "*.deprecated-*" -delete
+find /var/matoo/storage -type d -empty -delete
+```
+
+### 4.4 生产期：S3Driver（v1.3+ 增量）
+
+接口已预留，切换点：`apps/api/src/modules/storage/storage.module.ts` 中 `useClass: LocalDriver` → 改为 `S3Driver`。需要新增环境变量：
+
+```bash
+S3_BUCKET=matoo-documents
+S3_REGION=auto   # Cloudflare R2
+S3_ACCESS_KEY_ID=...
+S3_SECRET_ACCESS_KEY=...
+S3_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+```
+
+## 5. CI/CD 流水线（已写）
 
 `.github/workflows/ci.yml` 跑：
 

@@ -3,6 +3,7 @@ import { I18nProvider } from '@/lib/i18n';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { ToastHost } from '@/components/Toast';
 import { Onboarding } from '@/components/Onboarding';
+import { SkipLink } from '@/components/SkipLink';
 import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // suppressHydrationWarning:<html lang/dir/class> 会在 I18nProvider 客户端水合后由 useEffect 同步
     <html lang="zh-CN" suppressHydrationWarning>
       <body>
-        <a href="#main-content" className="skip-link">跳到主要内容</a>
+        <SkipLink />
         <I18nProvider>
           <div id="main-content" role="main">
             {children}

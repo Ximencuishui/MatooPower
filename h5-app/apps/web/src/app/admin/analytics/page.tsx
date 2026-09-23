@@ -1,7 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { PhoneShell } from '@/components/PhoneShell';
-import { TopBar } from '@/components/TopBar';
+import { TopBar, AdminBreadcrumb } from '@/components/TopBar';
 import { LangSwitch } from '@/components/LangSwitch';
 import { PageLoading } from '@/components/Spinner';
 import { ErrorBlock } from '@/components/ErrorBlock';
@@ -10,41 +10,55 @@ import { useT } from '@/lib/i18n';
 import { getAnalyticsTrends, getAnalyticsBreakdown } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
 import { getSession } from '@/lib/api/auth-store';
+import { useRequireRole, RoleGuardView } from '@/hooks/useRequireRole';
+import { useAbortedFetch } from '@/hooks/useAbortedFetch';
 
 type Trends = Awaited<ReturnType<typeof getAnalyticsTrends>>;
 
 export default function AdminAnalyticsPage() {
   const { t } = useT();
+  const guard = useRequireRole(['admin']);
   const [days, setDays] = useState(30);
   const [trends, setTrends] = useState<Trends | null>(null);
   const [warrantyBySku, setWarrantyBySku] = useState<Array<{ key: string; c: number }>>([]);
   const [ticketBySeverity, setTicketBySeverity] = useState<Array<{ key: string; c: number }>>([]);
   const [error, setError] = useState<unknown>(null);
+  // P0 UX-10:onRetry 时通过递增 reloadKey 触发重新 fetch
+  const [reloadKey, setReloadKey] = useState(0);
 
   function load() {
     setError(null);
-    const s = getSession();
-    if (!s?.token) { setError(new ApiError(401, 'UNAUTHORIZED', t.ticket.needLoginAdmin)); return; }
+    setReloadKey((k) => k + 1);
+  }
 
+  // P0 UX-10:用 useAbortedFetch 取代裸 useEffect+load,组件卸载或切换 days 时取消
+  useAbortedFetch((signal) => {
+    if (guard.status !== 'ok') return;
+    setError(null);
     Promise.all([
-      getAnalyticsTrends(days),
-      getAnalyticsBreakdown('warranty', 'sku'),
-      getAnalyticsBreakdown('ticket', 'severity'),
+      getAnalyticsTrends(days, { signal }),
+      getAnalyticsBreakdown('warranty', 'sku', { signal }),
+      getAnalyticsBreakdown('ticket', 'severity', { signal }),
     ])
       .then(([tr, wb, ts]) => {
         setTrends(tr);
         setWarrantyBySku(wb.items);
         setTicketBySeverity(ts.items);
       })
-      .catch((e: unknown) => setError(e));
-  }
+      .catch((e: unknown) => {
+        if ((e as { name?: string })?.name === 'AbortError') return;
+        setError(e);
+      });
+  }, [days, guard.status, reloadKey]);
 
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [days]);
+  if (guard.status !== 'ok') {
+    return <RoleGuardView state={guard} title={t.adminAnalytics.title} />;
+  }
 
   if (error && !trends) {
     return (
       <PhoneShell>
-        <TopBar title={t.adminAnalytics.title} right={<LangSwitch />} />
+        <TopBar title={t.adminAnalytics.title} leftExtra={<AdminBreadcrumb />} right={<LangSwitch />} />
         <main className="p-4"><ErrorBlock error={error} onRetry={load} showLoginLink={error instanceof ApiError && error.status === 401} loginNext="/admin/analytics" /></main>
       </PhoneShell>
     );
@@ -52,14 +66,14 @@ export default function AdminAnalyticsPage() {
 
   return (
     <PhoneShell>
-      <TopBar title={t.adminAnalytics.title} right={<LangSwitch />} />
+      <TopBar title={t.adminAnalytics.title} leftExtra={<AdminBreadcrumb />} right={<LangSwitch />} />
       <main className="flex-1 overflow-auto p-4 space-y-4">
         <div className="flex gap-2">
           {[7, 30, 90].map((d) => (
             <button
               key={d}
               onClick={() => setDays(d)}
-              className={`px-3 py-1.5 rounded-full text-xs ${days === d ? 'bg-matoo text-white font-semibold' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200'}`}
+              className={`px-3 py-1.5 rounded-full text-xs ${days === d ? 'bg-matoo text-white font-semibold' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'}`}
             >
               {t.adminAnalytics.days.replace('{n}', String(d))}
             </button>
@@ -79,7 +93,7 @@ export default function AdminAnalyticsPage() {
         <section>
           <h3 className="text-sm font-semibold mb-2">{t.adminAnalytics.warrantyBySku}</h3>
           {warrantyBySku.length === 0 ? (
-            <EmptyState icon="📊" title="—" />
+            <EmptyState icon="??" title="—" />
           ) : (
             <div className="space-y-1">
               {warrantyBySku.map((b) => {
@@ -101,7 +115,7 @@ export default function AdminAnalyticsPage() {
         <section>
           <h3 className="text-sm font-semibold mb-2">{t.adminAnalytics.ticketBySeverity}</h3>
           {ticketBySeverity.length === 0 ? (
-            <EmptyState icon="📊" title="—" />
+            <EmptyState icon="??" title="—" />
           ) : (
             <div className="space-y-1">
               {ticketBySeverity.map((b) => {
@@ -155,7 +169,7 @@ function SparkSection({
     <section className="card p-4">
       <div className="flex items-baseline justify-between mb-2">
         <h3 className="text-sm font-semibold">{title}</h3>
-        <span className="text-xs text-slate-500">最近 {n} 天 · 累计 <span className="font-bold text-matoo-dark">{total}</span>{prev7 > 0 && (
+        <span className="text-xs text-slate-500 dark:text-slate-400">最近 {n} 天 · 累计 <span className="font-bold text-matoo-dark">{total}</span>{prev7 > 0 && (
           <span className={`ml-2 ${delta > 0 ? 'text-red-500' : delta < 0 ? 'text-matoo' : 'text-slate-400'}`}>
             {delta > 0 ? '↑' : delta < 0 ? '↓' : '·'} {Math.abs(delta)}%
           </span>
@@ -176,7 +190,7 @@ function SparkSection({
           </>
         )}
       </svg>
-      <div className="text-[11px] text-slate-400 mt-1">最近一天:<span className="font-mono text-matoo-dark">{last}</span></div>
+      <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">最近一天:<span className="font-mono text-matoo-dark">{last}</span></div>
     </section>
   );
 }

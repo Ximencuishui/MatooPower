@@ -6,16 +6,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Matoo Power 绿能品牌色：科技绿 + 能量橙
+        // v1.4 T-2d X1:统一到 brand 站三色（#0052CC 科技蓝 / #36B37E 强调绿 / #091E42 深色）
+        // memory “品牌主色调规范”:主色 #0052CC（按钮/链接/强调）
+        // energy #36B37E 继承自 website/admin.css 变量配色
         matoo: {
-          DEFAULT: '#0E8F5A', // 主绿
-          dark: '#0A6E45',
-          light: '#E6F7EE',
-          energy: '#FF7A1A', // 能量橙
-          ink: '#0F172A',
-          muted: '#64748B',
-          border: '#E5E7EB',
-          bg: '#F7FAF8',
+          DEFAULT: '#0052CC', // 主蓝（科技蓝）
+          dark: '#091E42',    // 深色（text / heading）
+          light: '#E6F0FB',   // 蓝浅背景（card hover / chip bg）
+          energy: '#36B37E',  // 强调绿（成功态 / 高亮）
+          ink: '#0F172A',     // 主文本色
+          muted: '#64748B',   // 次要文本色
+          border: '#E5E7EB',  // 描边
+          bg: '#F7FAF8',      // 页面背景
         },
       },
       fontFamily: {
