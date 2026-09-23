@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Header,
   HttpCode,
@@ -21,6 +22,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { AdminService } from './admin.service';
 import { TicketService } from '../ticket/ticket.service';
+import { DeviceService } from '../device/device.service';
 import { toCsv, CSV_BOM } from '../../common/util/csv';
 
 @Controller('admin')
@@ -32,6 +34,7 @@ export class AdminController {
   constructor(
     private readonly svc: AdminService,
     private readonly ticketSvc: TicketService,
+    private readonly deviceSvc: DeviceService,
   ) {}
 
   @Get('sku')
@@ -81,6 +84,17 @@ export class AdminController {
         q, page: page ? Number(page) : undefined, pageSize: pageSize ? Number(pageSize) : undefined,
       }),
     };
+  }
+
+  /**
+   * Admin 视角：获取任意设备的实时遥测（跳过 owner 校验，不写入模拟 lastSeenAt）
+   * 用于 /admin/devices 详情 Drawer
+   */
+  @Get('device/:id/health')
+  @ApiOperation({ summary: 'Admin: get device health snapshot (any device, no owner check)' })
+  async deviceHealth(@Param('id') id: string) {
+    const snap = await this.deviceSvc.getHealth(id, '', { asAdmin: true });
+    return { ok: true, device: snap };
   }
 
   @Get('users')
@@ -156,6 +170,23 @@ export class AdminController {
   @ApiOperation({ summary: 'Ticket KPIs (open / resolved / urgent / today)' })
   async ticketStats(@CurrentUser() _user: AuthUser) {
     return { ok: true, stats: this.ticketSvc.stats() };
+  }
+
+  // P1-3 v1.4:SLA 预警统计 — admin/support 可访问
+  @Get('tickets/sla-stats')
+  @Roles('admin', 'support')
+  @ApiOperation({ summary: 'SLA breach stats (openOver2h / highOver4h)' })
+  async slaStats(@CurrentUser() _user: AuthUser) {
+    return { ok: true, ...this.ticketSvc.slaStats() };
+  }
+
+  // P1-3 v1.4:手动触发 SLA sweep(调试 + 冒烟)
+  @Post('tickets/sla-sweep')
+  @Roles('admin')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Manually trigger SLA escalation sweep (admin only)' })
+  async slaSweep(@CurrentUser() _user: AuthUser) {
+    return { ok: true, ...this.ticketSvc.runSlaSweep() };
   }
 
   @Get('overview')
@@ -286,5 +317,19 @@ export class AdminController {
     }
     const user = await this.svc.updateUserRole(id, body.role);
     return { ok: true, user };
+  }
+
+  // ============================================================
+  // P1-1 v1.4:GDPR 软删 — DELETE /admin/users/:id
+  // 匿名化字段 + 写 AuditLog + 清 Session
+  // ============================================================
+  @Delete('users/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'GDPR soft-delete + anonymize user (admin only)' })
+  async gdprDeleteUser(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+  ) {
+    return await this.svc.gdprDeleteUser(id, user.sub);
   }
 }

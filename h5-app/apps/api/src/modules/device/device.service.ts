@@ -69,11 +69,37 @@ export class DeviceService {
     );
   }
 
-  async getHealth(id: string, userId: string): Promise<HealthSnapshot> {
+  async getHealth(id: string, userId: string, opts: { asAdmin?: boolean } = {}): Promise<HealthSnapshot> {
     const dev = this.db.get<any>('SELECT * FROM Device WHERE id = ?', id);
     if (!dev) throw new NotFoundException(`device ${id} 不存在`);
-    if (dev.userId !== userId) {
+    if (!opts.asAdmin && dev.userId !== userId) {
       throw new NotFoundException(`device ${id} 不存在`);
+    }
+    if (opts.asAdmin) {
+      // admin 视角：不要写入 lastSeenAt (避免模拟 telemetry 污染其他用户)
+      const soc = dev.soc ?? 80;
+      const temp = dev.temp ?? 25;
+      const volt = dev.volt ?? 13.0;
+      const curr = dev.curr ?? 0;
+      return {
+        id: dev.id,
+        skuId: dev.skuId,
+        soh: dev.soh ?? 100,
+        soc,
+        cycles: dev.cycles ?? 0,
+        temp,
+        volt,
+        curr,
+        fw: dev.fw ?? 'unknown',
+        alarms: dev.alarms ?? 0,
+        boundAt: new Date(dev.boundAt).toISOString(),
+        lastSeenAt: new Date(dev.lastSeenAt).toISOString(),
+        online: dev.lastSeenAt ? (Date.now() - new Date(dev.lastSeenAt).getTime()) < 24 * 3600 * 1000 : false,
+        trend: {
+          socLast6h: this.synthSoc(dev.soc ?? 80),
+          voltLast1h: this.synthVolt(dev.volt ?? 13.0),
+        },
+      };
     }
 
     const soc = this.jitter(dev.soc ?? 80, 3, 0, 100);
