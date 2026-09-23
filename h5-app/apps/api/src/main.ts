@@ -92,6 +92,24 @@ async function bootstrap() {
       `   Storage: ${storageRoot} -> /storage/*`,
     'Bootstrap',
   );
+
+  // P1-3 v1.4:SLA 自动升级 cron — 每 60s 跑一次 sweep
+  // 可通过 SLA_CRON_DISABLED=1 / SLA_CRON_INTERVAL_MS 覆盖
+  if (process.env.SLA_CRON_DISABLED !== '1') {
+    const intervalMs = Number(process.env.SLA_CRON_INTERVAL_MS ?? 60_000);
+    const ticketSvc = app.get(require('./modules/ticket/ticket.service').TicketService);
+    const sweep = () => {
+      try {
+        const r = ticketSvc.runSlaSweep();
+        if (r.upgraded > 0) logger.log(`SLA sweep: upgraded ${r.upgraded} tickets`, 'SLA');
+      } catch (e) {
+        logger.warn(`SLA sweep failed: ${(e as Error).message}`, 'SLA');
+      }
+    };
+    const handle = setInterval(sweep, intervalMs);
+    process.on('beforeExit', () => clearInterval(handle));
+    logger.log(`⏰ SLA sweep cron enabled (${intervalMs}ms interval)`, 'Bootstrap');
+  }
 }
 
 bootstrap().catch((err) => {
