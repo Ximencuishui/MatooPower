@@ -69,6 +69,21 @@ _*fix*.js
 _patch-*.js
 _*reverify*.ps1
 _*reverify*.js
+_*repair*.js
+_*repair*.ps1
+_*scan*.js
+_*scan*.ps1
+_*show_corrupt*.js
+_*show_corrupt*.ps1
+# _ 前缀的临时调试脚本(v1.4 P1 价复用 / T-1d 联调阶段产生,不入库)
+_*.cjs
+_*.cjs.txt
+_*.cjs.out
+# 例外:跨产品对接中是公开工具脚本,手动调价不需过 _ 前缀
+!website/scripts/sync-sku-manifest.cjs
+!website/scripts/t1d-verify.cjs
+!website/scripts/strip-bom.js
+!website/scripts/verify-i18n-embed.cjs
 # 本地 i18n 修复/翻译脚本(一次性工具,不入库)
 # 注：_audit_*.out / _audit_*.md / _i18n_fix_report.md / _translation_cache.json
 # 是审计产物，进入版本控制
