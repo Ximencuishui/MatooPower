@@ -1,5 +1,7 @@
 ﻿node_modules/
 .next/
+# Next.js 16 调整: .next/types → .next/dev/types, 显式标注以避免下次构建污染 next-env.d.ts
+h5-app/apps/web/.next/
 dist/
 *.log
 .env
