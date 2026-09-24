@@ -44,10 +44,26 @@ export interface AdminOverviewDto {
   ok: true;
   overview: {
     sku: { total: number; activated: number };
-    user: { total: number; dealer: number };
-    warranty: { active: number; activeThisMonth: number };
-    device: { total: number; boundThisMonth: number };
-    ticket: { open: number; urgent: number; newThisMonth: number };
+    user: { total: number; dealer: number; customer: number; suspended: number }; // #P2-2 + #P1-3
+    warranty: {
+      active: number;
+      activeThisMonth: number;
+      expiredThisMonth: number;       // #P2-2
+      pending: number;                // #P2-2
+      expiredThisMonthOver7d: number; // #P2-2:本月到期且超过 7 天的质保件数
+    };
+    device: {
+      total: number;
+      boundThisMonth: number;
+      offline: number;                // #P2-2:未上报天数 > 7 天的设备数
+    };
+    ticket: {
+      open: number;
+      urgent: number;
+      newThisMonth: number;
+      byType: Record<TicketType, number>; // #P0-5 + #P2-2
+      bySource: Record<TicketSource, number>; // #P2-3
+    };
   };
 }
 export const getAdminOverview = (signal?: AbortSignal) =>
@@ -99,14 +115,18 @@ export type TicketStatus =
   | 'resolved'
   | 'closed';
 export type TicketSeverity = 'low' | 'normal' | 'high' | 'urgent';
+export type TicketType = 'general' | 'warranty' | 'inquiry' | 'remote';
+export type TicketSource = 'web' | 'h5' | 'dealer' | 'system';
 export interface AdminTicketItem {
   id: string;
   userId: string;
   userPhone?: string | null;
   userDisplayName?: string | null;
   subject: string;
-  status: TicketStatus;
+  type: TicketType;            // #P0-5:透出 type 供 chip 区分
   severity: TicketSeverity;
+  source?: TicketSource | null; // #P2-3:来源标记
+  status: TicketStatus;
   createdAt: string;
   updatedAt: string;
 }
@@ -116,11 +136,14 @@ export interface AdminTicketsDto {
   total: number;
 }
 export const listTickets = (
-  params: { status?: TicketStatus; q?: string; page?: number; pageSize?: number } = {},
+  params: { status?: TicketStatus; type?: TicketType; severity?: TicketSeverity; source?: TicketSource; q?: string; page?: number; pageSize?: number } = {},
   signal?: AbortSignal,
 ) => {
   const qs = new URLSearchParams();
   if (params.status) qs.set('status', params.status);
+  if (params.type) qs.set('type', params.type);
+  if (params.severity) qs.set('severity', params.severity);
+  if (params.source) qs.set('source', params.source);
   if (params.q) qs.set('q', params.q);
   if (params.page) qs.set('page', String(params.page));
   if (params.pageSize) qs.set('pageSize', String(params.pageSize));
@@ -163,9 +186,18 @@ export interface AdminWarrantyItem {
   userId: string;
   userPhone?: string | null;
   userDisplayName?: string | null;
-  status: 'pending' | 'active' | 'review' | 'rejected' | 'expired';
+  /** #P0-1:仅保留 DB 枚举的合法值;UI 的 '复审' 不在此列,改在页面以 reviewNotes != null 派生提示 */
+  status: 'pending' | 'active' | 'rejected' | 'expired';
   activatedAt?: string | null;
+  /** #P1-6:细化质保详情补齐字段(发票三件套 + 照片 URL) */
+  invoiceNo?: string | null;
+  invoiceDate?: string | null;
+  invoiceAmount?: number | null;
+  invoicePhotoUrl?: string | null;
   reviewStatus?: 'pending' | 'approved' | 'rejected' | null;
+  /** #P1-5:经销商双轨合并后的关联经销商 ID(列表查询从 Dealer 表 JOIN) */
+  dealerId?: string | null;
+  dealerCompanyName?: string | null;
   createdAt: string;
 }
 export interface AdminWarrantiesDto {
@@ -173,13 +205,21 @@ export interface AdminWarrantiesDto {
   items: AdminWarrantyItem[];
   total: number;
 }
+// v1.5 #P1-5:透出 dealerId 给后端 listWarranties 过滤
 export const listWarranties = (
-  params: { status?: string; q?: string; page?: number; pageSize?: number } = {},
+  params: {
+    status?: string;
+    q?: string;
+    dealerId?: string;
+    page?: number;
+    pageSize?: number;
+  } = {},
   signal?: AbortSignal,
 ) => {
   const qs = new URLSearchParams();
   if (params.status) qs.set('status', params.status);
   if (params.q) qs.set('q', params.q);
+  if (params.dealerId) qs.set('dealerId', params.dealerId);
   if (params.page) qs.set('page', String(params.page));
   if (params.pageSize) qs.set('pageSize', String(params.pageSize));
   const q = qs.toString();
@@ -217,7 +257,7 @@ export const getTicketDetail = (id: string, signal?: AbortSignal) =>
 export interface AdminWarrantyLiteItem {
   id: string;
   skuId: string;
-  status: 'active' | 'pending' | 'expired' | 'rejected' | 'review';
+  status: 'active' | 'pending' | 'expired' | 'rejected';
   country?: string | null;
   createdAt: string;
   reviewNotes?: string | null;
@@ -256,12 +296,8 @@ export const getWarrantyDetail = (id: string, signal?: AbortSignal) =>
   api.get<{ ok: true; warranty: WarrantyDetail }>(`/admin/warranties/${id}`, { signal });
 
 /* ---------- Admin: Write operations ---------- */
-export type WarrantyReviewStatus =
-  | 'active'
-  | 'pending'
-  | 'expired'
-  | 'rejected'
-  | 'review';
+/** #P0-1:严格枚举,不允许 UI 随意发 'review' 等 */
+export type WarrantyReviewStatus = 'active' | 'pending' | 'expired' | 'rejected';
 export const reviewWarranty = (
   id: string,
   status: WarrantyReviewStatus,
@@ -274,17 +310,38 @@ export const reviewWarranty = (
     { signal },
   );
 
+/**
+ * #P1-4:批量审核支持逐条 notes
+ * - 旧:传 ids:string[] + 顶层 status/notes(统一模式)
+ * - 新:传 items:Array<{ id; status?; notes? }>(逐条模式),未填字段 fallback 到顶层
+ * 后端 controller 两种形态都支持,这里仅加同名入口选择调用者。
+ */
+export interface BulkReviewItemBody {
+  id: string;
+  status?: WarrantyReviewStatus;
+  notes?: string;
+}
+export interface BulkReviewResult {
+  ok: true;
+  total: number;
+  succeeded: Array<{ id: string; status: string }>;
+  failed: Array<{ id: string; reason: string }>;
+}
 export const bulkReviewWarranties = (
-  ids: string[],
-  status: WarrantyReviewStatus,
-  notes?: string,
-  signal?: AbortSignal,
-) =>
-  api.post<{ ok: true; succeeded: number; failed: number; errors?: unknown[] }>(
+  args:
+    | { ids: string[]; status: WarrantyReviewStatus; notes?: string; signal?: AbortSignal }
+    | { items: BulkReviewItemBody[]; status?: WarrantyReviewStatus; notes?: string; signal?: AbortSignal },
+): Promise<BulkReviewResult> => {
+  const signal = 'signal' in args ? args.signal : undefined;
+  return api.post<BulkReviewResult>(
     '/admin/warranties/bulk-review',
-    { ids, status, notes },
+    (() => {
+      const { signal: _s, ...rest } = args as Record<string, unknown>;
+      return rest;
+    })(),
     { signal },
-  );
+  ) as unknown as Promise<BulkReviewResult>;
+};
 
 export const replyTicket = (id: string, body: string, signal?: AbortSignal) =>
   api.post<{ ok: true; message: TicketMessage }>(`/tickets/${id}/reply`, { body }, { signal });
@@ -302,6 +359,23 @@ export const updateUserRole = (
   signal?: AbortSignal,
 ) =>
   api.patch<{ ok: true; user: UserDetail }>(`/admin/users/${id}/role`, { role }, { signal });
+
+/* v1.5 #P1-3:账户 Suspension — POST /admin/users/:id/suspend */
+export const suspendUser = (id: string, reason: string, signal?: AbortSignal) =>
+  api.post<{ ok: true; user: UserDetail & { suspendedAt: string; suspendedReason: string; isActive: 0 | 1 } }>(
+    `/admin/users/${id}/suspend`, { reason }, { signal },
+  );
+export const unsuspendUser = (id: string, signal?: AbortSignal) =>
+  api.post<{ ok: true; user: UserDetail & { suspendedAt: null; suspendedReason: null; isActive: 0 | 1 } }>(
+    `/admin/users/${id}/unsuspend`, undefined, { signal },
+  );
+
+/* v1.5 #P1-2:按 serial 解析 SKU(H5 扫码 / 后台 by-serial 检索) */
+export const getAdminSkuBySerial = (serial: string, signal?: AbortSignal) =>
+  api.get<{
+    ok: true; skuId: string; sku: string; modelName: string; serial: string;
+    batch: string; mfgDate: string; activated: boolean; activatedAt: string | null;
+  }>(`/admin/sku/by-serial/${encodeURIComponent(serial)}`, { signal });
 
 /* ---------- Admin: SKUs (商品列表) ---------- */
 export interface AdminSkuItem {
@@ -381,6 +455,31 @@ export interface UpdateSkuCatalogBody {
 }
 export const updateSkuCatalog = (id: string, body: UpdateSkuCatalogBody, signal?: AbortSignal) =>
   api.patch<{ ok: true; catalog: SkuCatalogView }>(`/admin/sku-catalog/${id}`, body, { signal });
+
+/** v1.5 #P2-5:后台调整 SKU 质保月份 — PATCH /admin/sku/:id/warranty */
+export interface UpdateSkuWarrantyBody {
+  warrantyMonthsWhole?: number;
+  warrantyMonthsCell?: number | null;
+  warrantyMonthsBms?: number | null;
+  warrantyMonthsParts?: number | null;
+}
+export interface UpdateSkuWarrantyResult {
+  ok: true;
+  sku: {
+    id: string;
+    sku: string;
+    warrantyMonthsWhole: number;
+    warrantyMonthsCell: number | null;
+    warrantyMonthsBms: number | null;
+    warrantyMonthsParts: number | null;
+  };
+}
+export const updateSkuWarranty = (
+  id: string,
+  body: UpdateSkuWarrantyBody,
+  signal?: AbortSignal,
+) =>
+  api.patch<UpdateSkuWarrantyResult>(`/admin/sku/${id}/warranty`, body, { signal });
 
 /* ---------- Admin: SKU Images (详情图片集) ---------- */
 // 语言常量 + 类型已从 @matoo/shared 导入并 re-export（见文件顶部）
@@ -698,6 +797,8 @@ export const listSkuDocuments = (
     q?: string;
     page?: number;
     pageSize?: number;
+    /** #P2-4: 'type' = 按文档类型预排(manual → video → specsheet → faq) */
+    sortBy?: 'type' | 'time';
   } = {},
   signal?: AbortSignal,
 ) => {
@@ -708,6 +809,7 @@ export const listSkuDocuments = (
   if (params.includeDeprecated) qs.set('includeDeprecated', 'true');
   if (params.page) qs.set('page', String(params.page));
   if (params.pageSize) qs.set('pageSize', String(params.pageSize));
+  if (params.sortBy) qs.set('sortBy', params.sortBy);
   const q = qs.toString();
   return api.get<SkuDocumentsPageDto>(`/admin/sku-document${q ? `?${q}` : ''}`, { signal });
 };
@@ -825,6 +927,38 @@ export const listAudit = (
 };
 export const getWarrantyAuditTrail = (warrantyId: string, signal?: AbortSignal) =>
   api.get<WarrantyAuditTrailDto>(`/admin/audit/warranty/${warrantyId}`, { signal });
+
+/** v1.5 #P2-1:工单审计轨迹 */
+export interface TicketAuditLogItem {
+  id: string;
+  ticketId: string;
+  actorUserId: string | null;
+  actorRole: string | null;
+  fromStatus: string | null;
+  toStatus: string | null;
+  fromSeverity: string | null;
+  toSeverity: string | null;
+  action: string;
+  notes: string | null;
+  createdAt: string;
+}
+export interface TicketAuditTrailDto {
+  ok: true;
+  audit: Array<{
+    id: string;
+    actorUserId: string | null;
+    actorRole: string | null;
+    action: string;
+    resource: string | null;
+    payload: string | null;
+    ip: string | null;
+    userAgent: string | null;
+    createdAt: string;
+  }>;
+  statusLogs: TicketAuditLogItem[];
+}
+export const getTicketAuditTrail = (ticketId: string, signal?: AbortSignal) =>
+  api.get<TicketAuditTrailDto>(`/admin/audit/ticket/${ticketId}`, { signal });
 
 /* ---------- Admin: Tickets SLA (v1.4 P1-3) ---------- */
 export interface TicketStatsDto {

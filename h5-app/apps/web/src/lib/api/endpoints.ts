@@ -58,6 +58,8 @@ export type ActivateWarrantyBody = {
   invoiceDate?: string;
   invoiceAmt?: number;
   invoiceCurrency?: string;
+  /** v1.5 #P1-1:发票照片 URL(由 /storage/upload 预先上传) */
+  invoicePhotoUrl?: string;
   policyAccepted: true;
 };
 

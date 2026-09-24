@@ -1,47 +1,39 @@
 'use client';
+// v1.5 #P0-2:配件商城 - 消费后端 GET /parts(替代本地硬编码)
 import { useEffect, useState } from 'react';
 import { PhoneShell } from '@/components/PhoneShell';
 import { TabBar } from '@/components/TabBar';
+import { PageLoading, Spinner } from '@/components/Spinner';
+import { ErrorBlock } from '@/components/ErrorBlock';
 import { useT } from '@/lib/i18n';
-import { getDeviceHealth } from '@/lib/api/operations';
+import { listParts, createPartOrder, type PartItem, type PartOrder } from '@/lib/api/operations';
+import { ApiError } from '@/lib/api/client';
 import { toast } from '@/components/Toast';
 import { useLocaleFormat } from '@/hooks/useLocaleFormat';
 
-type PartCategory = 'connector' | 'monitor' | 'protection' | 'solar';
-type Part = {
-  id: string;
-  name: string;
-  category: PartCategory;
-  price: number;
-  img: string;
-  compatibleSkus: string[];
-  description: string;
-};
+type FamilyKey = PartItem['family'];
+type CategoryKey = FamilyKey | 'all';
 
-const PARTS: Part[] = [
-  { id: 'p-1', name: 'XT90 高电流连接线', category: 'connector', price: 18, img: '??', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12200-DEMO0003','MATO-MAT12300-DEMO0004'], description: '50A 持续电流,含防反插护套' },
-  { id: 'p-2', name: 'Anderson 50A 插头', category: 'connector', price: 6, img: '??', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12200-DEMO0003'], description: '快速插拔,适合便携场景' },
-  { id: 'p-3', name: 'Smart BMS 蓝牙显示器', category: 'monitor', price: 36, img: '??', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12200-DEMO0003','MATO-MAT12300-DEMO0004'], description: '实时 SoC / SOH / 告警推送' },
-  { id: 'p-4', name: '20A MPPT 太阳能控制器', category: 'solar', price: 52, img: '??', compatibleSkus: ['MATO-MAT12200-DEMO0002','MATO-MAT12300-DEMO0004'], description: '12/24V 自适应,IP65 防水' },
-  { id: 'p-5', name: '200W 单晶硅太阳能板', category: 'solar', price: 138, img: '??', compatibleSkus: ['MATO-MAT12300-DEMO0004'], description: '含 MC4 连接器,铝框便携款' },
-  { id: 'p-6', name: '定制防水外壳', category: 'protection', price: 24, img: '??', compatibleSkus: ['MATO-MAT12200-DEMO0001','MATO-MAT12200-DEMO0002','MATO-MAT12300-DEMO0004'], description: 'IP67,可定制尺寸' },
-  { id: 'p-7', name: '散热风扇模组', category: 'protection', price: 14, img: '??', compatibleSkus: ['MATO-MAT12300-DEMO0004'], description: '12V 静音版,含温控开关' },
-];
-
-const CATEGORIES: Array<{ key: PartCategory | 'all'; label: string }> = [
+const CATEGORIES: Array<{ key: CategoryKey; label: string }> = [
   { key: 'all', label: '全部' },
-  { key: 'connector', label: '电源连接' },
-  { key: 'monitor', label: '监控扩展' },
-  { key: 'solar', label: '绿能外设' },
-  { key: 'protection', label: '安装保护' },
+  { key: 'cell', label: '电芯' },
+  { key: 'bms', label: 'BMS' },
+  { key: 'charger', label: '充电器' },
+  { key: 'cable', label: '线缆' },
+  { key: 'accessory', label: '配件' },
 ];
 
 export default function ShopPage() {
   const { t } = useT();
   const { formatCurrency } = useLocaleFormat();
-  const [cat, setCat] = useState<PartCategory | 'all'>('all');
-  const [fav, setFav] = useState<Set<string>>(new Set());
+  const [cat, setCat] = useState<CategoryKey>('all');
   const [activeSku, setActiveSku] = useState<string | null>(null);
+
+  const [parts, setParts] = useState<PartItem[] | null>(null);
+  const [loadError, setLoadError] = useState<Error | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [ordering, setOrdering] = useState<string | null>(null);
+  const [recentOrder, setRecentOrder] = useState<PartOrder | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -53,32 +45,59 @@ export default function ShopPage() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
-      const raw = window.localStorage.getItem('matoo.fav');
-      if (raw) setFav(new Set(JSON.parse(raw)));
-    } catch {}
+      const recent = window.localStorage.getItem('matoo.lastPartOrder');
+      if (recent) setRecentOrder(JSON.parse(recent));
+    } catch { /* ignore */ }
   }, []);
 
-  function toggleFav(id: string) {
-    setFav((s) => {
-      const next = new Set(s);
-      const had = next.has(id);
-      next.has(id) ? next.delete(id) : next.add(id);
-      if (typeof window !== 'undefined') window.localStorage.setItem('matoo.fav', JSON.stringify(Array.from(next)));
-      toast(had ? t.shop.unfav : t.shop.fav, 'success');
-      return next;
-    });
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setParts(null);
+      setLoadError(null);
+      try {
+        const r = await listParts({ family: cat === 'all' ? undefined : cat });
+        if (!cancelled) setParts(r.items);
+      } catch (e) {
+        if (!cancelled) setLoadError(e instanceof Error ? e : new Error(String(e)));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [cat, reloadKey]);
+
+  function load() {
+    setReloadKey((k) => k + 1);
   }
 
-  // P1-3:加购 disabled + tooltip
-  function onAddToCart(_p: Part) {
-    toast(t.common.comingSoon + ' / Coming soon', 'info');
+  async function onAddToCart(p: PartItem) {
+    if (ordering) return;
+    if (p.stock <= 0) { toast('该配件暂无库存', 'error'); return; }
+    setOrdering(p.id);
+    try {
+      const r = await createPartOrder({
+        items: [{ partId: p.id, quantity: 1 }],
+        source: 'h5',
+      });
+      setRecentOrder(r.order);
+      try { window.localStorage.setItem('matoo.lastPartOrder', JSON.stringify(r.order)); } catch { /* */ }
+      toast(`下单成功 ${p.name} ✓ 订单号 ${r.orderId}`, 'success');
+      // 刷新库存
+      setReloadKey((k) => k + 1);
+    } catch (err) {
+      if (err instanceof ApiError) toast(err.message, 'error');
+      else toast('下单失败,请稍后重试', 'error');
+    } finally {
+      setOrdering(null);
+    }
   }
 
-  const filtered = PARTS.filter((p) => {
-    if (cat !== 'all' && p.category !== cat) return false;
-    if (activeSku && !p.compatibleSkus.includes(activeSku)) return false;
+  const filtered = (parts ?? []).filter((p) => {
+    if (cat !== 'all' && p.family !== cat) return false;
+    if (activeSku && p.compatibleSkus && !p.compatibleSkus.includes(activeSku)) return false;
     return true;
   });
+
+  const isLoading = parts === null && !loadError;
 
   return (
     <PhoneShell>
@@ -111,38 +130,50 @@ export default function ShopPage() {
           ))}
         </div>
 
-        {filtered.length === 0 && (
+        {recentOrder && (
+          <div className="card p-3 border border-emerald-200 dark:border-emerald-900 bg-emerald-50/40 dark:bg-emerald-950/30 text-xs">
+            <div className="text-emerald-700 dark:text-emerald-300 font-medium">最近订单</div>
+            <div className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">
+              订单号 <span className="font-mono">{recentOrder.id}</span> · 状态 {recentOrder.status} · 总额 {formatCurrency(recentOrder.totalCents / 100, recentOrder.currency)}
+            </div>
+          </div>
+        )}
+
+        {loadError && <ErrorBlock error={loadError} onRetry={load} />}
+        {isLoading && <PageLoading />}
+
+        {!isLoading && !loadError && filtered.length === 0 && (
           <div className="card p-8 text-center text-slate-500 dark:text-slate-400 text-sm">{t.shop.empty}</div>
         )}
+
         <div className="grid grid-cols-2 gap-3">
           {filtered.map((p) => {
-            const faved = fav.has(p.id);
+            const outOfStock = p.stock <= 0 || !p.active;
+            const isOrdering = ordering === p.id;
             return (
               <div key={p.id} className="card overflow-hidden">
                 <div className="h-24 bg-slate-50 dark:bg-slate-800/40 flex items-center justify-center text-4xl relative">
-                  {p.img}
-                  <button
-                    onClick={() => toggleFav(p.id)}
-                    aria-label={faved ? t.shop.unfav : t.shop.fav}
-                    aria-pressed={faved}
-                    className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 flex items-center justify-center text-sm"
-                  >
-                    {faved ? '★' : '☆'}
-                  </button>
+                  {p.imageUrls?.[0] ? (
+                    <img src={p.imageUrls[0]} alt={p.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span aria-hidden="true">📦</span>
+                  )}
+                  {outOfStock && (
+                    <span className="absolute top-2 left-2 text-[10px] px-2 py-0.5 bg-slate-700 text-white rounded">暂无库存</span>
+                  )}
                 </div>
                 <div className="p-3">
                   <div className="text-sm font-medium truncate" title={p.name}>{p.name}</div>
-                  <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{p.description}</div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{p.description ?? '—'}</div>
                   <div className="mt-2 flex items-center justify-between gap-2">
-                    <span className="text-matoo font-bold whitespace-nowrap">{formatCurrency(p.price, 'USD')}</span>
+                    <span className="text-matoo font-bold whitespace-nowrap">{formatCurrency(p.priceCents / 100, p.currency)}</span>
                     <button
                       onClick={() => onAddToCart(p)}
-                      title={t.common.comingSoon}
-                      disabled
-                      className="text-[10px] px-2.5 py-1.5 rounded-md bg-matoo/10 dark:bg-matoo/20 text-matoo font-medium border border-matoo/30 disabled:opacity-80 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                      disabled={outOfStock || isOrdering}
+                      className="text-[10px] px-2.5 py-1.5 rounded-md bg-matoo text-white font-medium hover:bg-matoo-dark disabled:opacity-60 inline-flex items-center gap-1"
                     >
-                      <span aria-hidden="true">??</span>
-                      {t.common.comingSoon}
+                      {isOrdering ? <Spinner size="sm" /> : null}
+                      {isOrdering ? '处理中' : '下单'}
                     </button>
                   </div>
                 </div>

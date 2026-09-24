@@ -1,0 +1,23 @@
+feat(admin/web): v1.5 管理后台 Drawer 扩展 + H5 端配套
+
+admin/web:
+- overview/page.tsx +82 — 紧急工单 KPI + 6 字段补齐
+- sku-resources/page.tsx +15 — SKU 资源页新字段
+- tickets/page.tsx +85 — type/source 列 + SLA 升级入口
+- warranties/page.tsx +150 — bulk-review 嵌套校验 UI + invoice 3 件套
+- SkuCatalogEditDrawer +125 — PATCH warranty + sha256 dedup
+- TicketDetailDrawer +191 — type/source/audit trail 显示
+- UserDetailDrawer +92 — isActive 状态 + GDPR 联动
+- WarrantyDetailDrawer +115 — invoice/dealerId
+- operations.ts +180 — 新增 bulkReviewWarranties / listWarrantyAuditTrail
+
+web:
+- activate/[id]/page.tsx +38 — 激活页兼容 v1.5 sku 字段
+- dealer/pickup/page.tsx +187 — DealerPickup H5 端(读 GET /dealer/pickups)
+- shop/page.tsx +159 — 修复 TabBar import 路径错误
+- client.ts / endpoints.ts / operations.ts +174 — dealer pickup + part order API
+
+页面与前端测试:
+- TypeScript strict 编译 0 errors(api/admin/web 三 workspace)
+- 前端 vitest 单测 128/128 通过(增量已合入)
+- 前端 Playwright 7/7 通过

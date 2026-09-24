@@ -10,6 +10,8 @@ import { ErrorBlock } from '@/components/ErrorBlock';
 import {
   getUserDetail,
   updateUserRole,
+  suspendUser,
+  unsuspendUser,
   type UserDetail,
 } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
@@ -45,6 +47,11 @@ export function UserDetailDrawer({ userId, open, onClose, onChanged }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [saving, setSaving] = useState(false);
+  // v1.5 #P1-3:isActive 字段(后端 getUserDetail 当前 SELECT 未返回,需要后端返回或后加请求)
+  // 为不阻塞 UI,从列表 chip 中读 isActive 状态会有穿透问题;此处维护本地副本
+  const [isActive, setIsActive] = useState<boolean>(true);
+  const [suspendReason, setSuspendReason] = useState<string>('');
+  const [acting, setActing] = useState<null | 'suspend' | 'unsuspend'>(null);
 
   useEffect(() => {
     if (!open || !userId) return;
@@ -52,7 +59,13 @@ export function UserDetailDrawer({ userId, open, onClose, onChanged }: Props) {
     setLoading(true);
     setError(null);
     getUserDetail(userId, ctrl.signal)
-      .then((r) => setUser(r.user))
+      .then((r) => {
+        setUser(r.user);
+        // v1.5 #P1-3:后端返回 isActive / suspendedReason 后同步到本地 state
+        const u = r.user as any;
+        setIsActive(u.isActive === undefined ? true : u.isActive === 1 || u.isActive === true);
+        if (u.suspendedReason) setSuspendReason(u.suspendedReason);
+      })
       .catch((e) => setError(e as Error))
       .finally(() => setLoading(false));
     return () => ctrl.abort();
@@ -70,6 +83,37 @@ export function UserDetailDrawer({ userId, open, onClose, onChanged }: Props) {
       alert('角色更新失败: ' + (e as Error).message);
     } finally {
       setSaving(false);
+    }
+  }
+
+  // v1.5 #P1-3:暂停 / 恢复账户
+  async function handleSuspend() {
+    if (!user || acting) return;
+    const reason = suspendReason.trim() || '管理员手动停用';
+    if (!window.confirm(`暂停用户 ${user.phone ?? user.id}?\n原因: ${reason}\n该用户后续将被拒绝登录`)) return;
+    setActing('suspend');
+    try {
+      const r = await suspendUser(user.id, reason);
+      setIsActive((r.user as any).isActive === 1 || (r.user as any).isActive === true);
+      onChanged?.();
+    } catch (e) {
+      alert('停用失败: ' + (e as Error).message);
+    } finally {
+      setActing(null);
+    }
+  }
+  async function handleUnsuspend() {
+    if (!user || acting) return;
+    if (!window.confirm(`恢复用户 ${user.phone ?? user.id} 登录?`)) return;
+    setActing('unsuspend');
+    try {
+      const r = await unsuspendUser(user.id);
+      setIsActive((r.user as any).isActive === 1 || (r.user as any).isActive === true);
+      onChanged?.();
+    } catch (e) {
+      alert('恢复失败: ' + (e as Error).message);
+    } finally {
+      setActing(null);
     }
   }
 
@@ -111,7 +155,12 @@ export function UserDetailDrawer({ userId, open, onClose, onChanged }: Props) {
           </section>
 
           <section>
-            <div className="text-xs text-slate-500 mb-2">变更角色</div>
+            <div className="text-xs text-slate-500 mb-2 flex items-center justify-between">
+              <span>变更角色</span>
+              <span className={`chip ${isActive ? 'chip-emerald' : 'chip-rose'}`}>
+                {isActive ? '账户正常' : '账户已停用'}
+              </span>
+            </div>
             <div className="flex gap-2">
               {(Object.keys(ROLE_LABEL) as Role[]).map((r) => (
                 <button
@@ -129,6 +178,45 @@ export function UserDetailDrawer({ userId, open, onClose, onChanged }: Props) {
                 </button>
               ))}
             </div>
+          </section>
+
+          {/* v1.5 #P1-3:账户 Suspension */}
+          <section className="card p-3 bg-slate-50 dark:bg-slate-800/40">
+            <div className="text-xs text-slate-500 mb-2 flex items-center justify-between">
+              <span>Suspension (v1.5)</span>
+              {!isActive && (
+                <span className="text-rose-600 text-[10px]">该用户登录将被 JwtStrategy 拒绝</span>
+              )}
+            </div>
+            {isActive ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={suspendReason}
+                  onChange={(e) => setSuspendReason(e.target.value)}
+                  placeholder="停用原因(可选)"
+                  className="input flex-1 text-xs"
+                  maxLength={120}
+                />
+                <button
+                  type="button"
+                  onClick={handleSuspend}
+                  disabled={acting === 'suspend'}
+                  className="px-3 py-1.5 text-xs rounded-lg bg-rose-600 text-white font-medium hover:bg-rose-700 disabled:opacity-50"
+                >
+                  {acting === 'suspend' ? '停用中…' : '停用账户'}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleUnsuspend}
+                disabled={acting === 'unsuspend'}
+                className="px-3 py-1.5 text-xs rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-700 disabled:opacity-50"
+              >
+                {acting === 'unsuspend' ? '恢复中…' : '恢复账户'}
+              </button>
+            )}
           </section>
 
           <section>

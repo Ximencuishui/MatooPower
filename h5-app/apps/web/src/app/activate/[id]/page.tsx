@@ -7,7 +7,7 @@ import { TopBar } from '@/components/TopBar';
 import { PageLoading, Spinner } from '@/components/Spinner';
 import { ErrorBlock } from '@/components/ErrorBlock';
 import { useT } from '@/lib/i18n';
-import { getSku, activateWarranty } from '@/lib/api/operations';
+import { getSku, activateWarranty, uploadInvoicePhoto } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
 import { toast, toastSuccess } from '@/components/Toast';
 import { useAbortedFetch } from '@/hooks/useAbortedFetch';
@@ -50,7 +50,11 @@ export default function ActivatePage() {
   // P1-4:默认日期为今天
   const [invDate, setInvDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [invAmt, setInvAmt] = useState('');
-  const [photo, setPhoto] = useState<{ name: string; size: number; dataUrl: string } | null>(null);
+  const [photo, setPhoto] = useState<{ name: string; size: number; dataUrl: string; file?: File } | null>(null);
+  // v1.5 #P1-1:上传返回的公开 URL(用于 warranty.invoicePhotoUrl)
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photoUploadProgress, setPhotoUploadProgress] = useState(0);
+  const [photoUploading, setPhotoUploading] = useState(false);
   const [agree, setAgree] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<unknown>(null);
@@ -84,13 +88,18 @@ export default function ActivatePage() {
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = String(reader.result || '');
-      setPhoto({ name: file.name, size: file.size, dataUrl });
+      setPhoto({ name: file.name, size: file.size, dataUrl, file });
+      // 重置之前上传结果(选择新文件后老 URL 失效)
+      setPhotoUrl(null);
+      setPhotoUploadProgress(0);
     };
     reader.readAsDataURL(file);
   }
 
   function clearPhoto() {
     setPhoto(null);
+    setPhotoUrl(null);
+    setPhotoUploadProgress(0);
     if (fileRef.current) fileRef.current.value = '';
   }
 
@@ -109,6 +118,28 @@ export default function ActivatePage() {
     try {
       const countryCode = COUNTRY_TO_CODE[country] ?? 'NP';
       const currency = COUNTRY_TO_CCY[country] ?? 'USD';
+      // v1.5 #P1-1:有发票且未上传过 → 先 XHR 上传到 /storage/upload(purpose=invoice)
+      // 上传失败不阻断后续激活(发票照片非阻塞字段),仅 toast 提示
+      let invoicePhotoUrl: string | undefined;
+      if (hasInvoice && photo?.file && !photoUrl && !photoUploading) {
+        try {
+          setPhotoUploading(true);
+          const r = await uploadInvoicePhoto(photo.file, {
+            signal: ctrl.signal,
+            onProgress: (loaded, total) => setPhotoUploadProgress(Math.round((loaded / total) * 100)),
+            fileName: photo.file.name,
+          });
+          setPhotoUrl(r.url);
+          invoicePhotoUrl = r.url;
+        } catch (upErr) {
+          if ((upErr as { name?: string })?.name === 'AbortError') return;
+          if (upErr instanceof ApiError) toast(`发票照片上传失败: ${upErr.message}(将继续提交)`, 'error');
+        } finally {
+          setPhotoUploading(false);
+        }
+      } else if (photoUrl) {
+        invoicePhotoUrl = photoUrl;
+      }
       await activateWarranty({
         skuId: sku.id,
         serial: sku.serial,
@@ -121,6 +152,7 @@ export default function ActivatePage() {
         invoiceDate: hasInvoice && invNo ? invDate : undefined,
         invoiceAmt: hasInvoice && invAmt ? Number(invAmt) : undefined,
         invoiceCurrency: hasInvoice ? currency : undefined,
+        invoicePhotoUrl,
         policyAccepted: true,
       }, { signal: ctrl.signal });
       if (ctrl.signal.aborted) return;

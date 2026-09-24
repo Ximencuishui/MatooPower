@@ -5,8 +5,11 @@ import { useEffect, useState } from 'react';
 import {
   listWarranties,
   bulkReviewWarranties,
+  listDealers,
   type AdminWarrantyItem,
   type WarrantyReviewStatus,
+  type BulkReviewItemBody,
+  type DealerItem,
 } from '@/lib/api/operations';
 import { useRequireRole, RoleGuardView } from '@/lib/useRequireRole';
 import { PageLoading } from '@/components/PageLoading';
@@ -14,19 +17,22 @@ import { ErrorBlock } from '@/components/ErrorBlock';
 import { EmptyState } from '@/components/EmptyState';
 import { WarrantyDetailDrawer } from '@/components/drawers/WarrantyDetailDrawer';
 
-type StatusFilter = 'all' | 'active' | 'pending' | 'review' | 'rejected' | 'expired';
+/**
+ * #P0-1:UI 状态筛只取 DB 真实枚举;'复审' 不作为后端字段,改为
+ *  '待审 · 有备注' 的混合标记(下面 'pendingWithNotes' 复用 pending 状态但 page 内加锁筛选)
+ */
+type StatusFilter = 'all' | 'active' | 'pending' | 'rejected' | 'expired';
+type ReviewTagFilter = 'all' | 'needsReview';
 const STATUS_LABEL: Record<StatusFilter, string> = {
   all: '全部',
   active: '激活',
   pending: '待审',
-  review: '复审',
   rejected: '驳回',
   expired: '过期',
 };
 const STATUS_CHIP: Record<string, string> = {
   active: 'chip-green',
   pending: 'chip-orange',
-  review: 'chip-purple',
   rejected: 'chip-red',
   expired: 'chip-gray',
 };
@@ -34,6 +40,11 @@ const STATUS_CHIP: Record<string, string> = {
 export default function AdminWarrantiesPage() {
   const guard = useRequireRole(['admin']);
   const [status, setStatus] = useState<StatusFilter>('all');
+  /** #P0-1:辅助过滤 — pending 且有 reviewNotes 的质保以紫色 chip 标记 */
+  const [reviewTag, setReviewTag] = useState<ReviewTagFilter>('all');
+  /** #P1-5:经销商过滤(下拉来源:GET /admin/dealers 仅取 active 列表) */
+  const [dealerId, setDealerId] = useState<string>('');
+  const [dealers, setDealers] = useState<DealerItem[]>([]);
   const [items, setItems] = useState<AdminWarrantyItem[] | null>(null);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<unknown>(null);
@@ -43,13 +54,29 @@ export default function AdminWarrantiesPage() {
   const [bulkStatus, setBulkStatus] = useState<WarrantyReviewStatus>('active');
   const [bulkNotes, setBulkNotes] = useState('');
   const [bulking, setBulking] = useState(false);
+  /** #P1-4:逐行覆盖 notes */
+  const [perRowNotes, setPerRowNotes] = useState<Record<string, string>>({});
+
+  // 经销商下拉数据(进入页面即拉一次)
+  useEffect(() => {
+    if (guard.status !== 'ok') return;
+    const ac = new AbortController();
+    listDealers({ status: 'active', pageSize: 200 }, ac.signal)
+      .then((r) => setDealers(r.items))
+      .catch(() => undefined);
+    return () => ac.abort();
+  }, [guard.status]);
 
   useEffect(() => {
     if (guard.status !== 'ok') return;
     const ac = new AbortController();
     setError(null);
     listWarranties(
-      { status: status === 'all' ? undefined : status, pageSize: 200 },
+      {
+        status: status === 'all' ? undefined : status,
+        dealerId: dealerId || undefined,
+        pageSize: 200,
+      },
       ac.signal,
     )
       .then((r) => {
@@ -61,17 +88,24 @@ export default function AdminWarrantiesPage() {
         setError(e);
       });
     return () => ac.abort();
-  }, [status, guard.status, reloadKey]);
+  }, [status, dealerId, guard.status, reloadKey]);
+
+  /** #P0-1:'需复审' 是前端派生态:status=pending 且有 reviewNotes */
+  const filteredItems = items
+    ? reviewTag === 'needsReview'
+      ? items.filter((w) => w.status === 'pending' && (w as { reviewNotes?: string | null }).reviewNotes)
+      : items
+    : null;
 
   if (guard.status !== 'ok') {
     return <RoleGuardView state={guard} title="保修管理" />;
   }
 
-  const allSelected = !!items && items.length > 0 && items.every((w) => selected.has(w.id));
+  const allSelected = !!filteredItems && filteredItems.length > 0 && filteredItems.every((w) => selected.has(w.id));
   function toggleAll() {
-    if (!items) return;
+    if (!filteredItems) return;
     if (allSelected) setSelected(new Set());
-    else setSelected(new Set(items.map((w) => w.id)));
+    else setSelected(new Set(filteredItems.map((w) => w.id)));
   }
   function toggleOne(id: string) {
     setSelected((prev) => {
@@ -82,18 +116,36 @@ export default function AdminWarrantiesPage() {
     });
   }
 
+  /**
+   * #P1-4:统一触发批量审核,UI 上提供「共享 notes」+「逐条 notes」两种入口
+   * - 若某行有 perRowNotes 填写 → 走逐条模式 (items[])
+   * - 否则走统一模式 (ids[] + 顶层 status/notes)
+   */
   async function handleBulk() {
     if (selected.size === 0 || bulking) return;
     setBulking(true);
     try {
-      const res = await bulkReviewWarranties(
-        Array.from(selected),
-        bulkStatus,
-        bulkNotes.trim() || undefined,
-      );
-      alert(`批量审批完成：成功 ${res.succeeded} 条，失败 ${res.failed} 条`);
+      const ids = Array.from(selected);
+      const hasPerRow = ids.some((id) => (perRowNotes[id] ?? '').trim().length > 0);
+      const res = hasPerRow
+        ? await bulkReviewWarranties({
+            items: ids.map<BulkReviewItemBody>((id) => ({
+              id,
+              status: bulkStatus,
+              notes: perRowNotes[id]?.trim() || undefined,
+            })),
+            status: bulkStatus,
+            notes: bulkNotes.trim() || undefined,
+          })
+        : await bulkReviewWarranties({
+            ids,
+            status: bulkStatus,
+            notes: bulkNotes.trim() || undefined,
+          });
+      alert(`批量审批完成：成功 ${res.succeeded.length} 条，失败 ${res.failed.length} 条`);
       setSelected(new Set());
       setBulkNotes('');
+      setPerRowNotes({});
       setReloadKey((k) => k + 1);
     } catch (e) {
       alert('批量审批失败: ' + (e as Error).message);
@@ -114,8 +166,8 @@ export default function AdminWarrantiesPage() {
         </button>
       </header>
 
-      <div className="flex items-center gap-2 mb-4 border-b border-slate-200">
-        {(['all', 'active', 'pending', 'review', 'rejected', 'expired'] as StatusFilter[]).map(
+      <div className="flex flex-wrap items-center gap-2 mb-4 border-b border-slate-200">
+        {(['all', 'active', 'pending', 'rejected', 'expired'] as StatusFilter[]).map(
           (k) => {
             const active = status === k;
             return (
@@ -133,11 +185,46 @@ export default function AdminWarrantiesPage() {
             );
           },
         )}
+        {/* #P0-1:独立 chip 切到「需复审」(派生过滤),不再依赖 DB 不存在的 'review' 枚举 */}
+        <button
+          onClick={() => setReviewTag(reviewTag === 'needsReview' ? 'all' : 'needsReview')}
+          className={`ml-3 px-3 py-1.5 text-xs rounded-full border ${
+            reviewTag === 'needsReview'
+              ? 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/40 dark:text-purple-200'
+              : 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300'
+          }`}
+          title="待审且有审批备注 — 派生态，不占用独立状态位"
+        >
+          ⚑ 需复审
+        </button>
+
+        {/* #P1-5:经销商过滤(放在 Tab 行右侧)— 选中后只显示该经销商的保修 */}
+        <div className="ml-auto flex items-center gap-2">
+          <label className="text-xs text-slate-500">经销商</label>
+          <select
+            value={dealerId}
+            onChange={(e) => setDealerId(e.target.value)}
+            className="input max-w-[200px] py-1.5 text-xs"
+          >
+            <option value="">全部经销商</option>
+            {dealers.map((d) => (
+              <option key={d.id} value={d.id}>{d.companyName}</option>
+            ))}
+          </select>
+          {dealerId && (
+            <button
+              onClick={() => setDealerId('')}
+              className="text-xs text-matoo hover:underline"
+            >
+              清除
+            </button>
+          )}
+        </div>
       </div>
 
-      {error !== null && !items && <ErrorBlock error={error} onRetry={() => setReloadKey((k) => k + 1)} />}
-      {!items && !error && <PageLoading />}
-      {items && items.length === 0 && <EmptyState title="暂无保修记录" />}
+      {error !== null && !filteredItems && <ErrorBlock error={error} onRetry={() => setReloadKey((k) => k + 1)} />}
+      {!filteredItems && !error && <PageLoading />}
+      {filteredItems && filteredItems.length === 0 && <EmptyState title="暂无保修记录" />}
 
       {selected.size > 0 && (
         <div className="card p-4 mb-4 bg-matoo-light/30 dark:bg-matoo/10 border-matoo/30 flex flex-wrap items-center gap-3">
@@ -178,7 +265,7 @@ export default function AdminWarrantiesPage() {
         </div>
       )}
 
-      {items && items.length > 0 && (
+      {filteredItems && filteredItems.length > 0 && (
         <div className="card overflow-hidden">
           <table className="w-full">
             <thead>
@@ -194,12 +281,14 @@ export default function AdminWarrantiesPage() {
                 <th className="table-th">保修 ID</th>
                 <th className="table-th">SKU</th>
                 <th className="table-th">用户</th>
+                {/* #P1-5:经销商列(若列表命中经销商过滤,展示 dealerCompanyName) */}
+                <th className="table-th">经销商</th>
                 <th className="table-th">状态</th>
                 <th className="table-th">激活时间</th>
               </tr>
             </thead>
             <tbody>
-              {items.map((w) => (
+              {filteredItems.map((w) => (
                 <tr
                   key={w.id}
                   className={`hover:bg-slate-50/60 cursor-pointer ${
@@ -224,9 +313,22 @@ export default function AdminWarrantiesPage() {
                     )}
                   </td>
                   <td className="table-td">
-                    <span className={`chip ${STATUS_CHIP[w.status] ?? 'chip-gray'}`}>
-                      {STATUS_LABEL[w.status as StatusFilter] ?? w.status}
-                    </span>
+                    {w.dealerCompanyName ? (
+                      <span className="chip chip-violet">{w.dealerCompanyName}</span>
+                    ) : (
+                      <span className="text-[11px] text-slate-400">直销</span>
+                    )}
+                  </td>
+                  <td className="table-td">
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span className={`chip ${STATUS_CHIP[w.status] ?? 'chip-gray'}`}>
+                        {STATUS_LABEL[w.status as StatusFilter] ?? w.status}
+                      </span>
+                      {/* #P0-1:派生复审提示 */}
+                      {w.status === 'pending' && (w as { reviewNotes?: string | null }).reviewNotes && (
+                        <span className="chip chip-purple text-[10px]" title="已有审批备注">⚑ 复审</span>
+                      )}
+                    </div>
                   </td>
                   <td className="table-td text-xs text-slate-500">
                     {w.activatedAt

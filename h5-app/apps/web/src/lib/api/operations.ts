@@ -1,5 +1,5 @@
 // 业务封装：把 fetch 调用和类型绑在一起
-import { api, downloadCsv, type FetchOpts } from './client';
+import { api, downloadCsv, uploadFile, type FetchOpts } from './client';
 import type {
   ActivateWarrantyBody,
   ActivateWarrantyResp,
@@ -434,3 +434,124 @@ export const getTicketSlaStats = (opts?: FetchOpts) =>
 export const runTicketSlaSweep = (opts?: FetchOpts) =>
   api.post<{ ok: true; upgraded: number; details: { id: string; from: string; to: string }[] }>(
     '/admin/tickets/sla-sweep', undefined, opts);
+
+// ============================================================
+// v1.5 #P1-1:通用文件上传(XHR with progress)
+// ============================================================
+export const uploadInvoicePhoto = (
+  file: File | Blob,
+  opts?: { signal?: AbortSignal; onProgress?: (loaded: number, total: number) => void; fileName?: string },
+) => uploadFile('/storage/upload', file, { ...opts, purpose: 'invoice' });
+
+export const uploadGeneralFile = (
+  file: File | Blob,
+  opts?: { signal?: AbortSignal; onProgress?: (loaded: number, total: number) => void; purpose?: string; fileName?: string },
+) => uploadFile('/storage/upload', file, opts);
+
+// ============================================================
+// v1.5 #P0-2:配件商城 API
+// ============================================================
+export type PartItem = {
+  id: string; sku: string; name: string; modelName: string;
+  family: 'cell' | 'bms' | 'charger' | 'cable' | 'accessory';
+  capacity: string | null; voltage: string | null;
+  compatibleSkus: string[] | null;
+  description: string | null; imageUrls: string[] | null;
+  priceCents: number; currency: string;
+  stock: number; active: number;
+  createdAt: string; updatedAt: string;
+};
+export type PartOrderItem = {
+  id: string; partId: string; sku: string; name: string;
+  priceCents: number; currency: string; quantity: number;
+};
+export type PartOrder = {
+  id: string; userId: string; status: 'pending' | 'paid' | 'shipped' | 'completed' | 'cancelled';
+  totalCents: number; currency: string;
+  contactPhone: string | null; shipName: string | null; shipCountry: string | null;
+  shipCity: string | null; shipAddress: string | null; note: string | null;
+  paidAt: string | null; shippedAt: string | null; completedAt: string | null; cancelledAt: string | null;
+  source: string | null;
+  createdAt: string; updatedAt: string;
+  items?: PartOrderItem[];
+};
+
+export const listParts = (params?: { family?: string; q?: string }, opts?: FetchOpts) => {
+  const q = new URLSearchParams();
+  if (params?.family) q.set('family', params.family);
+  if (params?.q) q.set('q', params.q);
+  const qs = q.toString();
+  return api.get<{ ok: true; items: PartItem[] }>(`/parts${qs ? `?${qs}` : ''}`, { ...opts, auth: false });
+};
+export const getPart = (id: string, opts?: FetchOpts) =>
+  api.get<{ ok: true; part: PartItem }>(`/parts/${encodeURIComponent(id)}`, { ...opts, auth: false });
+
+export const createPartOrder = (body: {
+  items: Array<{ partId: string; quantity: number }>;
+  contactPhone?: string; shipName?: string; shipCountry?: string;
+  shipCity?: string; shipAddress?: string; note?: string; source?: string;
+}, opts?: FetchOpts) =>
+  api.post<{ ok: true; order: PartOrder; orderId: string; totalCents: number }>('/parts/orders', body, opts);
+
+export const listMyPartOrders = (opts?: FetchOpts) =>
+  api.get<{ ok: true; items: PartOrder[] }>('/parts/orders/mine', opts);
+
+// ============================================================
+// v1.5 #P0-3:经销商提货 API(dealer 角色)
+// ============================================================
+export type DealerPickupItemRow = { id: string; sku: string; serial: string; activated: number; warrantyId: string | null; createdAt: string };
+export type DealerPickup = {
+  id: string; dealerId: string;
+  shipmentInvoiceNo: string; shipmentDate: string;
+  createdByUserId: string; note: string | null;
+  createdAt: string;
+  items: DealerPickupItemRow[];
+  activatedCount?: number; totalCount?: number;
+};
+
+export const listDealerPickups = (params?: { invoiceNo?: string }, opts?: FetchOpts) => {
+  const q = new URLSearchParams();
+  if (params?.invoiceNo) q.set('invoiceNo', params.invoiceNo);
+  const qs = q.toString();
+  return api.get<{ ok: true; items: DealerPickup[] }>(`/dealer/pickups${qs ? `?${qs}` : ''}`, opts);
+};
+export const createDealerPickup = (body: {
+  shipmentInvoiceNo: string; shipmentDate: string;
+  items: Array<{ sku: string; serial: string }>;
+  note?: string;
+}, opts?: FetchOpts) =>
+  api.post<{ ok: true; pickup: DealerPickup }>('/dealer/pickups', body, opts);
+export const deleteDealerPickup = (id: string, opts?: FetchOpts) =>
+  api.delete<{ ok: true; id: string }>(`/dealer/pickups/${encodeURIComponent(id)}`, opts);
+
+// ============================================================
+// v1.5 #P1-9:经销商专属价表(消费 DealerPriceList)
+// ============================================================
+export type DealerPriceRow = {
+  id: string; skuId: string; priceCents: number; currency: string;
+  effectiveFrom: string; effectiveTo: string | null;
+  sku: string; modelName: string; serial: string;
+  imageUrls: string | null;
+  guidePriceCents: number | null; guidePriceCurrency: string | null;
+};
+export const getDealerPriceList = (opts?: FetchOpts) =>
+  api.get<{ ok: true; items: DealerPriceRow[] }>('/dealer/price-list', opts);
+
+// ============================================================
+// v1.5 #P1-2:by-serial 解析真实 SKU(H5 扫码后立刻反查)
+// ============================================================
+export const getSkuBySerial = (serial: string, opts?: FetchOpts) =>
+  api.get<{
+    ok: true; skuId: string; sku: string; modelName: string; serial: string;
+    batch: string; mfgDate: string; activated: boolean; activatedAt: string | null;
+  }>(`/admin/sku/by-serial/${encodeURIComponent(serial)}`, { ...opts, auth: false });
+
+// ============================================================
+// v1.5 #P1-3:User suspension
+// ============================================================
+export const suspendAdminUser = (id: string, reason: string, opts?: FetchOpts) =>
+  api.post<{ ok: true; user: any }>(`/admin/users/${encodeURIComponent(id)}/suspend`, { reason }, opts);
+export const unsuspendAdminUser = (id: string, opts?: FetchOpts) =>
+  api.post<{ ok: true; user: any }>(`/admin/users/${encodeURIComponent(id)}/unsuspend`, undefined, opts);
+export const getAdminUser = (id: string, opts?: FetchOpts) =>
+  api.get<{ ok: true; user: any }>(`/admin/users/${encodeURIComponent(id)}`, opts);
