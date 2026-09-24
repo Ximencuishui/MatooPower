@@ -22,6 +22,7 @@ import {
   bulkUploadSkuImages,
   updateSkuImage,
   deprecateSkuImage,
+  updateSkuWarranty,
 } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
 import { useLocale } from '@/lib/useLocale';
@@ -37,7 +38,7 @@ const LANG_LABEL: Record<SkuImageLang, string> = {
 
 const CURRENCY_OPTIONS = ['BDT', 'USD', 'CNY', 'EUR', 'INR', 'PKR'] as const;
 
-type Tab = 'basic' | 'images' | 'price';
+type Tab = 'basic' | 'images' | 'price' | 'warranty';
 
 interface Props {
   open: boolean;
@@ -87,6 +88,12 @@ export function SkuCatalogEditDrawer({ open, onClose, sku, onSaved }: Props) {
   const [currency, setCurrency] = useState<string>('BDT');
   const [priceNote, setPriceNote] = useState('');
 
+  // Tab4 #P2-5:质保月份
+  const [wWhole, setWWhole] = useState<string>('');
+  const [wCell, setWCell] = useState<string>('');
+  const [wBms, setWBms] = useState<string>('');
+  const [wParts, setWParts] = useState<string>('');
+
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
 
@@ -113,6 +120,11 @@ export function SkuCatalogEditDrawer({ open, onClose, sku, onSaved }: Props) {
         setPriceCents(cat.guidePriceCents != null ? String(cat.guidePriceCents) : '');
         setCurrency(cat.guidePriceCurrency ?? 'BDT');
         setPriceNote(cat.guidePriceNote ?? '');
+        // #P2-5:从 sku 行同步质保月数(sku 行字段覆盖在 SkuCatalogView 之外的 AdminSkuItem 上)
+        setWWhole(String(sku.warrantyMonthsWhole ?? ''));
+        setWCell(sku.warrantyMonthsCell != null ? String(sku.warrantyMonthsCell) : '');
+        setWBms(sku.warrantyMonthsBms != null ? String(sku.warrantyMonthsBms) : '');
+        setWParts(sku.warrantyMonthsParts != null ? String(sku.warrantyMonthsParts) : '');
       })
       .catch((e: unknown) => {
         if ((e as { name?: string })?.name === 'AbortError') return;
@@ -489,6 +501,49 @@ export function SkuCatalogEditDrawer({ open, onClose, sku, onSaved }: Props) {
     }
   }
 
+  // ---------- Tab4 #P2-5: 质保月份 ----------
+  // 接受"留空=清零(null)"、正整数。Cell/Bms/Parts 三者支持 null(代表不区分,按整包 36 月质保)
+  async function saveWarranty() {
+    if (!sku) return;
+    setSaving(true);
+    try {
+      const parseMonths = (raw: string, allowNull: boolean): number | null => {
+        const t = raw.trim();
+        if (t === '') return allowNull ? null : NaN;
+        const n = Number(t);
+        if (!Number.isInteger(n) || n < 0) return NaN;
+        return n;
+      };
+      const whole = parseMonths(wWhole, false);
+      if (!Number.isFinite(whole as number)) {
+        alert('整机质保月数必须为非负整数');
+        setSaving(false);
+        return;
+      }
+      const cell = parseMonths(wCell, true);
+      const bms = parseMonths(wBms, true);
+      const parts = parseMonths(wParts, true);
+      if ([cell, bms, parts].some((n) => !Number.isFinite(n as number))) {
+        alert('电芯 / BMS / 配件质保必须为非负整数或留空');
+        setSaving(false);
+        return;
+      }
+      await updateSkuWarranty(sku.id, {
+        warrantyMonthsWhole: whole as number,
+        warrantyMonthsCell: cell as number | null,
+        warrantyMonthsBms: bms as number | null,
+        warrantyMonthsParts: parts as number | null,
+      });
+      setDirty(false);
+      onSaved?.();
+      alert(dict.skuEdit.saveOk);
+    } catch (e) {
+      alert(dict.skuEdit.saveFail.replace('{msg}', msgOf(e)));
+    } finally {
+      setSaving(false);
+    }
+  }
+
   const subtitle = useMemo(() => {
     if (!sku) return '';
     return dict.skuEdit.subtitle.replace('{sku}', sku.sku).replace('{model}', sku.modelName);
@@ -511,6 +566,7 @@ export function SkuCatalogEditDrawer({ open, onClose, sku, onSaved }: Props) {
             { key: 'basic' as Tab, label: dict.skuEdit.tabBasic },
             { key: 'images' as Tab, label: dict.skuEdit.tabImages },
             { key: 'price' as Tab, label: dict.skuEdit.tabPrice },
+            { key: 'warranty' as Tab, label: '质保月份' },
           ]
         ).map((t) => (
           <button
@@ -921,6 +977,73 @@ export function SkuCatalogEditDrawer({ open, onClose, sku, onSaved }: Props) {
             <button onClick={closeWithConfirm} className="btn-ghost">取消</button>
             <button onClick={savePrice} disabled={saving} className="btn-primary">
               {saving ? '保存中…' : dict.skuEdit.savePrice}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 4 #P2-5: 质保月份 */}
+      {tab === 'warranty' && (
+        <div className="space-y-4">
+          <div className="text-xs text-slate-500 bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <p className="font-medium text-amber-800 mb-1">质保规则说明</p>
+            <ul className="list-disc list-inside space-y-0.5">
+              <li>整机月数:所有 SKU 必填,作为基础质保</li>
+              <li>电芯 / BMS / 配件:留空表示不区分,与整机同享;填写则独立计算</li>
+              <li>修改后立即生效,新建保修按新规则起算</li>
+              <li>变更会写入 AuditLog(sku.warranty_update)</li>
+            </ul>
+          </div>
+          <Field label="整机质保(月) *">
+            <input
+              type="number"
+              min={0}
+              step={1}
+              value={wWhole}
+              onChange={(e) => { setWWhole(e.target.value); setDirty(true); }}
+              placeholder="36"
+              className="input mt-1 max-w-[200px]"
+            />
+          </Field>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Field label="电芯质保(月)">
+              <input
+                type="number"
+                min={0}
+                step={1}
+                value={wCell}
+                onChange={(e) => { setWCell(e.target.value); setDirty(true); }}
+                placeholder="60"
+                className="input mt-1"
+              />
+            </Field>
+            <Field label="BMS 质保(月)">
+              <input
+                type="number"
+                min={0}
+                step={1}
+                value={wBms}
+                onChange={(e) => { setWBms(e.target.value); setDirty(true); }}
+                placeholder="36"
+                className="input mt-1"
+              />
+            </Field>
+            <Field label="配件质保(月)">
+              <input
+                type="number"
+                min={0}
+                step={1}
+                value={wParts}
+                onChange={(e) => { setWParts(e.target.value); setDirty(true); }}
+                placeholder="12"
+                className="input mt-1"
+              />
+            </Field>
+          </div>
+          <div className="flex justify-end gap-2 pt-4 border-t border-slate-200">
+            <button onClick={closeWithConfirm} className="btn-ghost">取消</button>
+            <button onClick={saveWarranty} disabled={saving} className="btn-primary">
+              {saving ? '保存中…' : '保存质保设置'}
             </button>
           </div>
         </div>

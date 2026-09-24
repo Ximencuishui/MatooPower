@@ -64,14 +64,14 @@ export class PublicInquiryController {
     lines.push('Submitted via website/api/routes/inquiries.js (forwarded to h5-app public system).');
     const description = lines.join('\n').slice(0, 4096);
 
-    // 3) 写入 Ticket(type='inquiry', severity='normal', status='open')
+    // 3) 写入 Ticket(type='inquiry', severity='normal', status='open', source='web')
     const ticket = this.tickets.create(SYSTEM_WEB_INQUIRY_USER, {
       type: 'inquiry',
       severity: 'normal',
       subject,
       description,
       contactPhone: body.phone?.trim() || undefined,
-    });
+    }, 'web');
 
     this.logger.log(
       `[inquiry-from-web] created ticket=${ticket.id} form=${body._form} inquiryId=${body.inquiryId ?? '-'}`,

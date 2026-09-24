@@ -44,6 +44,7 @@ export class SkuDocumentController {
     @Query('q') _q?: string,
     @Query('page') page?: string,
     @Query('pageSize') pageSize?: string,
+    @Query('sortBy') sortBy?: string,
   ) {
     return {
       ok: true,
@@ -54,6 +55,7 @@ export class SkuDocumentController {
         includeDeprecated: includeDeprecated === 'true',
         page: page ? Number(page) : undefined,
         pageSize: pageSize ? Number(pageSize) : undefined,
+        sortBy: sortBy === 'type' ? 'type' : 'time',
       }),
     };
   }

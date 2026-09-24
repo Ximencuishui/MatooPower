@@ -28,6 +28,34 @@ const STATUS_OPTIONS: Array<{ key: TicketStatus | 'all'; label: string }> = [
   { key: 'closed', label: '已关闭' },
 ];
 
+// #P0-5 + #P2-3:工单 type / source 列 + 过滤
+const TYPE_OPTIONS: Array<{ key: 'all' | 'general' | 'warranty' | 'inquiry' | 'remote'; label: string }> = [
+  { key: 'all', label: '全部类型' },
+  { key: 'general', label: '一般咨询' },
+  { key: 'warranty', label: '质保' },
+  { key: 'inquiry', label: '商务问询' },
+  { key: 'remote', label: '远程支持' },
+];
+const SOURCE_OPTIONS: Array<{ key: 'all' | 'web' | 'h5' | 'dealer' | 'system'; label: string }> = [
+  { key: 'all', label: '全部来源' },
+  { key: 'web', label: '官网表单' },
+  { key: 'h5', label: 'H5 应用' },
+  { key: 'dealer', label: '经销商' },
+  { key: 'system', label: '系统' },
+];
+const TYPE_CHIP: Record<string, string> = {
+  general: 'chip-slate',
+  warranty: 'chip-amber',
+  inquiry: 'chip-blue',
+  remote: 'chip-violet',
+};
+const SOURCE_CHIP: Record<string, string> = {
+  web: 'chip-blue',
+  h5: 'chip-emerald',
+  dealer: 'chip-violet',
+  system: 'chip-rose',
+};
+
 const SEVERITY_CHIP: Record<TicketSeverity, string> = {
   low: 'chip-gray',
   normal: 'chip-blue',
@@ -61,6 +89,9 @@ export default function AdminTicketsPage() {
   const { locale } = useLocale();
   const dict = getDict(locale);
   const [status, setStatus] = useState<TicketStatus | 'all'>('all');
+  // #P0-5 + #P2-3:类型 / 来源过滤
+  const [typeFilter, setTypeFilter] = useState<'all' | 'general' | 'warranty' | 'inquiry' | 'remote'>('all');
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'web' | 'h5' | 'dealer' | 'system'>('all');
   const [items, setItems] = useState<AdminTicketItem[] | null>(null);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<unknown>(null);
@@ -83,7 +114,12 @@ export default function AdminTicketsPage() {
     const ac = new AbortController();
     setError(null);
     listTickets(
-      { status: status === 'all' ? undefined : status, pageSize: 200 },
+      {
+        status: status === 'all' ? undefined : status,
+        type: typeFilter === 'all' ? undefined : typeFilter,
+        source: sourceFilter === 'all' ? undefined : sourceFilter,
+        pageSize: 200,
+      },
       ac.signal,
     )
       .then((r) => {
@@ -95,7 +131,7 @@ export default function AdminTicketsPage() {
         setError(e);
       });
     return () => ac.abort();
-  }, [status, guard.status, reloadKey]);
+  }, [status, typeFilter, sourceFilter, guard.status, reloadKey]);
 
   // SLA / Stats 独立拉取（与列表条件解耦，刷新列表时不影响）
   useEffect(() => {
@@ -178,6 +214,38 @@ export default function AdminTicketsPage() {
         })}
       </div>
 
+      {/* #P0-5 + #P2-3:类型 / 来源二级过滤 */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <label className="text-xs text-slate-500">类型</label>
+        <select
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)}
+          className="input max-w-[160px] py-1.5 text-xs"
+        >
+          {TYPE_OPTIONS.map((o) => (
+            <option key={o.key} value={o.key}>{o.label}</option>
+          ))}
+        </select>
+        <label className="text-xs text-slate-500 ml-2">来源</label>
+        <select
+          value={sourceFilter}
+          onChange={(e) => setSourceFilter(e.target.value as typeof sourceFilter)}
+          className="input max-w-[160px] py-1.5 text-xs"
+        >
+          {SOURCE_OPTIONS.map((o) => (
+            <option key={o.key} value={o.key}>{o.label}</option>
+          ))}
+        </select>
+        {(typeFilter !== 'all' || sourceFilter !== 'all') && (
+          <button
+            onClick={() => { setTypeFilter('all'); setSourceFilter('all'); }}
+            className="text-xs text-matoo hover:underline ml-auto"
+          >
+            清除过滤
+          </button>
+        )}
+      </div>
+
       {error !== null && !items && (
         <ErrorBlock error={error} onRetry={() => setReloadKey((k) => k + 1)} />
       )}
@@ -220,6 +288,9 @@ export default function AdminTicketsPage() {
               <tr className="bg-slate-50">
                 <th className="table-th">主题</th>
                 <th className="table-th">提交用户</th>
+                {/* #P0-5 + #P2-3:type / source 列 */}
+                <th className="table-th">类型</th>
+                <th className="table-th">来源</th>
                 <th className="table-th">状态</th>
                 <th className="table-th">严重度</th>
                 <th className="table-th">更新时间</th>
@@ -241,6 +312,16 @@ export default function AdminTicketsPage() {
                     {t.userPhone && (
                       <div className="text-[11px] text-slate-500 font-mono">{t.userPhone}</div>
                     )}
+                  </td>
+                  <td className="table-td">
+                    <span className={`chip text-[10px] ${TYPE_CHIP[t.type] ?? 'chip-gray'}`}>
+                      {TYPE_OPTIONS.find((o) => o.key === t.type)?.label ?? t.type}
+                    </span>
+                  </td>
+                  <td className="table-td">
+                    <span className={`chip text-[10px] ${SOURCE_CHIP[t.source ?? ''] ?? 'chip-gray'}`}>
+                      {SOURCE_OPTIONS.find((o) => o.key === t.source)?.label ?? t.source ?? '—'}
+                    </span>
                   </td>
                   <td className="table-td">
                     <span className={`chip ${STATUS_CHIP[t.status] ?? 'chip-gray'}`}>

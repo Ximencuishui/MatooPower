@@ -7,6 +7,7 @@ import {
   Header,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -23,7 +24,14 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { AdminService } from './admin.service';
 import { TicketService } from '../ticket/ticket.service';
 import { DeviceService } from '../device/device.service';
+import { SkuService } from '../sku/sku.service';
 import { toCsv, CSV_BOM } from '../../common/util/csv';
+import {
+  ReviewWarrantyDto,
+  BulkReviewWarrantiesDto,
+  ListWarrantiesQueryDto,
+  WarrantyStatus,
+} from './dto/warranty.dto';
 
 @Controller('admin')
 @ApiTags('admin')
@@ -35,6 +43,7 @@ export class AdminController {
     private readonly svc: AdminService,
     private readonly ticketSvc: TicketService,
     private readonly deviceSvc: DeviceService,
+    private readonly skuSvc: SkuService,
   ) {}
 
   @Get('sku')
@@ -53,19 +62,23 @@ export class AdminController {
     };
   }
 
+  // #P0-1:状态枚举收紧,白名单之外直接 400,避免 'review' 之类错拼写造成静默 0 结果
+  // #P1-5:dealerId 过滤(后台能定位某经销商名下所有保修)
   @Get('warranties')
   @ApiOperation({ summary: 'List all warranties (paginated + searchable)' })
   async listWarranties(
     @CurrentUser() _user: AuthUser,
-    @Query('q') q?: string,
-    @Query('page') page?: string,
-    @Query('pageSize') pageSize?: string,
-    @Query('status') status?: string,
+    @Query() qry: ListWarrantiesQueryDto,
+    @Query('dealerId') dealerId?: string,
   ) {
     return {
       ok: true,
       ...await this.svc.listWarranties({
-        q, page: page ? Number(page) : undefined, pageSize: pageSize ? Number(pageSize) : undefined, status,
+        q: qry.q,
+        page: qry.page ? Number(qry.page) : undefined,
+        pageSize: qry.pageSize ? Number(qry.pageSize) : undefined,
+        status: qry.status,
+        dealerId,
       }),
     };
   }
@@ -114,35 +127,55 @@ export class AdminController {
     };
   }
 
+  // #P1-4 接受单 DTO,内部强制走白名单(由 class-validator class 保证)
   @Post('warranties/:id/review')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Review / override warranty status' })
   async review(
     @CurrentUser() user: AuthUser,
     @Param('id') id: string,
-    @Body() body: { status: 'active' | 'pending' | 'expired' | 'rejected'; notes?: string },
+    @Body() body: ReviewWarrantyDto,
   ) {
     const w = await this.svc.reviewWarranty(id, body.status, body.notes, user.sub);
     return { ok: true, warranty: w };
   }
 
-  // P0-6 v1.2 增量:批量审核 — admin 批量场景(如批量拒绝伪造批次)
-  // 接受 ids[] 与统一 status/notes,逐条复用 reviewWarranty 写入逻辑
-  // 返回 succeeded/failed 两条,前端按需提示重试
+  /**
+   * #P1-4 v1.5 增量:批量审核
+   * - 兼容旧用法 { ids, status, notes }
+   * - 新用法 { items: [{ id, status?, notes? }] } 可逐条覆盖 status + notes
+   *   ↑ 当某条不提供时,fallback 到顶层 status/notes
+   * - 防御性校验:ids 与 items 不能同时为空
+   */
   @Post('warranties/bulk-review')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Bulk review multiple warranties (admin only)' })
   async bulkReview(
     @CurrentUser() user: AuthUser,
-    @Body() body: { ids: string[]; status: 'active' | 'pending' | 'expired' | 'rejected'; notes?: string },
+    @Body() body: BulkReviewWarrantiesDto,
   ) {
-    if (!Array.isArray(body.ids) || body.ids.length === 0) {
-      throw new BadRequestException('ids 必须为非空数组');
+    const idList: string[] = Array.isArray(body.items)
+      ? body.items.map((it) => it.id)
+      : Array.isArray(body.ids) ? body.ids : [];
+    if (idList.length === 0) {
+      throw new BadRequestException('ids 或 items 至少提供一个非空数组');
     }
-    if (body.ids.length > 100) {
+    if (idList.length > 100) {
       throw new BadRequestException('单次批量上限 100 条');
     }
-    const result = await this.svc.bulkReviewWarranties(body.ids, body.status, body.notes, user.sub);
+    if (Array.isArray(body.items) && body.items.length > 0 && !body.status) {
+      // 逐条模式:每条需自带 status 或顶层提供 status;否则整体 400
+      const allHave = body.items.every((it) => !!it.status);
+      if (!allHave) {
+        throw new BadRequestException('逐条模式时,需每条都提供 status,或在顶层提供公共 status');
+      }
+    }
+    const result = await this.svc.bulkReviewWarranties(
+      body.items ?? idList.map((id) => ({ id })),
+      body.status,
+      body.notes,
+      user.sub,
+    );
     return { ok: true, ...result };
   }
 
@@ -152,16 +185,16 @@ export class AdminController {
   async listTickets(
     @CurrentUser() _user: AuthUser,
     @Query('status') status?: string,
+    @Query('type') type?: string,
     @Query('severity') severity?: string,
+    @Query('source') source?: string,
     @Query('q') q?: string,
     @Query('page') page?: string,
     @Query('pageSize') pageSize?: string,
   ) {
     return {
       ok: true,
-      ...this.ticketSvc.listAll(status, severity, {
-        q, page: page ? Number(page) : undefined, pageSize: pageSize ? Number(pageSize) : undefined,
-      }),
+      ...this.ticketSvc.listAll(status, severity, { type, source, q, page: page ? Number(page) : undefined, pageSize: pageSize ? Number(pageSize) : undefined }),
     };
   }
 
@@ -331,5 +364,74 @@ export class AdminController {
     @Param('id') id: string,
   ) {
     return await this.svc.gdprDeleteUser(id, user.sub);
+  }
+
+  // ============================================================
+  // v1.5 #P1-3:用户 Suspension — POST /admin/users/:id/suspend
+  // 体止:isActive=0 → JwtStrategy 拒绝后续请求
+  // ============================================================
+  @Post('users/:id/suspend')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Suspend user (admin only) — sets isActive=0' })
+  async suspendUser(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() body: { reason?: string },
+  ) {
+    return await this.svc.suspendUser(id, body?.reason ?? '', user.sub);
+  }
+
+  @Post('users/:id/unsuspend')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Unsuspend user (admin only) — sets isActive=1' })
+  async unsuspendUser(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+  ) {
+    return await this.svc.unsuspendUser(id, user.sub);
+  }
+
+  // ============================================================
+  // v1.5 #P1-2:根据序列号反查 SKU(经销商 H5 提货粘贴 SKU/Serial 时回填用)
+  // ============================================================
+  @Get('sku/by-serial/:serial')
+  @ApiOperation({ summary: 'Admin: lookup Sku by serial number (returns sku + batch + skuId)' })
+  async skuBySerial(@Param('serial') serial: string) {
+    const row = this.skuSvc.findBySerial(serial);
+    if (!row) throw new NotFoundException(`serial ${serial} 未找到对应 SKU`);
+    return { ok: true, sku: row };
+  }
+
+  // ============================================================
+  // v1.5 #P2-1:工单审计轨迹 — GET /admin/audit/ticket/:id
+  // 返回 AuditLog（资源型动作） + TicketStatusLog（状态/严重度变更）
+  // ============================================================
+  @Get('audit/ticket/:id')
+  @ApiOperation({ summary: 'Ticket audit trail (admin/support)' })
+  async ticketAuditTrail(
+    @CurrentUser() _user: AuthUser,
+    @Param('id') id: string,
+  ) {
+    return await this.svc.getTicketAuditTrail(id);
+  }
+
+  // ============================================================
+  // v1.5 #P2-5:SKU 质保月份设置 — PATCH /admin/sku/:id/warranty
+  // 允许后台修改 warrantyMonthsWhole / Cell / Bms / Parts
+  // ============================================================
+  @Patch('sku/:id/warranty')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update SKU warranty months (admin only)' })
+  async updateSkuWarranty(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() body: {
+      warrantyMonthsWhole?: number;
+      warrantyMonthsCell?: number | null;
+      warrantyMonthsBms?: number | null;
+      warrantyMonthsParts?: number | null;
+    },
+  ) {
+    return await this.svc.updateSkuWarranty(id, body, user.sub);
   }
 }

@@ -24,6 +24,10 @@ export function extForImage(mimeType: string): string {
   if (mimeType === 'image/png') return 'png';
   if (mimeType === 'image/webp') return 'webp';
   if (mimeType === 'image/gif') return 'gif';
+  // v1.5 #C5 修复:iOS 拍照的 HEIC/HEIF 显式映射到正确后缀,不再落入 bin
+  // iOS 17+ 也可能上传 AVIF,顺便一起处理
+  if (mimeType === 'image/heic' || mimeType === 'image/heif') return 'heic';
+  if (mimeType === 'image/avif') return 'avif';
   return 'bin';
 }
 

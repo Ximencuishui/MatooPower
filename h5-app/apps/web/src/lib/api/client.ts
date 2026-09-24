@@ -92,4 +92,51 @@ export async function downloadCsv(path: string): Promise<Blob> {
   return res.blob();
 }
 
+/**
+ * v1.5 #P1-1:文件上传(XHR with progress callback)
+ * - 严格使用 XMLHttpRequest,带 progress 回调(发票照片、SKU 图片、SKUDocument 都走这里)
+ * - 与 fetch 不同:XHR 上传过程中能拿到原生 upload.onprogress,fetch 拿不到
+ * - 返回 { url, storageKey, mimeType, sizeBytes }
+ */
+export function uploadFile(
+  path: string,
+  file: File | Blob,
+  opts: {
+    purpose?: string;            // 'invoice' | 'general' | 'avatar'
+    fileName?: string;
+    signal?: AbortSignal;
+    onProgress?: (loaded: number, total: number) => void;
+  } = {},
+): Promise<{ ok: true; url: string; storageKey: string; mimeType: string; sizeBytes: number }> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${BASE}${path}`);
+    xhr.responseType = 'json';
+    xhr.withCredentials = true;
+    if (opts.signal) {
+      if (opts.signal.aborted) return reject(new DOMException('Aborted', 'AbortError'));
+      opts.signal.addEventListener('abort', () => xhr.abort());
+    }
+    const s = getSession();
+    if (s?.token) xhr.setRequestHeader('Authorization', `Bearer ${s.token}`);
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable && opts.onProgress) opts.onProgress(e.loaded, e.total);
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response as any);
+      } else {
+        const data = xhr.response as any;
+        reject(new ApiError(xhr.status, data?.error ?? `HTTP_${xhr.status}`, data?.message ?? xhr.statusText));
+      }
+    };
+    xhr.onerror = () => reject(new ApiError(0, 'NETWORK_ERROR', 'upload network error'));
+    xhr.onabort = () => reject(new DOMException('Aborted', 'AbortError'));
+    const fd = new FormData();
+    fd.append('file', file, opts.fileName ?? (file as File).name ?? 'upload.bin');
+    if (opts.purpose) fd.append('purpose', opts.purpose);
+    xhr.send(fd);
+  });
+}
+
 export const API_BASE = BASE;

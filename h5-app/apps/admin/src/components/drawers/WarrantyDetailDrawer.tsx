@@ -21,14 +21,23 @@ const STATUS_LABEL: Record<Status, string> = {
   pending: '待审核',
   expired: '已过期',
   rejected: '已拒绝',
-  review: '复核中',
 };
 const STATUS_COLOR: Record<Status, string> = {
   active: 'chip-emerald',
   pending: 'chip-amber',
   expired: 'chip-slate',
   rejected: 'chip-rose',
-  review: 'chip-violet',
+};
+// #P1-6:发票认领状态(仅 H5 提交照片后的审核状态,与 Warranty.status 解耦)
+const REVIEW_STATUS_LABEL: Record<string, string> = {
+  pending: '待审',
+  approved: '已认可',
+  rejected: '已驳回',
+};
+const REVIEW_STATUS_COLOR: Record<string, string> = {
+  pending: 'chip-amber',
+  approved: 'chip-emerald',
+  rejected: 'chip-rose',
 };
 
 interface Props {
@@ -113,35 +122,97 @@ export function WarrantyDetailDrawer({ warrantyId, open, onClose, onChanged }: P
                 {STATUS_LABEL[warranty.status]}
               </span>
             </div>
-            {warranty.invoiceNo && (
-              <div>
-                <div className="text-xs text-slate-500 mb-1">发票号</div>
-                <div className="font-mono">{warranty.invoiceNo}</div>
-              </div>
-            )}
-            {warranty.deviceId && (
-              <div>
-                <div className="text-xs text-slate-500 mb-1">设备 ID</div>
-                <div className="font-mono text-xs truncate">{warranty.deviceId}</div>
-              </div>
-            )}
-            {warranty.notes && (
+            {/* #P1-5:经销商信息 */}
+            {warranty.dealerId && (
               <div className="col-span-2">
-                <div className="text-xs text-slate-500 mb-1">用户备注</div>
-                <div className="card p-3 text-sm whitespace-pre-wrap">
-                  {warranty.notes}
-                </div>
-              </div>
-            )}
-            {warranty.reviewNotes && (
-              <div className="col-span-2">
-                <div className="text-xs text-slate-500 mb-1">审批备注</div>
-                <div className="card p-3 text-sm whitespace-pre-wrap bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
-                  {warranty.reviewNotes}
+                <div className="text-xs text-slate-500 mb-1">所属经销商</div>
+                <div className="flex items-center gap-2">
+                  <span className="chip chip-violet">{warranty.dealerCompanyName ?? warranty.dealerId}</span>
+                  <span className="text-[11px] font-mono text-slate-500">{warranty.dealerId}</span>
                 </div>
               </div>
             )}
           </section>
+
+          {/* #P1-6:发票三件套 + 照片预览 */}
+          <section>
+            <div className="text-xs text-slate-500 mb-2">发票信息</div>
+            <div className="card p-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+              <div>
+                <div className="text-[11px] text-slate-500 mb-0.5">发票号</div>
+                <div className="font-mono">{warranty.invoiceNo ?? '—'}</div>
+              </div>
+              <div>
+                <div className="text-[11px] text-slate-500 mb-0.5">开票日期</div>
+                <div className="font-mono text-xs">
+                  {warranty.invoiceDate
+                    ? new Date(warranty.invoiceDate).toLocaleDateString('zh-CN')
+                    : '—'}
+                </div>
+              </div>
+              <div>
+                <div className="text-[11px] text-slate-500 mb-0.5">金额(分)</div>
+                <div className="font-mono">
+                  {warranty.invoiceAmount != null ? warranty.invoiceAmount.toLocaleString() : '—'}
+                </div>
+              </div>
+              <div>
+                <div className="text-[11px] text-slate-500 mb-0.5">状态</div>
+                <span className={`chip text-[10px] ${REVIEW_STATUS_COLOR[warranty.reviewStatus ?? ''] ?? 'chip-gray'}`}>
+                  {REVIEW_STATUS_LABEL[warranty.reviewStatus ?? ''] ?? '未提交'}
+                </span>
+              </div>
+              {warranty.invoicePhotoUrl && (
+                <div className="col-span-2 sm:col-span-4">
+                  <div className="text-[11px] text-slate-500 mb-1">发票照片</div>
+                  <a
+                    href={warranty.invoicePhotoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-block border border-slate-200 rounded-lg overflow-hidden hover:border-matoo transition"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={warranty.invoicePhotoUrl}
+                      alt="发票照片"
+                      className="max-h-48 max-w-xs object-contain bg-slate-50"
+                    />
+                  </a>
+                  <div className="mt-1 text-[10px] text-slate-400 font-mono break-all">
+                    {warranty.invoicePhotoUrl}
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* 设备 ID + 用户备注 + 审批备注(原 detail 行下方) */}
+          {(warranty.deviceId || warranty.notes || warranty.reviewNotes) && (
+            <section className="grid grid-cols-2 gap-4 text-sm">
+              {warranty.deviceId && (
+                <div className="col-span-2">
+                  <div className="text-xs text-slate-500 mb-1">设备 ID</div>
+                  <div className="font-mono text-xs truncate">{warranty.deviceId}</div>
+                </div>
+              )}
+              {warranty.notes && (
+                <div className="col-span-2">
+                  <div className="text-xs text-slate-500 mb-1">用户备注</div>
+                  <div className="card p-3 text-sm whitespace-pre-wrap">
+                    {warranty.notes}
+                  </div>
+                </div>
+              )}
+              {warranty.reviewNotes && (
+                <div className="col-span-2">
+                  <div className="text-xs text-slate-500 mb-1">审批备注</div>
+                  <div className="card p-3 text-sm whitespace-pre-wrap bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+                    {warranty.reviewNotes}
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
 
           <section>
             <div className="text-xs text-slate-500 mb-2">变更状态 + 备注</div>

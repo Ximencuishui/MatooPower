@@ -12,9 +12,13 @@ import {
   getTicketDetail,
   replyTicket,
   updateTicket,
+  getTicketAuditTrail,
   type TicketDetail,
+  type TicketAuditTrailDto,
 } from '@/lib/api/operations';
 import { ApiError } from '@/lib/api/client';
+
+type AuditTab = 'detail' | 'audit';
 
 interface Props {
   ticketId: string | null;
@@ -82,12 +86,20 @@ export function TicketDetailDrawer({ ticketId, open, onClose, onChanged }: Props
   const [reply, setReply] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [updating, setUpdating] = useState(false);
+  // #P2-1:审计 Tab
+  const [tab, setTab] = useState<AuditTab>('detail');
+  const [audit, setAudit] = useState<TicketAuditTrailDto | null>(null);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditError, setAuditError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (!open || !ticketId) return;
     const ctrl = new AbortController();
     setLoading(true);
     setError(null);
+    setTab('detail');
+    setAudit(null);
+    setAuditError(null);
     getTicketDetail(ticketId, ctrl.signal)
       .then((r) => setTicket(r.ticket))
       .catch((e) => {
@@ -100,6 +112,22 @@ export function TicketDetailDrawer({ ticketId, open, onClose, onChanged }: Props
       .finally(() => setLoading(false));
     return () => ctrl.abort();
   }, [open, ticketId]);
+
+  // #P2-1:切换到审计 Tab 时按需拉取 audit trail(列表不展开时避免无谓请求)
+  useEffect(() => {
+    if (!open || !ticketId || tab !== 'audit' || audit) return;
+    const ctrl = new AbortController();
+    setAuditLoading(true);
+    setAuditError(null);
+    getTicketAuditTrail(ticketId, ctrl.signal)
+      .then((r) => setAudit(r))
+      .catch((e) => {
+        if ((e as { name?: string })?.name === 'AbortError') return;
+        setAuditError(e instanceof Error ? e : new Error(String(e)));
+      })
+      .finally(() => setAuditLoading(false));
+    return () => ctrl.abort();
+  }, [tab, open, ticketId, audit]);
 
   async function handleReply() {
     if (!ticket || !reply.trim() || submitting) return;
@@ -144,6 +172,78 @@ export function TicketDetailDrawer({ ticketId, open, onClose, onChanged }: Props
       {error && <ErrorBlock error={error} />}
       {ticket && !loading && !error && (
         <div className="space-y-6">
+          {/* #P2-1:Tab 切换 — 详情 / 审计 */}
+          <div className="flex items-center gap-1 border-b border-slate-200">
+            {(
+              [
+                { key: 'detail' as AuditTab, label: '详情' },
+                { key: 'audit' as AuditTab, label: '审计轨迹' },
+              ]
+            ).map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`px-4 py-2 text-sm border-b-2 -mb-px transition ${
+                  tab === t.key
+                    ? 'border-matoo text-matoo-dark font-semibold'
+                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {tab === 'detail' && (
+            <DetailTab
+              ticket={ticket}
+              reply={reply}
+              setReply={setReply}
+              submitting={submitting}
+              updating={updating}
+              onReply={handleReply}
+              onStatusChange={handleStatusChange}
+            />
+          )}
+          {tab === 'audit' && (
+            <AuditTab
+              audit={audit}
+              loading={auditLoading}
+              error={auditError}
+              onRetry={() => {
+                setAudit(null);
+                setAuditError(null);
+                setTab('detail');
+                setTimeout(() => setTab('audit'), 0);
+              }}
+            />
+          )}
+        </div>
+      )}
+    </Drawer>
+  );
+}
+
+/* ============== 详情子组件(原内容迁入,行为不变) ============== */
+function DetailTab({
+  ticket,
+  reply,
+  setReply,
+  submitting,
+  updating,
+  onReply,
+  onStatusChange,
+}: {
+  ticket: TicketDetail;
+  reply: string;
+  setReply: (v: string) => void;
+  submitting: boolean;
+  updating: boolean;
+  onReply: () => void;
+  onStatusChange: (s: string) => void;
+}) {
+  return (
+    <div className="space-y-6">
           {/* Meta */}
           <section className="grid grid-cols-2 gap-4 text-sm">
             <div>
@@ -184,7 +284,7 @@ export function TicketDetailDrawer({ ticketId, open, onClose, onChanged }: Props
                 <button
                   key={s}
                   type="button"
-                  onClick={() => handleStatusChange(s)}
+                  onClick={() => onStatusChange(s)}
                   disabled={updating || ticket.status === s}
                   className={`px-3 py-1.5 text-xs rounded-lg border transition ${
                     ticket.status === s
@@ -254,7 +354,7 @@ export function TicketDetailDrawer({ ticketId, open, onClose, onChanged }: Props
             <div className="mt-2 flex justify-end">
               <button
                 type="button"
-                onClick={handleReply}
+                onClick={onReply}
                 disabled={!reply.trim() || submitting}
                 className="btn-primary"
               >
@@ -262,8 +362,91 @@ export function TicketDetailDrawer({ ticketId, open, onClose, onChanged }: Props
               </button>
             </div>
           </section>
+    </div>
+  );
+}
+
+/* ============== 审计子组件 ============== */
+function AuditTab({
+  audit,
+  loading,
+  error,
+  onRetry,
+}: {
+  audit: TicketAuditTrailDto | null;
+  loading: boolean;
+  error: Error | null;
+  onRetry: () => void;
+}) {
+  if (loading) return <PageLoading />;
+  if (error) return <ErrorBlock error={error} onRetry={onRetry} />;
+  if (!audit) return <div className="text-sm text-slate-400 italic">暂无数据</div>;
+  const statusLogs = audit.statusLogs ?? [];
+  const auditLogs = audit.audit ?? [];
+  return (
+    <div className="space-y-6">
+      <section>
+        <div className="text-xs text-slate-500 mb-2">
+          状态变更轨迹 · {statusLogs.length} 条
         </div>
-      )}
-    </Drawer>
+        {statusLogs.length === 0 ? (
+          <div className="text-sm text-slate-400 italic">暂无状态变更</div>
+        ) : (
+          <div className="space-y-2">
+            {statusLogs.map((l) => (
+              <div key={l.id} className="card p-3 text-sm">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="chip chip-blue text-[10px]">{l.action}</span>
+                    <span className="font-medium">
+                      {l.fromStatus ?? '—'} → {l.toStatus ?? '—'}
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono text-slate-500">{l.createdAt}</span>
+                </div>
+                <div className="text-[11px] text-slate-500 mb-1">
+                  by {l.actorUserId ?? 'system'}{l.actorRole ? ` · ${l.actorRole}` : ''}
+                </div>
+                {l.notes && (
+                  <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                    {l.notes}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+      <section>
+        <div className="text-xs text-slate-500 mb-2">
+          资源审计 · {auditLogs.length} 条
+        </div>
+        {auditLogs.length === 0 ? (
+          <div className="text-sm text-slate-400 italic">暂无资源审计</div>
+        ) : (
+          <div className="space-y-2">
+            {auditLogs.map((log) => (
+              <div key={log.id} className="card p-3 text-sm">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-medium">{log.action}</span>
+                  <span className="text-[11px] font-mono text-slate-500">{log.createdAt}</span>
+                </div>
+                <div className="text-[11px] text-slate-500 mb-1">
+                  by {log.actorUserId ?? 'system'}{log.actorRole ? ` · ${log.actorRole}` : ''}
+                </div>
+                {log.payload && (
+                  <details className="text-[11px] text-slate-600">
+                    <summary className="cursor-pointer hover:text-matoo-dark">payload</summary>
+                    <pre className="mt-1 p-2 bg-slate-50 dark:bg-slate-900 rounded overflow-x-auto whitespace-pre-wrap break-all">
+                      {log.payload}
+                    </pre>
+                  </details>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }

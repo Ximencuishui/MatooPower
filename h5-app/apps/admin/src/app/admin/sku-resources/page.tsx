@@ -262,6 +262,8 @@ function DocumentTab({ highlightSkuId }: { highlightSkuId: string }) {
   const [typeFilter, setTypeFilter] = useState<DocType | ''>('');
   const [langFilter, setLangFilter] = useState<DocLang | ''>('');
   const [includeDeprecated, setIncludeDeprecated] = useState(false);
+  // #P2-4:排序方式(type=按文档类型预排; time=按上传时间)
+  const [sortBy, setSortBy] = useState<'type' | 'time'>('type');
   const [items, setItems] = useState<SkuDocumentRow[] | null>(null);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<Error | null>(null);
@@ -277,6 +279,7 @@ function DocumentTab({ highlightSkuId }: { highlightSkuId: string }) {
         type: typeFilter || undefined,
         lang: langFilter || undefined,
         includeDeprecated,
+        sortBy,
         pageSize: 100,
       },
       ac.signal,
@@ -290,7 +293,7 @@ function DocumentTab({ highlightSkuId }: { highlightSkuId: string }) {
         setError(e as Error);
       });
     return () => ac.abort();
-  }, [skuFilter, typeFilter, langFilter, includeDeprecated, reloadKey]);
+  }, [skuFilter, typeFilter, langFilter, includeDeprecated, sortBy, reloadKey]);
 
   async function handleDeprecate(d: SkuDocumentRow) {
     if (!confirm(`下架文档 ${d.title}？`)) return;
@@ -345,6 +348,16 @@ function DocumentTab({ highlightSkuId }: { highlightSkuId: string }) {
           />
           含已下架
         </label>
+        {/* #P2-4:排序方式(type=预排; time=按上传时间倒序) */}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as 'type' | 'time')}
+          className="input max-w-[160px] py-1.5 text-xs"
+          title="排序方式"
+        >
+          <option value="type">按类型预排</option>
+          <option value="time">按上传时间</option>
+        </select>
         <div className="ml-auto">
           <button onClick={() => setUploadOpen(true)} className="btn-primary">
             + 上传文档

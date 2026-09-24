@@ -61,24 +61,98 @@ export default function AdminOverviewPage() {
 
       {data && (
         <>
-          {/* KPI 卡片 */}
+          {/* KPI 卡片 — v1.5 #P2-2:按缺陷修复报告扩展明细卡片 */}
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             <Kpi label="SKU 总数" value={data.sku.total} sub={`已激活 ${data.sku.activated}`} accent="green" />
-            <Kpi label="用户总数" value={data.user.total} sub={`经销商 ${data.user.dealer}`} accent="blue" />
+            <Kpi
+              label="用户总数"
+              value={data.user.total}
+              sub={`经销商 ${data.user.dealer} · 客户 ${data.user.customer} · 已停用 ${data.user.suspended}`}
+              accent="blue"
+            />
             <Kpi
               label="在保中保修"
               value={data.warranty.active}
-              sub={`本月新增 ${data.warranty.activeThisMonth}`}
+              sub={`本月新增 ${data.warranty.activeThisMonth} · 本月到期 ${data.warranty.expiredThisMonth}`}
               accent="purple"
               highlight
             />
-            <Kpi label="设备总数" value={data.device.total} sub={`本月绑定 ${data.device.boundThisMonth}`} accent="orange" />
+            <Kpi
+              label="设备总数"
+              value={data.device.total}
+              sub={`本月绑定 ${data.device.boundThisMonth} · 离线 ${data.device.offline}`}
+              accent="orange"
+            />
             <Kpi
               label="待处理工单"
               value={data.ticket.open}
               sub={`紧急 ${data.ticket.urgent} · 本月新增 ${data.ticket.newThisMonth}`}
               accent="red"
             />
+          </section>
+
+          {/* v1.5 #P2-2:二级 KPI 行 */}
+          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+            <Kpi
+              label="待审质保"
+              value={data.warranty.pending}
+              sub="状态=pending 待管理员审核"
+              accent="orange"
+            />
+            <Kpi
+              label="到期超 7 天"
+              value={data.warranty.expiredThisMonthOver7d}
+              sub="本月到期 + 已超期 7 天"
+              accent={(data.warranty.expiredThisMonthOver7d ?? 0) > 0 ? 'red' : 'gray'}
+            />
+            <Kpi
+              label="离线设备"
+              value={data.device.offline}
+              sub="超 7 天未上报"
+              accent={(data.device.offline ?? 0) > 0 ? 'orange' : 'gray'}
+            />
+            <Kpi
+              label="已停用账户"
+              value={data.user.suspended}
+              sub="isActive=0 被管理员停用"
+              accent={(data.user.suspended ?? 0) > 0 ? 'red' : 'gray'}
+            />
+          </section>
+
+          {/* v1.5 #P0-5 + #P2-3:工单按类型 / 来源分布 */}
+          <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div className="card p-4">
+              <div className="text-xs uppercase tracking-wide text-slate-500 mb-3">工单按类型</div>
+              <div className="space-y-2">
+                {(['general', 'warranty', 'inquiry', 'remote'] as const).map((k) => (
+                  <div key={k} className="flex items-center justify-between text-sm">
+                    <span className="text-slate-600">
+                      {k === 'general' ? '一般咨询'
+                        : k === 'warranty' ? '质保'
+                        : k === 'inquiry' ? '商务问询'
+                        : '远程支持'}
+                    </span>
+                    <span className="font-mono font-semibold">{data.ticket.byType[k] ?? 0}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="card p-4">
+              <div className="text-xs uppercase tracking-wide text-slate-500 mb-3">工单按来源</div>
+              <div className="space-y-2">
+                {(['web', 'h5', 'dealer', 'system'] as const).map((k) => (
+                  <div key={k} className="flex items-center justify-between text-sm">
+                    <span className="text-slate-600">
+                      {k === 'web' ? '官网表单'
+                        : k === 'h5' ? 'H5 应用'
+                        : k === 'dealer' ? '经销商'
+                        : '系统'}
+                    </span>
+                    <span className="font-mono font-semibold">{data.ticket.bySource[k] ?? 0}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
 
           {/* 紧急告警 */}
