@@ -128,3 +128,14 @@ _diff_index.txt
 _git_status.txt
 _audit_*.txt
 .audit_full.out
+
+# v1.5 验收期误产物 / 本地运行副产物
+# SN24B0801A0001:h5-app/apps/api/_smoke-v15.ps1 用 > 重定向误生成的空文件(本机 PowerShell 习惯性注入)
+SN24B0801A0001
+# 根目录误生成的 npm lock(h5-app 是 pnpm workspace,根目录不应有 package-lock.json)
+package-lock.json
+# 冒烟脚本 stdout 落盘(已通过 PowerShell Tee 收集,不入库)
+/_smoke-*.out
+_smoke-*.out
+website/_simulate_browser.out
+_simulate_browser.out
