@@ -41,6 +41,19 @@ export class DealerController {
     return { ok: true, items };
   }
 
+  /**
+   * v1.5 #P1-9:H5 /dealer/price-list 入口 — 经销商专属价表
+   * - 反查 dealer User.dealerId → DealerPriceList WHERE dealerId = ?
+   * - 拼接 SKU 主数据(sku / modelName / imageUrls / guidePriceCents 折扣基准)
+   * - 过滤:有效期需涵盖 today
+   */
+  @Get('price-list')
+  @ApiOperation({ summary: 'Get my dedicated price list (joined with SKU info)' })
+  async priceList(@CurrentUser() user: AuthUser) {
+    const items = this.svc.getPriceList(user.sub);
+    return { ok: true, items };
+  }
+
   @Post('bulk-activate')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Bulk activate multiple SKUs (auto-create customer, warranty, device)' })

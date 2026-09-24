@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { DbService } from '../../common/db/db';
 
@@ -18,15 +18,24 @@ export class AdminService {
     return this.paginated('SELECT * FROM Sku', opts, ['sku', 'modelName', 'serial', 'batch']);
   }
 
-  /** 保修列表 */
-  async listWarranties(opts: { q?: string; page?: number; pageSize?: number; status?: string } = {}): Promise<PageResult<any>> {
+  /** 保修列表 — v1.5 #P1-5:增加 dealerId 过滤 */
+  async listWarranties(opts: { q?: string; page?: number; pageSize?: number; status?: string; dealerId?: string } = {}): Promise<PageResult<any>> {
+    const extraWhere: string[] = [];
+    const extraParams: any[] = [];
+    if (opts.status) { extraWhere.push('w.status = ?'); extraParams.push(opts.status); }
+    if (opts.dealerId) { extraWhere.push('w.dealerId = ?'); extraParams.push(opts.dealerId); }
     return this.paginated(
       `SELECT w.*, u.phone AS user_phone, u.displayName AS user_displayName,
-              s.sku AS s_sku, s.modelName AS s_modelName, s.serial AS s_serial
+              s.sku AS s_sku, s.modelName AS s_modelName, s.serial AS s_serial,
+              (SELECT companyName FROM Dealer d WHERE d.id = w.dealerId) AS dealer_companyName
        FROM Warranty w
        JOIN User u ON w.userId = u.id
        JOIN Sku s ON w.skuId = s.id`,
-      { ...opts, extraWhere: opts.status ? 'w.status = ?' : undefined, extraParams: opts.status ? [opts.status] : [] },
+      {
+        ...opts,
+        extraWhere: extraWhere.length ? extraWhere.join(' AND ') : undefined,
+        extraParams,
+      },
       ['s_sku', 's_serial', 'user_phone', 'user_displayName'],
       'w.createdAt DESC',
     );
@@ -137,20 +146,33 @@ export class AdminService {
   }
 
   /**
-   * P0-6 v1.2 增量:批量审核（admin 批量操作场景，如批量拒绝伪造批次）
+   * #P1-4 v1.5 增量:批量审核支持逐条 notes
+   * - 旧调用传 string[] (从 controller 呼入 ids 转过来)
+   * - 新调用传 Array<{ id, status?, notes? }>,可逐条覆盖 status + notes
+   *   ↑ 某条 status/notes 缺失时 fallback 到顶层的 fallbackStatus / fallbackNotes
    * - 逐条复用 reviewWarranty 写入逻辑,保持审计/状态机一致
-   * - 任一条失败抛出 BadRequest,事务已写入行不回滚(演示期 sqlite 简化),调用方按失败列表重试
-   * - 返回值含 succeeded/failed 两条,便于前端展示
    */
   async bulkReviewWarranties(
-    ids: string[],
-    status: 'active' | 'pending' | 'expired' | 'rejected',
-    notes: string | undefined,
+    itemsOrIds: string[] | Array<{ id: string; status?: 'active' | 'pending' | 'expired' | 'rejected'; notes?: string }>,
+    fallbackStatus: 'active' | 'pending' | 'expired' | 'rejected' | undefined,
+    fallbackNotes: string | undefined,
     actorUserId: string,
   ): Promise<{ succeeded: Array<{ id: string; status: string }>; failed: Array<{ id: string; reason: string }>; total: number }> {
+    const list: Array<{ id: string; status?: 'active' | 'pending' | 'expired' | 'rejected'; notes?: string }> =
+      typeof itemsOrIds[0] === 'string'
+        ? (itemsOrIds as string[]).map((id) => ({ id }))
+        : (itemsOrIds as Array<{ id: string; status?: 'active' | 'pending' | 'expired' | 'rejected'; notes?: string }>);
+
     const succeeded: Array<{ id: string; status: string }> = [];
     const failed: Array<{ id: string; reason: string }> = [];
-    for (const id of ids) {
+    for (const item of list) {
+      const id = item.id;
+      const status = item.status ?? fallbackStatus;
+      const notes = item.notes ?? fallbackNotes;
+      if (!status) {
+        failed.push({ id, reason: '缺少 status(未提供顶层 status,逐条也未提供)' });
+        continue;
+      }
       try {
         const w = this.db.get<{ id: string; status: string; reviewNotes: string | null }>(
           'SELECT id, status, reviewNotes FROM Warranty WHERE id = ?', id);
@@ -166,7 +188,7 @@ export class AdminService {
         failed.push({ id, reason: (e as Error).message ?? 'unknown' });
       }
     }
-    return { succeeded, failed, total: ids.length };
+    return { succeeded, failed, total: list.length };
   }
 
   /** 写 WarrantyReviewLog（reviewWarranty/bulkReviewWarranties 共用） */
@@ -268,36 +290,82 @@ export class AdminService {
     );
   }
 
-  /** 平台概览 */
+  /** 平台概览 — v1.5 扩展按缺陷修复报告(P0-5/P1-3/P2-2/P2-3) 拉宽 KPI */
   async overview() {
     const skuTotal = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Sku')?.c ?? 0;
     const skuActivated = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Sku WHERE activated = 1')?.c ?? 0;
-    const userTotal = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM User')?.c ?? 0;
-    const userDealer = this.db.get<{ c: number }>("SELECT COUNT(*) AS c FROM User WHERE role = 'dealer'")?.c ?? 0;
-    const warrantyActive = this.db.get<{ c: number }>("SELECT COUNT(*) AS c FROM Warranty WHERE status = 'active'")?.c ?? 0;
+    const userTotal = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM User WHERE deletedAt IS NULL')?.c ?? 0;
+    const userDealer = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM User WHERE role = ? AND deletedAt IS NULL', 'dealer')?.c ?? 0;
+    const userCustomer = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM User WHERE role = ? AND deletedAt IS NULL', 'customer')?.c ?? 0;
+    const userSuspended = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM User WHERE isActive = 0 AND deletedAt IS NULL')?.c ?? 0;
+    const warrantyActive = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Warranty WHERE status = ?', 'active')?.c ?? 0;
+    const warrantyPending = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Warranty WHERE status = ?', 'pending')?.c ?? 0;
     const deviceTotal = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Device')?.c ?? 0;
+    const deviceOffline = this.db.get<{ c: number }>(
+      "SELECT COUNT(*) AS c FROM Device WHERE (julianday('now') - julianday(lastSeenAt)) * 24 >= 7",
+    )?.c ?? 0;
     const ticketOpen = this.db.get<{ c: number }>("SELECT COUNT(*) AS c FROM Ticket WHERE status IN ('open','in_progress','waiting_customer')")?.c ?? 0;
     const ticketUrgent = this.db.get<{ c: number }>("SELECT COUNT(*) AS c FROM Ticket WHERE severity IN ('high','urgent') AND status NOT IN ('resolved','closed')")?.c ?? 0;
 
     const firstOfMonth = new Date();
     firstOfMonth.setDate(1); firstOfMonth.setHours(0,0,0,0);
-    const warrantyThisMonth = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Warranty WHERE createdAt >= ?', firstOfMonth.toISOString())?.c ?? 0;
-    const deviceThisMonth = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Device WHERE boundAt >= ?', firstOfMonth.toISOString())?.c ?? 0;
-    const ticketThisMonth = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Ticket WHERE createdAt >= ?', firstOfMonth.toISOString())?.c ?? 0;
+    const isoFirst = firstOfMonth.toISOString();
+    const warrantyThisMonth = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Warranty WHERE createdAt >= ?', isoFirst)?.c ?? 0;
+    const deviceThisMonth = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Device WHERE boundAt >= ?', isoFirst)?.c ?? 0;
+    const ticketThisMonth = this.db.get<{ c: number }>('SELECT COUNT(*) AS c FROM Ticket WHERE createdAt >= ?', isoFirst)?.c ?? 0;
+
+    // 本月到期 + 超过 7 天的质保
+    const monthEnd = new Date(firstOfMonth);
+    monthEnd.setMonth(monthEnd.getMonth() + 1);
+    const expiredThisMonth = this.db.get<{ c: number }>(
+      'SELECT COUNT(*) AS c FROM Warranty WHERE endAtWhole >= ? AND endAtWhole < ? AND status = ?',
+      isoFirst, monthEnd.toISOString(), 'active',
+    )?.c ?? 0;
+    const expiredThisMonthOver7d = this.db.get<{ c: number }>(
+      "SELECT COUNT(*) AS c FROM Warranty WHERE endAtWhole < ? AND status = ? AND (julianday('now') - julianday(endAtWhole)) * 24 >= 24 * 7",
+      isoFirst, 'active',
+    )?.c ?? 0;
+
+    // 工单 byType / bySource
+    const ticketByTypeRows = this.db.all<{ type: string; c: number }>(
+      "SELECT type, COUNT(*) AS c FROM Ticket GROUP BY type",
+    ) ?? [];
+    const ticketByType: Record<string, number> = { general: 0, warranty: 0, inquiry: 0, remote: 0 };
+    for (const r of ticketByTypeRows) ticketByType[r.type] = r.c;
+
+    const ticketBySourceRows = this.db.all<{ source: string | null; c: number }>(
+      "SELECT source, COUNT(*) AS c FROM Ticket GROUP BY source",
+    ) ?? [];
+    const ticketBySource: Record<string, number> = { web: 0, h5: 0, dealer: 0, system: 0 };
+    for (const r of ticketBySourceRows) ticketBySource[r.source ?? 'unknown'] = r.c;
 
     return {
       sku: { total: skuTotal, activated: skuActivated },
-      user: { total: userTotal, dealer: userDealer },
-      warranty: { active: warrantyActive, activeThisMonth: warrantyThisMonth },
-      device: { total: deviceTotal, boundThisMonth: deviceThisMonth },
-      ticket: { open: ticketOpen, urgent: ticketUrgent, newThisMonth: ticketThisMonth },
+      user: { total: userTotal, dealer: userDealer, customer: userCustomer, suspended: userSuspended },
+      warranty: {
+        active: warrantyActive,
+        activeThisMonth: warrantyThisMonth,
+        expiredThisMonth,
+        pending: warrantyPending,
+        expiredThisMonthOver7d,
+      },
+      device: { total: deviceTotal, boundThisMonth: deviceThisMonth, offline: deviceOffline },
+      ticket: {
+        open: ticketOpen,
+        urgent: ticketUrgent,
+        newThisMonth: ticketThisMonth,
+        byType: ticketByType as any,
+        bySource: ticketBySource as any,
+      },
     };
   }
 
   /** 单用户详情（含近 N 条保修） — GDPR 已删除用户返回 404 */
   async getUserDetail(id: string) {
     const user = this.db.get(
-      `SELECT id, phone, email, role, displayName, createdAt, deletedAt
+      // v1.5 #P1-3:加 isActive / suspendedAt / suspendedReason 返回,便于前端显示状态 chip
+      `SELECT id, phone, email, role, displayName, createdAt, deletedAt,
+              isActive, suspendedAt, suspendedReason
        FROM User WHERE id = ? AND deletedAt IS NULL`, id);
     if (!user) throw new NotFoundException(`user ${id} 不存在`);
     const warrantyCount = this.db.get<{ c: number }>(
@@ -401,6 +469,7 @@ export class AdminService {
              passwordHash = NULL,
              displayName = NULL,
              role = 'anonymous',
+             isActive = 0,
              anonymizedPhone = ?,
              anonymizedEmail = ?,
              deletedAt = CURRENT_TIMESTAMP
@@ -434,5 +503,212 @@ export class AdminService {
       anonymizedPhone: phoneHash,
       anonymizedEmail: emailHash,
     };
+  }
+
+  /**
+   * v1.5 #P1-3:用户 Suspension — admin 可临时停用违规用户
+   * - isActive=0 → JwtStrategy 拒绝该用户后续任何请求
+   * - suspend/unsuspend 都写 AuditLog(suspension 状态带原因)
+   * - 限制:不能停用自己(避免误锁)
+   */
+  async suspendUser(id: string, reason: string, actorUserId: string) {
+    if (actorUserId === id) {
+      throw new ForbiddenException('不能停用当前登录账号');
+    }
+    const target = this.db.get<{ id: string; isActive: number; deletedAt: string | null }>(
+      'SELECT id, isActive, deletedAt FROM User WHERE id = ?', id);
+    if (!target) throw new NotFoundException(`user ${id} 不存在`);
+    if (target.deletedAt) throw new ConflictException('用户已被 GDPR 删除,无法调整状态');
+    if (target.isActive === 0) {
+      return { ok: true, user: this.db.get('SELECT id, phone, email, role, displayName, isActive FROM User WHERE id = ?', id), alreadySuspended: true };
+    }
+    this.db.run(
+      'UPDATE User SET isActive = 0, suspendedAt = CURRENT_TIMESTAMP, suspendedReason = ? WHERE id = ?',
+      reason ?? null, id,
+    );
+    this.db.run(
+      `INSERT INTO AuditLog (id, actorUserId, actorRole, action, resource, payload, createdAt)
+       VALUES (?, ?, 'admin', 'user.suspend', ?, ?, CURRENT_TIMESTAMP)`,
+      'aud-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      actorUserId,
+      `user:${id}`,
+      JSON.stringify({ reason: reason ?? null }),
+    );
+    return {
+      ok: true,
+      user: this.db.get('SELECT id, phone, email, role, displayName, isActive, suspendedAt, suspendedReason FROM User WHERE id = ?', id),
+    };
+  }
+
+  async unsuspendUser(id: string, actorUserId: string) {
+    const target = this.db.get<{ id: string; isActive: number; deletedAt: string | null }>(
+      'SELECT id, isActive, deletedAt FROM User WHERE id = ?', id);
+    if (!target) throw new NotFoundException(`user ${id} 不存在`);
+    if (target.deletedAt) throw new ConflictException('用户已被 GDPR 删除,无法调整状态');
+    if (target.isActive === 1) {
+      return { ok: true, user: this.db.get('SELECT id, phone, email, role, displayName, isActive FROM User WHERE id = ?', id) };
+    }
+    this.db.run(
+      'UPDATE User SET isActive = 1, suspendedAt = NULL, suspendedReason = NULL WHERE id = ?', id,
+    );
+    this.db.run(
+      `INSERT INTO AuditLog (id, actorUserId, actorRole, action, resource, payload, createdAt)
+       VALUES (?, ?, 'admin', 'user.unsuspend', ?, ?, CURRENT_TIMESTAMP)`,
+      'aud-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      actorUserId,
+      `user:${id}`,
+      null,
+    );
+    return {
+      ok: true,
+      user: this.db.get('SELECT id, phone, email, role, displayName, isActive, suspendedAt, suspendedReason FROM User WHERE id = ?', id),
+    };
+  }
+
+  /**
+   * v1.5 #P2-1:工单审计轨迹 — GET /admin/audit/ticket/:id
+   * - AuditLog:资源型动作(create/reply/update/review 等)
+   * - TicketStatusLog:状态/严重度变更历史(包含 SLA 自动升级记录)
+   *   注意:TicketStatusLog 表本身只有 status 列,SLA 升级将旧 severity 写入 fromStatus / 新 severity 写入 toStatus
+   *   我们在返回前加 isSlaEscalation 标志帮前端区分展示
+   */
+  async getTicketAuditTrail(id: string) {
+    const ticket = this.db.get<{ id: string }>('SELECT id FROM Ticket WHERE id = ?', id);
+    if (!ticket) throw new NotFoundException(`ticket ${id} 不存在`);
+    const audit = this.db.all<{
+      id: string;
+      actorUserId: string | null;
+      actorRole: string | null;
+      action: string;
+      resource: string | null;
+      payload: string | null;
+      ip: string | null;
+      userAgent: string | null;
+      createdAt: string;
+    }>(
+      `SELECT id, actorUserId, actorRole, action, resource, payload, ip, userAgent, createdAt
+       FROM AuditLog
+       WHERE resource = ? OR action = 'ticket.reply'
+       ORDER BY createdAt DESC LIMIT 50`,
+      `ticket:${id}`,
+    );
+    const statusRows = this.db.all<{
+      id: string;
+      ticketId: string;
+      actorUserId: string | null;
+      fromStatus: string | null;
+      toStatus: string | null;
+      resolution: string | null;
+      createdAt: string;
+    }>(
+      `SELECT id, ticketId, actorUserId, fromStatus, toStatus, resolution, createdAt
+       FROM TicketStatusLog
+       WHERE ticketId = ? ORDER BY createdAt DESC LIMIT 50`,
+      id,
+    );
+    const statusLogs = statusRows.map((r) => ({
+      id: r.id,
+      ticketId: r.ticketId,
+      actorUserId: r.actorUserId,
+      actorRole: r.actorUserId === 'system-sla' ? 'system' : 'admin',
+      fromStatus: r.fromStatus,
+      toStatus: r.toStatus,
+      fromSeverity: null,
+      toSeverity: null,
+      action: r.actorUserId === 'system-sla' ? 'sla.escalation' : 'status.update',
+      notes: r.resolution,
+      createdAt: r.createdAt,
+    }));
+    return { ok: true, audit, statusLogs };
+  }
+
+  /**
+   * v1.5 #P2-5:SKU 质保月份设置 — PATCH /admin/sku/:id/warranty
+   * - 改 warrantyMonthsWhole / Cell / Bms / Parts 任意子集
+   * - 写 AuditLog('sku.warranty_update')
+   * - 限制:月数必须为正整数(0=清零允许,负数/小数/NaN 拒绝)
+   */
+  async updateSkuWarranty(
+    id: string,
+    body: {
+      warrantyMonthsWhole?: number;
+      warrantyMonthsCell?: number | null;
+      warrantyMonthsBms?: number | null;
+      warrantyMonthsParts?: number | null;
+    },
+    actorUserId?: string,
+  ) {
+    const sku = this.db.get<{ id: string; sku: string }>('SELECT id, sku FROM Sku WHERE id = ?', id);
+    if (!sku) throw new NotFoundException(`SKU ${id} 不存在`);
+
+    // 校验
+    const validPositiveInt = (n: unknown): n is number =>
+      typeof n === 'number' && Number.isInteger(n) && n >= 0;
+    const fields: string[] = [];
+    const values: any[] = [];
+    if (body.warrantyMonthsWhole !== undefined) {
+      if (!validPositiveInt(body.warrantyMonthsWhole)) {
+        throw new BadRequestException('warrantyMonthsWhole 必须为非负整数');
+      }
+      fields.push('warrantyMonthsWhole = ?');
+      values.push(body.warrantyMonthsWhole);
+    }
+    if (body.warrantyMonthsCell !== undefined) {
+      if (body.warrantyMonthsCell === null) {
+        fields.push('warrantyMonthsCell = NULL');
+      } else if (validPositiveInt(body.warrantyMonthsCell)) {
+        fields.push('warrantyMonthsCell = ?');
+        values.push(body.warrantyMonthsCell);
+      } else {
+        throw new BadRequestException('warrantyMonthsCell 必须为非负整数或 null');
+      }
+    }
+    if (body.warrantyMonthsBms !== undefined) {
+      if (body.warrantyMonthsBms === null) {
+        fields.push('warrantyMonthsBms = NULL');
+      } else if (validPositiveInt(body.warrantyMonthsBms)) {
+        fields.push('warrantyMonthsBms = ?');
+        values.push(body.warrantyMonthsBms);
+      } else {
+        throw new BadRequestException('warrantyMonthsBms 必须为非负整数或 null');
+      }
+    }
+    if (body.warrantyMonthsParts !== undefined) {
+      if (body.warrantyMonthsParts === null) {
+        fields.push('warrantyMonthsParts = NULL');
+      } else if (validPositiveInt(body.warrantyMonthsParts)) {
+        fields.push('warrantyMonthsParts = ?');
+        values.push(body.warrantyMonthsParts);
+      } else {
+        throw new BadRequestException('warrantyMonthsParts 必须为非负整数或 null');
+      }
+    }
+
+    if (fields.length === 0) {
+      throw new BadRequestException('至少提供一个质保月数字段');
+    }
+
+    this.db.run(
+      `UPDATE Sku SET ${fields.join(', ')} WHERE id = ?`,
+      ...values, id,
+    );
+
+    // 审计
+    if (actorUserId) {
+      this.db.run(
+        `INSERT INTO AuditLog (id, actorUserId, actorRole, action, resource, payload, createdAt)
+         VALUES (?, ?, 'admin', 'sku.warranty_update', ?, ?, CURRENT_TIMESTAMP)`,
+        'aud-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        actorUserId,
+        `sku:${id}`,
+        JSON.stringify(body),
+      );
+    }
+
+    const updated = this.db.get(
+      `SELECT id, sku, warrantyMonthsWhole, warrantyMonthsCell, warrantyMonthsBms, warrantyMonthsParts
+       FROM Sku WHERE id = ?`, id,
+    );
+    return { ok: true, sku: updated };
   }
 }

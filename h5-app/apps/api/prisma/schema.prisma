@@ -22,6 +22,10 @@ model User {
   deletedAt        DateTime? // v1.4 P1-1:GDPR 软删时间戳
   anonymizedPhone  String?   // v1.4 P1-1:删除前 phone 哈希备份(SHA256),用于审计
   anonymizedEmail  String?   // v1.4 P1-1:删除前 email 哈希备份
+  // v1.5 #P1-3:账户 Suspension 状态(isActive=0 → JwtAuthGuard 拒绝请求)
+  isActive         Boolean   @default(true)
+  suspendedAt      DateTime?
+  suspendedReason  String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
@@ -97,6 +101,8 @@ model Sku {
   activatedAt           DateTime?
   activatedByUserId     String?
   activatedByUser       User?    @relation("ActivatedBy", fields: [activatedByUserId], references: [id])
+  // v1.5 #P1-8:经销商双轨合并 — Dealer 经销商通过此字段反查,与 User.role='dealer' 并存过渡
+  activatedByDealerId   String?
   createdAt             DateTime @default(now())
 
   qrSignatures QrSignature[]
@@ -163,6 +169,8 @@ model Warranty {
   country          String
   city             String
   dealerName       String?
+  // v1.5 #P1-5:经销商强关联(dealer.bulkActivate 写入时反查 Dealer)
+  dealerId         String?
   invoiceNo        String?
   invoiceDate      DateTime?
   invoiceAmount    Float?
@@ -176,9 +184,12 @@ model Warranty {
   reviewNotes      String?
   createdAt        DateTime @default(now())
 
+  pickupItems      DealerPickupItem[]
+
   @@index([skuId])
   @@index([userId])
   @@index([status])
+  @@index([dealerId])
 }
 
 model Device {
@@ -219,6 +230,8 @@ model Ticket {
   status          String   @default("open")     // 'open' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed'
   assigneeUserId  String?
   assignee        User?     @relation("TicketAssignee", fields: [assigneeUserId], references: [id])
+  // v1.5 #P2-3:来源标记 — 用于 admin 区分 web/h5/dealer/system 引流工单
+  source          String?                       // 'web' | 'h5' | 'dealer' | 'system'
   resolution      String?
   resolvedAt      DateTime?
   createdAt       DateTime @default(now())
@@ -229,6 +242,7 @@ model Ticket {
   @@index([skuId])
   @@index([status])
   @@index([assigneeUserId])
+  @@index([source])
 }
 
 model TicketMessage {
@@ -392,4 +406,108 @@ model QrBatch {
   @@index([batchId])
   @@index([status])
   @@index([createdAt])
+}
+
+// v1.5 #P0-2:配件商城数据模型
+model Part {
+  id              String    @id @default(cuid())
+  sku             String
+  name            String
+  modelName       String
+  family          String    // 'cell' | 'bms' | 'charger' | 'cable' | 'accessory'
+  capacity        String?
+  voltage         String?
+  compatibleSkus  String?
+  description     String?
+  imageUrls       String?
+  priceCents      Int
+  currency        String    @default("BDT")
+  stock           Int       @default(0)
+  active          Boolean   @default(true)
+  createdByUserId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  orderItems      PartOrderItem[]
+
+  @@index([sku])
+  @@index([family])
+  @@index([active])
+}
+
+model PartOrder {
+  id              String    @id @default(cuid())
+  userId          String
+  status          String    @default("pending") // 'pending' | 'paid' | 'shipped' | 'completed' | 'cancelled'
+  totalCents      Int
+  currency        String    @default("BDT")
+  contactPhone    String?
+  shipName        String?
+  shipCountry     String?
+  shipCity        String?
+  shipAddress     String?
+  note            String?
+  paidAt          DateTime?
+  shippedAt       DateTime?
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+  source          String?   // 'h5' | 'dealer'
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  items           PartOrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model PartOrderItem {
+  id          String    @id @default(cuid())
+  orderId     String
+  order       PartOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  partId      String
+  part        Part      @relation(fields: [partId], references: [id])
+  sku         String
+  name        String
+  priceCents  Int
+  currency    String
+  quantity    Int
+  createdAt   DateTime  @default(now())
+
+  @@index([orderId])
+  @@index([partId])
+}
+
+// v1.5 #P0-3:经销商提货批次
+model DealerPickup {
+  id                String    @id @default(cuid())
+  dealerId          String
+  dealer            Dealer    @relation(fields: [dealerId], references: [id], onDelete: Cascade)
+  shipmentInvoiceNo String
+  shipmentDate      DateTime
+  createdByUserId   String
+  note              String?
+  createdAt         DateTime  @default(now())
+
+  items             DealerPickupItem[]
+
+  @@index([dealerId])
+  @@index([shipmentInvoiceNo])
+}
+
+model DealerPickupItem {
+  id          String    @id @default(cuid())
+  pickupId    String
+  pickup      DealerPickup @relation(fields: [pickupId], references: [id], onDelete: Cascade)
+  sku         String
+  serial      String
+  activated   Boolean   @default(false)
+  warrantyId  String?
+  warranty    Warranty? @relation(fields: [warrantyId], references: [id])
+  createdAt   DateTime  @default(now())
+
+  @@index([pickupId])
+  @@index([serial])
+  @@index([activated])
 }

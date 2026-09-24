@@ -35,7 +35,7 @@ export interface TicketListItem extends TicketRow {
 export class TicketService {
   constructor(private readonly db: DbService) {}
 
-  create(userId: string, dto: CreateTicketDto) {
+  create(userId: string, dto: CreateTicketDto, source?: 'web' | 'h5' | 'dealer' | 'system') {
     // 验证 skuId / deviceId 存在
     if (dto.skuId) {
       const s = this.db.get<any>('SELECT id FROM Sku WHERE id = ?', dto.skuId);
@@ -49,9 +49,9 @@ export class TicketService {
     const id = `ticket-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const now = new Date().toISOString();
     this.db.run(
-      `INSERT INTO Ticket (id, userId, skuId, deviceId, type, severity, subject, description, contactPhone, status, createdAt, updatedAt)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'open', ?, ?)`,
-      id, userId, dto.skuId ?? null, dto.deviceId ?? null, dto.type, dto.severity, dto.subject, dto.description, dto.contactPhone ?? null, now, now,
+      `INSERT INTO Ticket (id, userId, skuId, deviceId, type, severity, subject, description, contactPhone, status, source, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'open', ?, ?, ?)`,
+      id, userId, dto.skuId ?? null, dto.deviceId ?? null, dto.type, dto.severity, dto.subject, dto.description, dto.contactPhone ?? null, source ?? null, now, now,
     );
 
     // 系统首条消息
@@ -86,7 +86,7 @@ export class TicketService {
     return this.db.all(sql, ...args) as TicketListItem[];
   }
 
-  listAll(status?: string, severity?: string, opts: { q?: string; page?: number; pageSize?: number } = {}): { items: TicketListItem[]; total: number; page: number; pageSize: number } {
+  listAll(status?: string, severity?: string, opts: { type?: string; source?: string; q?: string; page?: number; pageSize?: number } = {}): { items: TicketListItem[]; total: number; page: number; pageSize: number } {
     const page = Math.max(1, opts.page ?? 1);
     const pageSize = Math.min(100, Math.max(1, opts.pageSize ?? 20));
     const offset = (page - 1) * pageSize;
@@ -96,6 +96,8 @@ export class TicketService {
     const args: any[] = [];
     if (status) { where.push('t.status = ?'); args.push(status); }
     if (severity) { where.push('t.severity = ?'); args.push(severity); }
+    if (opts.type) { where.push('t.type = ?'); args.push(opts.type); }
+    if (opts.source) { where.push('t.source = ?'); args.push(opts.source); }
     if (q) {
       where.push('(t.subject LIKE ? OR t.description LIKE ? OR t.id LIKE ?)');
       args.push(`%${q}%`, `%${q}%`, `%${q}%`);

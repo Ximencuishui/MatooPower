@@ -16,6 +16,9 @@ import { StorageModule } from './modules/storage/storage.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { WarrantyModule } from './modules/warranty/warranty.module';
 import { PublicInquiryModule } from './modules/public-inquiry/public-inquiry.module';
+// v1.5 #P0-2 / #P0-3:配件商城 + 经销商提货
+import { PartsModule } from './modules/parts/parts.module';
+import { DealerPickupModule } from './modules/dealer-pickup/dealer-pickup.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { AppThrottlerGuard } from './common/guards/app-throttler.guard';
@@ -64,6 +67,9 @@ import { DbModule } from './common/db/db.module';
     DealerModule,
     // v1.4 T-2d X2:website 询盘 → h5-app 工单对接的公开接收端点
     PublicInquiryModule,
+    // v1.5 #P0-2 / #P0-3:配件商城 + 经销商提货
+    PartsModule,
+    DealerPickupModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },

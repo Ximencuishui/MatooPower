@@ -52,10 +52,14 @@ export class SkuDocumentService {
     q?: string;
     page?: number;
     pageSize?: number;
+    /** #P2-4: 'type' = 按文档类型预排; 默认 = 按上传时间 */
+    sortBy?: 'type' | 'time';
   } = {}): Promise<PageResult<SkuDocumentRow>> {
     const page = Math.max(1, opts.page ?? 1);
     const pageSize = Math.min(100, Math.max(1, opts.pageSize ?? 20));
     const offset = (page - 1) * pageSize;
+    // #P2-4:sortBy 默认 undefined=按上传时间排; 'type' = 按文档类型预排(manual → video → specsheet → faq)
+    const sortBy = opts.sortBy ?? 'time';
 
     const where: string[] = [];
     const params: any[] = [];
@@ -65,9 +69,20 @@ export class SkuDocumentService {
     if (!opts.includeDeprecated) { where.push('deprecatedAt IS NULL'); }
     const whereSql = where.length ? `WHERE ${where.join(' AND ')}` : '';
 
+    // #P2-4:支持 sortBy=type 让文档 Tab 按类型预排(manual → video → specsheet → faq)
+    const orderSql = sortBy === 'type'
+      ? `ORDER BY CASE type
+            WHEN 'manual' THEN 0
+            WHEN 'video' THEN 1
+            WHEN 'specsheet' THEN 2
+            WHEN 'faq' THEN 3
+            ELSE 4
+          END, uploadedAt DESC`
+      : `ORDER BY uploadedAt DESC`;
+
     const total = this.db.get<{ c: number }>(`SELECT COUNT(*) AS c FROM SkuDocument ${whereSql}`, ...params)?.c ?? 0;
     const items = this.db.all<SkuDocumentRow>(
-      `SELECT * FROM SkuDocument ${whereSql} ORDER BY uploadedAt DESC LIMIT ? OFFSET ?`,
+      `SELECT * FROM SkuDocument ${whereSql} ${orderSql} LIMIT ? OFFSET ?`,
       ...params, pageSize, offset);
 
     return { items, total, page, pageSize };

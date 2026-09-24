@@ -151,4 +151,36 @@ export class SkuService {
         : null,
     };
   }
+
+  /**
+   * v1.5 #P1-2:经销商 H5 提货粘贴 SKU/Serial 时回填 SKU 用
+   * - 仅返回必要字段,避免泄漏成本价
+   * v1.5 #C2 + #C3:补 modelName/mfgDate/activatedAt — admin 前端需要展示生产日期与激活时间
+   */
+  findBySerial(serial: string) {
+    const r = this.db.get<{
+      id: string;
+      sku: string;
+      batch: string;
+      serial: string;
+      activated: number;
+      modelName: string | null;
+      mfgDate: string | null;
+      activatedAt: string | null;
+    }>(
+      'SELECT id, sku, batch, serial, activated, modelName, mfgDate, activatedAt FROM Sku WHERE serial = ?',
+      serial,
+    );
+    if (!r) return null;
+    return {
+      skuId: r.id,
+      sku: r.sku,
+      batch: r.batch,
+      serial: r.serial,
+      activated: r.activated === 1,
+      modelName: r.modelName,
+      mfgDate: r.mfgDate,
+      activatedAt: r.activatedAt,
+    };
+  }
 }

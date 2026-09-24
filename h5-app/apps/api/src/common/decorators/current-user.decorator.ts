@@ -6,6 +6,9 @@ export interface AuthUser {
   role: 'customer' | 'dealer' | 'admin' | 'support';
   phone?: string;
   email?: string;
+  /** v1.5 #P1-5:经销商归属 Dealer.id(供 dealer-pickup 隔离使用) */
+  dealerId?: string | null;
+  /** v1.5 #P1-3:实时 role 来自 User 表(避免 token 过期前角色被改) */
   iat?: number;
   exp?: number;
 }
